@@ -1,0 +1,139 @@
+@using StudentManagementApp.BLL.DTOs
+@{
+    ViewData["Title"] = "Lịch sử điểm danh";
+    var enrollments = ViewBag.Enrollments as IEnumerable<EnrollmentDto> ?? Enumerable.Empty<EnrollmentDto>();
+    var selectedClassId = ViewBag.SelectedClassId as int?;
+    var cls = ViewBag.Class as ClassDto;
+    var allSessions = ViewBag.AllSessions as List<DateOnly> ?? new();
+    var attByDate = ViewBag.AttByDate as Dictionary<DateOnly, AttendanceDto> ?? new();
+    var today = ViewBag.Today is DateOnly t ? t : DateOnly.FromDateTime(DateTime.Today);
+    int presentCount = ViewBag.PresentCount is int pc ? pc : 0;
+    int pastSessions = ViewBag.PastSessions is int ps ? ps : 0;
+    double pct = pastSessions > 0 ? (double)presentCount / pastSessions * 100 : 0;
+    string[] dayNames = { "CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7" };
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1">Lịch sử điểm danh</h4>
+            <p class="text-muted mb-0">Chọn lớp để xem chi tiết chuyên cần</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">Quay lại</a>
+    </div>
+
+    <!-- Class selector -->
+    <div class="card border-0 shadow-sm p-3 mb-4">
+        <form method="get" class="d-flex align-items-center gap-3">
+            <label class="fw-semibold mb-0 text-nowrap">Chọn lớp:</label>
+            <select name="classId" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Chọn lớp --</option>
+                @foreach (var e in enrollments)
+                {
+                    if (e.ClassId == selectedClassId)
+                    {
+                        <option value="@e.ClassId" selected="selected">@e.ClassName — @e.CourseName</option>
+                    }
+                    else
+                    {
+                        <option value="@e.ClassId">@e.ClassName — @e.CourseName</option>
+                    }
+                }
+            </select>
+        </form>
+    </div>
+
+    @if (cls == null)
+    {
+        <div class="alert alert-info">Vui lòng chọn một lớp học để xem lịch sử điểm danh.</div>
+    }
+    else
+    {
+        <!-- Summary -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body d-flex flex-wrap gap-4 align-items-center">
+                <div>
+                    <div class="text-muted small">Lớp học</div>
+                    <div class="fw-bold">@cls.ClassName</div>
+                    <div class="text-muted small">@cls.CourseName</div>
+                </div>
+                <div>
+                    <div class="text-muted small">Thời gian</div>
+                    <div class="fw-semibold">@cls.StartDate.ToString("dd/MM/yyyy") — @cls.EndDate.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="ms-auto text-center">
+                    <div class="fs-2 fw-bold @(pct >= 80 ? "text-success" : pct >= 60 ? "text-warning" : pastSessions > 0 ? "text-danger" : "text-muted")">
+                        @(pastSessions > 0 ? pct.ToString("0") + "%" : "—")
+                    </div>
+                    <div class="text-muted small">@presentCount / @pastSessions buổi có mặt</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session list -->
+        @if (!allSessions.Any())
+        {
+            <div class="alert alert-info">Lớp này chưa có lịch học nào.</div>
+        }
+        else
+        {
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Ngày học</th>
+                                <th>Thứ</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int idx = 1; }
+                            @foreach (var session in allSessions.OrderBy(d => d))
+                            {
+                                bool isFuture = session > today;
+                                attByDate.TryGetValue(session, out var att);
+
+                                <tr class="@(isFuture ? "text-muted" : "")">
+                                    <td>@idx</td>
+                                    <td>@session.ToString("dd/MM/yyyy")</td>
+                                    <td>@dayNames[(int)session.DayOfWeek]</td>
+                                    <td class="text-center">
+                                        @if (isFuture)
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="fa fa-clock me-1"></i>Chưa diễn ra
+                                            </span>
+                                        }
+                                        else if (att == null)
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="fa fa-minus me-1"></i>Chưa điểm danh
+                                            </span>
+                                        }
+                                        else if (att.IsPresent)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fa fa-check me-1"></i>Có mặt
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fa fa-times me-1"></i>Vắng mặt
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-muted small">@(att?.Note ?? (isFuture ? "" : "—"))</td>
+                                </tr>
+                                idx++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,85 @@
+# BÁO CÁO HỆ THỐNG - DOL ENGLISH CENTER
+## Student Management Application
+
+---
+
+## 1. TỔNG QUAN
+
+Ứng dụng quản lý trung tâm tiếng Anh DOL, xây dựng bằng ASP.NET Core 8 MVC theo kiến trúc 3 lớp (DAL / BLL / Presentation). Hỗ trợ 3 vai trò người dùng: Admin, Teacher, Student.
+
+**Tech stack:**
+- Backend: .NET 8 MVC, Entity Framework Core 8
+- Database: SQL Server Express
+- Auth: Session-based (tự custom, không dùng ASP.NET Identity)
+- Password: BCrypt hashing
+- Frontend: Bootstrap 5, jQuery, jQuery Validation
+
+---
+
+## 2. PHÂN QUYỀN
+
+| Vai trò | Quyền truy cập |
+|---------|---------------|
+| Admin   | Toàn bộ hệ thống: quản lý user, khóa học, lớp học, điểm danh, đăng ký |
+| Teacher | Xem lịch dạy, điểm danh học viên trong lớp mình |
+| Student | Xem khóa học, đăng ký lớp, xem lịch học, xem điểm danh của mình |
+
+Session lưu: UserId, UserName, UserRole. Mỗi controller tự kiểm tra session thủ công.
+
+---
+
+## 3. CHỨC NĂNG THEO VAI TRÒ
+
+### 3.1. AUTH (Tất cả người dùng)
+- **Đăng nhập** – Xác thực email + mật khẩu BCrypt. Phân biệt lỗi "sai mật khẩu" vs "tài khoản bị vô hiệu hóa".
+- **Đăng ký** – Tạo tài khoản Student mới.
+- **Quên mật khẩu** – Nhập email → nhận OTP 6 số → xác nhận OTP → đặt lại mật khẩu.
+- **Đổi mật khẩu** – Trong trang hồ sơ cá nhân (sau khi đăng nhập).
+
+### 3.2. ADMIN
+**Quản lý người dùng:**
+- Xem danh sách giáo viên và học viên (2 tab riêng, phân trang 15/trang).
+- Tạo tài khoản giáo viên mới.
+- Vô hiệu hóa / kích hoạt lại tài khoản.
+- Cập nhật email người dùng (có kiểm tra trùng email).
+
+**Quản lý khóa học:**
+- Xem danh sách khóa học (phân trang).
+- Tạo / chỉnh sửa khóa học (tên, cấp độ A1-C2, mô tả, học phí).
+- Ẩn / hiện khóa học.
+
+**Quản lý lớp học:**
+- Xem danh sách lớp học (phân trang).
+- Tạo lớp học: chọn khóa học, giáo viên, ngày bắt đầu/kết thúc, lịch học (thêm nhiều buổi).
+- Trạng thái lớp tự động tính: Upcoming / Ongoing / Finished dựa vào ngày hiện tại.
+
+**Quản lý đăng ký:**
+- Xem tất cả đơn đăng ký (phân trang).
+- Lọc hiển thị học viên chờ xác nhận (Registered).
+- Xác nhận hoặc hủy đăng ký của học viên.
+
+**Điểm danh:**
+- Xem / chỉnh sửa điểm danh theo lớp và ngày.
+- Ghi chú cho từng học viên vắng.
+
+### 3.3. TEACHER
+- Xem danh sách lớp đang dạy.
+- Điểm danh học viên trong buổi học.
+- Xem lịch dạy theo lớp.
+
+### 3.4. STUDENT
+- Xem danh sách khóa học đang mở.
+- Xem chi tiết khóa học và các lớp: chỉ hiện nút **Đăng ký** cho lớp Upcoming; lớp Ongoing hiển thị "Lớp đang học".
+- Xem lịch học cá nhân (các lớp đã được Confirmed).
+- Xem lịch sử điểm danh của bản thân.
+- Xem hồ sơ cá nhân, đổi mật khẩu.
+
+---
+
+## 4. FLOW CHÍNH
+
+### Flow đăng ký khóa học:
+Student vào trang Khóa học → Chọn khóa học → Xem chi tiết → Thấy danh sách lớp Upcoming → Bấm “Đăng ký” → Hệ thống tạo Enrollment (Status = Registered) → 
+	Admin vào trang Đăng ký → Lọc “Chờ xác nhận” → Xác nhận → Enrollment (Status = Confirmed) → Student thấy lớp trong Lịch học
+### Flow điểm danh:
+Teacher / Admin chọn lớp học → Chọn ngày điểm danh → Hệ thống load danh sách học viên Confirmed của lớp đó → Tick có mặt / vắng + ghi chú → Lưu vào bảng Attendances

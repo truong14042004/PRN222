@@ -1,0 +1,160 @@
+@using StudentManagementApp.BLL.DTOs
+@model CreateClassDto
+
+@{
+    ViewData["Title"] = "Thêm lớp học";
+    var courses = ViewBag.Courses as IEnumerable<CourseDto> ?? new List<CourseDto>();
+    var teachers = ViewBag.Teachers as IEnumerable<UserDto> ?? new List<UserDto>();
+    string[] days = { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN" };
+    int[] dayValues = { 2, 3, 4, 5, 6, 7, 8 };
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0">Thêm lớp học</h4>
+                <a asp-action="Classes" class="btn btn-outline-secondary rounded-pill">Quay lại</a>
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+
+            <div class="card border-0 shadow-sm p-4">
+                <form asp-action="CreateClass" method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tên lớp</label>
+                        <input asp-for="ClassName" class="form-control" placeholder="VD: B1 - Sáng Thứ 2,4,6" />
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Khóa học</label>
+                            <select asp-for="CourseId" class="form-select">
+                                <option value="">-- Chọn khóa học --</option>
+                                @foreach (var c in courses)
+                                {
+                                    <option value="@c.Id">@c.Name (@c.Level)</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Giáo viên</label>
+                            <select asp-for="TeacherId" class="form-select">
+                                <option value="">-- Chọn giáo viên --</option>
+                                @foreach (var t in teachers)
+                                {
+                                    <option value="@t.Id">@t.FullName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Ngày bắt đầu</label>
+                            <input asp-for="StartDate" type="date" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Ngày kết thúc</label>
+                            <input asp-for="EndDate" type="date" class="form-control" />
+                        </div>
+                    </div>
+
+                    <label class="form-label fw-semibold">Lịch học</label>
+                    <div id="schedules">
+                        <div class="row g-2 mb-2 schedule-row">
+                            <div class="col-md-4">
+                                <select class="form-select schedule-day">
+                                    @for (int i = 0; i < days.Length; i++)
+                                    {
+                                        <option value="@dayValues[i]">@days[i]</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="time" class="form-control schedule-start" value="08:00" />
+                            </div>
+                            <div class="col-md-3">
+                                <input type="time" class="form-control schedule-end" value="10:00" />
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow(this)">Xóa</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill mb-4" onclick="addRow()">
+                        <i class="fa fa-plus me-1"></i> Thêm lịch
+                    </button>
+
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold" onclick="return validateForm()">Tạo lớp học</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var days = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(days));
+        var dayValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(dayValues));
+
+        function validateForm() {
+            var today = new Date().toISOString().split('T')[0];
+            var startDate = document.querySelector('[name="StartDate"]').value;
+            var endDate = document.querySelector('[name="EndDate"]').value;
+            if (startDate && startDate < today) {
+                alert('Ngày bắt đầu không được là ngày trong quá khứ.');
+                return false;
+            }
+            if (startDate && endDate && startDate >= endDate) {
+                alert('Ngày kết thúc phải sau ngày bắt đầu.');
+                return false;
+            }
+            var rows = document.querySelectorAll('.schedule-row');
+            if (rows.length === 0) {
+                alert('Vui lòng thêm ít nhất một lịch học.');
+                return false;
+            }
+            for (var i = 0; i < rows.length; i++) {
+                var start = rows[i].querySelector('[name$=".StartTime"]').value;
+                var end = rows[i].querySelector('[name$=".EndTime"]').value;
+                if (start && end && end <= start) {
+                    alert('Giờ kết thúc phải sau giờ bắt đầu trong mỗi buổi học.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function addRow() {
+            var options = days.map((d, i) => `<option value="${dayValues[i]}">${d}</option>`).join('');
+            var html = `
+                <div class="row g-2 mb-2 schedule-row">
+                    <div class="col-md-4"><select class="form-select schedule-day">${options}</select></div>
+                    <div class="col-md-3"><input type="time" class="form-control schedule-start" value="08:00" /></div>
+                    <div class="col-md-3"><input type="time" class="form-control schedule-end" value="10:00" /></div>
+                    <div class="col-md-2"><button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow(this)">Xóa</button></div>
+                </div>`;
+            document.getElementById('schedules').insertAdjacentHTML('beforeend', html);
+            reindexRows();
+        }
+
+        function removeRow(btn) {
+            btn.closest('.schedule-row').remove();
+            reindexRows();
+        }
+
+        function reindexRows() {
+            var rows = document.querySelectorAll('.schedule-row');
+            rows.forEach(function(row, idx) {
+                row.querySelector('.schedule-day').name = `Schedules[${idx}].DayOfWeek`;
+                row.querySelector('.schedule-start').name = `Schedules[${idx}].StartTime`;
+                row.querySelector('.schedule-end').name = `Schedules[${idx}].EndTime`;
+            });
+        }
+
+        // Init first row names
+        reindexRows();
+    </script>
+}

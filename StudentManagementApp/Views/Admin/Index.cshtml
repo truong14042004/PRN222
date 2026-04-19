@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container py-5">
+    <h4 class="fw-bold mb-4">Dashboard</h4>
+
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3">
+                <div class="fs-2 fw-bold text-primary">@ViewBag.StudentCount</div>
+                <div class="text-muted">Học viên</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3">
+                <div class="fs-2 fw-bold text-success">@ViewBag.TeacherCount</div>
+                <div class="text-muted">Giáo viên</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3">
+                <div class="fs-2 fw-bold text-warning">@ViewBag.CourseCount</div>
+                <div class="text-muted">Khóa học</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3">
+                <div class="fs-2 fw-bold text-danger">@ViewBag.ClassCount</div>
+                <div class="text-muted">Lớp học</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-3">
+            <a asp-action="Users" class="card border-0 shadow-sm p-4 text-decoration-none text-dark d-block">
+                <i class="fa fa-users fs-3 text-primary mb-2"></i>
+                <div class="fw-bold">Quản lý người dùng</div>
+                <div class="text-muted small">Giáo viên, học viên</div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a asp-action="CreateTeacher" class="card border-0 shadow-sm p-4 text-decoration-none text-dark d-block">
+                <i class="fa fa-user-plus fs-3 text-info mb-2"></i>
+                <div class="fw-bold">Thêm giáo viên</div>
+                <div class="text-muted small">Tạo tài khoản giáo viên</div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a asp-action="Courses" class="card border-0 shadow-sm p-4 text-decoration-none text-dark d-block">
+                <i class="fa fa-book fs-3 text-success mb-2"></i>
+                <div class="fw-bold">Quản lý khóa học</div>
+                <div class="text-muted small">Thêm, sửa khóa học</div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a asp-action="Classes" class="card border-0 shadow-sm p-4 text-decoration-none text-dark d-block">
+                <i class="fa fa-chalkboard-teacher fs-3 text-warning mb-2"></i>
+                <div class="fw-bold">Quản lý lớp học</div>
+                <div class="text-muted small">Tạo lớp, xếp giáo viên</div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a asp-action="Enrollments" class="card border-0 shadow-sm p-4 text-decoration-none text-dark d-block">
+                <i class="fa fa-clipboard-check fs-3 text-danger mb-2"></i>
+                <div class="fw-bold">Xác nhận đăng ký</div>
+                <div class="text-muted small">Duyệt đăng ký học viên</div>
+            </a>
+        </div>
+    </div>
+</div>

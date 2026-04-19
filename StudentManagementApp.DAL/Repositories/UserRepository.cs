@@ -1,0 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using StudentManagementApp.DAL.Data;
+using StudentManagementApp.DAL.Models;
+
+namespace StudentManagementApp.DAL.Repositories;
+
+public class UserRepository : Repository<User>, IUserRepository
+{
+    public UserRepository(AppDbContext context) : base(context) { }
+
+    public async Task<User?> GetByEmailAsync(string email) =>
+        await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
+
+    public async Task<bool> ExistsByEmailAsync(string email) =>
+        await _dbSet.AnyAsync(u => u.Email == email);
+}

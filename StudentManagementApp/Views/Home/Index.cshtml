@@ -1,0 +1,79 @@
+@using StudentManagementApp.BLL.DTOs
+@model IEnumerable<CourseDto>
+
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<!-- Hero -->
+<section style="background: linear-gradient(135deg, #0a2d6e 0%, #1a5fba 100%); color: white; padding: 90px 0 70px;">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">DOL <span style="color:#f0c040">English</span> Center</h1>
+        <p class="lead mb-4">Nâng tầm tiếng Anh — Mở rộng cơ hội</p>
+        <a asp-controller="Course" asp-action="Index" class="btn btn-warning btn-lg px-5 rounded-pill fw-bold">
+            Xem khóa học
+        </a>
+    </div>
+</section>
+
+<!-- Khóa học nổi bật -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-2">Khóa học nổi bật</h2>
+        <p class="text-center text-muted mb-4">Chương trình học được thiết kế theo chuẩn CEFR</p>
+
+        <form method="get" class="d-flex gap-2 justify-content-center mb-5" style="max-width:480px; margin:0 auto;">
+            <input type="text" name="q" value="@ViewBag.Q" class="form-control rounded-pill px-3" placeholder="Tìm khóa học theo tên, cấp độ..." />
+            <button type="submit" class="btn btn-primary rounded-pill px-3"><i class="fa fa-search"></i></button>
+            @if (!string.IsNullOrEmpty(ViewBag.Q as string))
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3">Xóa</a>
+            }
+        </form>
+
+        <div class="row g-4">
+            @if (!Model.Any())
+            {
+                <div class="col-12 text-center text-muted py-4">Không tìm thấy khóa học phù hợp.</div>
+            }
+            @foreach (var course in Model)
+            {
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                        {
+                            <img src="@course.ThumbnailUrl" class="card-img-top" style="height:160px; object-fit:cover;" alt="@course.Name" />
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center justify-content-center bg-primary text-white" style="height:160px; font-size:2.5rem; font-weight:800;">
+                                @course.Level
+                            </div>
+                        }
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge bg-warning text-dark mb-2" style="width:fit-content">@course.Level</span>
+                            <h5 class="card-title fw-bold">@course.Name</h5>
+                            <p class="card-text text-muted small flex-grow-1">@course.Description</p>
+                            <div class="mt-3 d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary">@course.TuitionFee.ToString("N0") ₫</span>
+                                <a asp-controller="Course" asp-action="Detail" asp-route-id="@course.Id"
+                                   class="btn btn-outline-primary btn-sm rounded-pill">Chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section style="background:#0a2d6e; color:white; padding: 60px 0;">
+    <div class="container text-center">
+        <h3 class="fw-bold mb-3">Sẵn sàng bắt đầu hành trình?</h3>
+        <p class="mb-4 text-white-50">Đăng ký ngay hôm nay để nhận tư vấn miễn phí</p>
+        <a asp-controller="Auth" asp-action="Register" class="btn btn-warning btn-lg px-5 rounded-pill fw-bold">
+            Đăng ký học ngay
+        </a>
+    </div>
+</section>

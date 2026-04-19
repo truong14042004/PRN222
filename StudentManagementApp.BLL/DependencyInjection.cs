@@ -1,0 +1,37 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using StudentManagementApp.BLL.Services;
+using StudentManagementApp.DAL.Data;
+using StudentManagementApp.DAL.Repositories;
+
+namespace StudentManagementApp.BLL;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // DbContext
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+        // Repositories
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICourseRepository, CourseRepository>();
+        services.AddScoped<IClassRepository, ClassRepository>();
+        services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+        services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+        services.AddScoped<IOtpRepository, OtpRepository>();
+
+        // Services
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<IClassService, ClassService>();
+        services.AddScoped<IEnrollmentService, EnrollmentService>();
+        services.AddScoped<IAttendanceService, AttendanceService>();
+        services.AddScoped<IOtpService, OtpService>();
+
+        return services;
+    }
+}

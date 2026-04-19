@@ -1,0 +1,123 @@
+@using StudentManagementApp.BLL.DTOs
+@model CourseDto
+
+@{
+    ViewData["Title"] = Model.Name;
+    var classes = ViewBag.Classes as IEnumerable<ClassDto> ?? new List<ClassDto>();
+    var isLoggedIn = Context.Session.GetString("UserId") != null;
+    var role = Context.Session.GetString("UserRole");
+    string[] days = { "", "CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN" };
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Course" asp-action="Index">Khóa học</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Thông tin khóa học -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                {
+                    <img src="@Model.ThumbnailUrl" class="card-img-top" style="height:220px;object-fit:cover" />
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-top" style="height:220px;font-size:4rem;font-weight:800;">
+                        @Model.Level
+                    </div>
+                }
+                <div class="card-body">
+                    <span class="badge bg-warning text-dark mb-2">@Model.Level</span>
+                    <h4 class="fw-bold">@Model.Name</h4>
+                    <p class="text-muted">@Model.Description</p>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Học phí</span>
+                        <span class="fw-bold text-primary fs-5">@Model.TuitionFee.ToString("N0") ₫</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách lớp học -->
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-3">Lớp học</h4>
+
+            @if (!classes.Any())
+            {
+                <div class="alert alert-info">Hiện chưa có lớp học nào cho khóa này.</div>
+            }
+
+            @foreach (var cls in classes)
+            {
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1">@cls.ClassName</h6>
+                                <div class="text-muted small mb-2">
+                                    <i class="fa fa-user me-1"></i>@(cls.TeacherName ?? "Chưa có giáo viên")
+                                </div>
+                                <div class="text-muted small mb-2">
+                                    <i class="fa fa-calendar me-1"></i>
+                                    @cls.StartDate.ToString("dd/MM/yyyy") — @cls.EndDate.ToString("dd/MM/yyyy")
+                                </div>
+                                <div class="text-muted small">
+                                    <i class="fa fa-clock me-1"></i>
+                                    @string.Join(", ", cls.Schedules.Select(s => $"{days[s.DayOfWeek]} ({s.StartTime:hh\\:mm}-{s.EndTime:hh\\:mm})"))
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge @(cls.Status == "Ongoing" ? "bg-success" : cls.Status == "Upcoming" ? "bg-primary" : "bg-secondary") mb-2">
+                                    @(cls.Status == "Ongoing" ? "Đang học" : cls.Status == "Upcoming" ? "Sắp khai giảng" : "Đã kết thúc")
+                                </span>
+                                @if (cls.Status == "Upcoming")
+                                {
+                                    @if (isLoggedIn && role == "Student")
+                                    {
+                                        <form asp-action="Enroll" method="post">
+                                            <input type="hidden" name="classId" value="@cls.Id" />
+                                            <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill d-block w-100">
+                                                Đăng ký
+                                            </button>
+                                        </form>
+                                    }
+                                    else if (!isLoggedIn)
+                                    {
+                                        <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary btn-sm rounded-pill d-block">
+                                            Đăng nhập để đăng ký
+                                        </a>
+                                    }
+                                }
+                                else if (cls.Status == "Ongoing")
+                                {
+                                    <span class="text-muted small d-block">Lớp đang học</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

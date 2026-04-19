@@ -1,0 +1,26 @@
+## Các bước
+
+**1. Sửa connection string**
+Mở `StudentManagementApp/appsettings.json`, sửa `Server` cho đúng với máy bạn:
+```json
+"DefaultConnection": "Server=.\\SQLEXPRESS;Database=EnglishCenterDB;Trusted_Connection=True;TrustServerCertificate=True;"
+
+2. Tạo database + bảng
+Mở Package Manager Console trong Visual Studio, chạy:
+
+Update-Database
+
+3. Seed dữ liệu
+Mở SSMS, copy toàn bộ file seed_data.sql ở thư mục gốc và chạy.
+
+4. Chạy app
+Nhấn F5 trong Visual Studio.
+
+Tài khoản test (mật khẩu tất cả: 123456)
+
+"AdminAccount": {
+  "FullName": "Admin DOL",
+  "Email": "admin@dol.com",
+  "Phone": "0901000001",
+  "Password": "Admin@123"
+}

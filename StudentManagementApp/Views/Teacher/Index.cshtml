@@ -48,7 +48,7 @@
                             {
                                 <p class="text-muted small mb-2">
                                     <i class="fa fa-clock me-1"></i>
-                                    @string.Join(", ", cls.Schedules.Select(s => $"{dayNames[s.DayOfWeek]} {s.StartTime:hh\\:mm}-{s.EndTime:hh\\:mm}"))
+                                    @string.Join(", ", cls.Schedules.Select(s => $"{dayNames[s.DayOfWeek]} {s.StartTime:HH\\:mm}-{s.EndTime:HH\\:mm}"))
                                 </p>
                             }
 

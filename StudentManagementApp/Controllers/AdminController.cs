@@ -332,7 +332,7 @@ namespace StudentManagementApp.Controllers
                     var conflict = await _classService.HasScheduleConflictAsync(dto.TeacherId.Value, s.DayOfWeek, s.StartTime, s.EndTime);
                     if (conflict)
                     {
-                        TempData["Error"] = $"Giáo viên đã có lịch dạy vào {s.DayOfWeek} {s.StartTime:hh\\:mm}-{s.EndTime:hh\\:mm}.";
+                        TempData["Error"] = $"Giáo viên đã có lịch dạy vào {s.DayOfWeek} {s.StartTime:HH\\:mm}-{s.EndTime:HH\\:mm}.";
                         ViewBag.Courses = await _courseService.GetActiveCoursesAsync();
                         ViewBag.Teachers = (await _userService.GetAllAsync()).Where(u => u.Role == "Teacher" && u.IsActive);
                         return View(dto);
@@ -342,6 +342,75 @@ namespace StudentManagementApp.Controllers
 
             await _classService.CreateAsync(dto);
             TempData["Success"] = "Tạo lớp học thành công.";
+            return RedirectToAction("Classes");
+        }
+
+        // GET: /Admin/EditClass/5
+        public async Task<IActionResult> EditClass(int id)
+        {
+            if (RequireAdmin() is { } r) return r;
+            var cls = await _classService.GetByIdAsync(id);
+            if (cls is null) return NotFound();
+            ViewBag.Teachers = (await _userService.GetAllAsync()).Where(u => u.Role == "Teacher" && u.IsActive);
+            return View(new UpdateClassDto
+            {
+                Id = cls.Id,
+                ClassName = cls.ClassName,
+                TeacherId = cls.TeacherId,
+                StartDate = cls.StartDate,
+                EndDate = cls.EndDate,
+                Status = cls.Status,
+                Schedules = cls.Schedules
+            });
+        }
+
+        // POST: /Admin/EditClass
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditClass(UpdateClassDto dto)
+        {
+            if (RequireAdmin() is { } r) return r;
+
+            if (dto.StartDate >= dto.EndDate)
+            {
+                TempData["Error"] = "Ngày kết thúc phải sau ngày bắt đầu.";
+                ViewBag.Teachers = (await _userService.GetAllAsync()).Where(u => u.Role == "Teacher" && u.IsActive);
+                return View(dto);
+            }
+
+            if (!dto.Schedules.Any())
+            {
+                TempData["Error"] = "Vui lòng thêm ít nhất một lịch học.";
+                ViewBag.Teachers = (await _userService.GetAllAsync()).Where(u => u.Role == "Teacher" && u.IsActive);
+                return View(dto);
+            }
+
+            foreach (var s in dto.Schedules)
+            {
+                if (s.EndTime <= s.StartTime)
+                {
+                    TempData["Error"] = "Giờ kết thúc phải sau giờ bắt đầu trong mỗi buổi học.";
+                    ViewBag.Teachers = (await _userService.GetAllAsync()).Where(u => u.Role == "Teacher" && u.IsActive);
+                    return View(dto);
+                }
+            }
+
+            if (dto.TeacherId.HasValue && dto.Schedules.Any())
+            {
+                foreach (var s in dto.Schedules)
+                {
+                    var conflict = await _classService.HasScheduleConflictAsync(dto.TeacherId.Value, s.DayOfWeek, s.StartTime, s.EndTime, dto.Id);
+                    if (conflict)
+                    {
+                        TempData["Error"] = $"Giáo viên đã có lịch dạy vào {s.DayOfWeek} {s.StartTime:HH\\:mm}-{s.EndTime:HH\\:mm}.";
+                        ViewBag.Teachers = (await _userService.GetAllAsync()).Where(u => u.Role == "Teacher" && u.IsActive);
+                        return View(dto);
+                    }
+                }
+            }
+
+            await _classService.UpdateAsync(dto);
+            TempData["Success"] = "Cập nhật lớp học thành công.";
             return RedirectToAction("Classes");
         }
 

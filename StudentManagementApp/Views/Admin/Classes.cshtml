@@ -44,6 +44,7 @@
                         <th>Lịch học</th>
                         <th>Thời gian</th>
                         <th>Trạng thái</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,13 +55,16 @@
                             <td>@cls.CourseName</td>
                             <td>@(cls.TeacherName ?? "Chưa có")</td>
                             <td class="small">
-                                @string.Join(", ", cls.Schedules.Select(s => $"{days[s.DayOfWeek]} {s.StartTime:hh\\:mm}"))
+                                @string.Join(", ", cls.Schedules.Select(s => $"{days[s.DayOfWeek]} {s.StartTime:HH\\:mm}"))
                             </td>
                             <td class="small">@cls.StartDate.ToString("dd/MM/yy") — @cls.EndDate.ToString("dd/MM/yy")</td>
                             <td>
                                 <span class="badge @(cls.Status == "Ongoing" ? "bg-success" : cls.Status == "Upcoming" ? "bg-primary" : "bg-secondary")">
                                     @(cls.Status == "Ongoing" ? "Đang học" : cls.Status == "Upcoming" ? "Sắp khai giảng" : "Kết thúc")
                                 </span>
+                            </td>
+                            <td>
+                                <a asp-action="EditClass" asp-route-id="@cls.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3">Sửa</a>
                             </td>
                         </tr>
                     }

@@ -1,7 +1,9 @@
 using StudentManagementApp.BLL;
 using StudentManagementApp.BLL.DTOs;
 using StudentManagementApp.BLL.Services;
+using StudentManagementApp.DAL.Data;
 using StudentManagementApp.Hubs;
+using Microsoft.EntityFrameworkCore;
 
 namespace StudentManagementApp
 {
@@ -36,23 +38,65 @@ namespace StudentManagementApp
             // Seed admin account from appsettings.json
             using (var scope = app.Services.CreateScope())
             {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-                var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
                 var config = app.Configuration.GetSection("AdminAccount");
 
+                // Ensure schema is up to date before querying Users table
+                await dbContext.Database.MigrateAsync();
+
                 var email = config["Email"]!;
-                var existing = await userService.GetAllAsync();
-                if (!existing.Any(u => u.Email == email))
+                var username = config["Username"]!;
+                var password = config["Password"]!;
+                var fullName = config["FullName"]!;
+                var phone = config["Phone"];
+
+                var adminByUsername = await dbContext.Users
+                    .FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
+                var adminByEmail = await dbContext.Users
+                    .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+
+                if (adminByUsername is null && adminByEmail is null)
                 {
                     await authService.RegisterAsync(new CreateUserDto
                     {
-                        FullName = config["FullName"]!,
+                        FullName = fullName,
                         Email = email,
-                        Username = config["Username"]!,
-                        Phone = config["Phone"],
-                        Password = config["Password"]!,
+                        Username = username,
+                        Phone = phone,
+                        Password = password,
                         Role = "Admin"
                     });
+                }
+                else
+                {
+                    var admin = adminByUsername ?? adminByEmail!;
+
+                    admin.FullName = fullName;
+                    admin.Role = "Admin";
+                    admin.IsActive = true;
+                    admin.Phone = phone;
+
+                    var hasEmailConflict = await dbContext.Users.AnyAsync(u =>
+                        u.Id != admin.Id && u.Email.ToLower() == email.ToLower());
+                    if (!hasEmailConflict)
+                    {
+                        admin.Email = email;
+                    }
+
+                    var hasUsernameConflict = await dbContext.Users.AnyAsync(u =>
+                        u.Id != admin.Id && u.Username.ToLower() == username.ToLower());
+                    if (!hasUsernameConflict)
+                    {
+                        admin.Username = username;
+                    }
+
+                    if (!BCrypt.Net.BCrypt.Verify(password, admin.PasswordHash))
+                    {
+                        admin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+                    }
+
+                    await dbContext.SaveChangesAsync();
                 }
             }
 

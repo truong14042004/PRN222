@@ -1,56 +1,73 @@
 ﻿USE EnglishCenterDB;
 GO
 
+DELETE FROM StudentAnswers;
+DELETE FROM QuizResults;
+DELETE FROM QuizOptions;
+DELETE FROM QuizQuestions;
+DELETE FROM Quizzes;
+DELETE FROM CourseProgresses;
 DELETE FROM Attendances;
 DELETE FROM Enrollments;
 DELETE FROM ClassSchedules;
 DELETE FROM Classes;
+DELETE FROM EmailLogs;
+DELETE FROM EmailOtps;
 DELETE FROM OtpCodes;
 DELETE FROM Users;
 DELETE FROM Courses;
 
-DBCC CHECKIDENT ('Users',          RESEED, 0);
-DBCC CHECKIDENT ('Courses',        RESEED, 0);
-DBCC CHECKIDENT ('Classes',        RESEED, 0);
-DBCC CHECKIDENT ('ClassSchedules', RESEED, 0);
-DBCC CHECKIDENT ('Enrollments',    RESEED, 0);
-DBCC CHECKIDENT ('Attendances',    RESEED, 0);
-DBCC CHECKIDENT ('OtpCodes',       RESEED, 0);
+DBCC CHECKIDENT ('Quizzes',          RESEED, 0);
+DBCC CHECKIDENT ('QuizQuestions',    RESEED, 0);
+DBCC CHECKIDENT ('QuizOptions',      RESEED, 0);
+DBCC CHECKIDENT ('QuizResults',      RESEED, 0);
+DBCC CHECKIDENT ('StudentAnswers',   RESEED, 0);
+DBCC CHECKIDENT ('CourseProgresses', RESEED, 0);
+DBCC CHECKIDENT ('EmailOtps',        RESEED, 0);
+DBCC CHECKIDENT ('EmailLogs',        RESEED, 0);
+DBCC CHECKIDENT ('Users',            RESEED, 0);
+DBCC CHECKIDENT ('Courses',          RESEED, 0);
+DBCC CHECKIDENT ('Classes',          RESEED, 0);
+DBCC CHECKIDENT ('ClassSchedules',   RESEED, 0);
+DBCC CHECKIDENT ('Enrollments',      RESEED, 0);
+DBCC CHECKIDENT ('Attendances',      RESEED, 0);
+DBCC CHECKIDENT ('OtpCodes',         RESEED, 0);
 GO
 
-INSERT INTO Users (FullName, Email, Phone, PasswordHash, Role, AvatarUrl, IsActive, CreatedAt)
+INSERT INTO Users (FullName, Email, Username, Phone, PasswordHash, Role, AvatarUrl, IsActive, CreatedAt)
 VALUES
-(N'Nguyễn Thị Hương',  'huong.nguyen@dol.com',  '0902000001', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-05 08:00:00'),
-(N'Trần Văn Minh',     'minh.tran@dol.com',     '0902000002', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-05 08:00:00'),
-(N'Phạm Thanh Lan',    'lan.pham@dol.com',      '0902000003', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-06 08:00:00'),
-(N'Lê Quốc Bảo',      'bao.le@dol.com',        '0902000004', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-06 08:00:00'),
-(N'Hoàng Thị Thu',     'thu.hoang@dol.com',     '0902000005', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-07 08:00:00'),
-(N'Võ Đình Khoa',      'khoa.vo@dol.com',       '0902000006', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 0, '2024-01-07 08:00:00'),
-(N'Nguyễn Văn An',     'an.nguyen@gmail.com',   '0903000001', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-01 09:00:00'),
-(N'Trần Thị Bích',     'bich.tran@gmail.com',   '0903000002', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-01 09:00:00'),
-(N'Phạm Văn Cường',    'cuong.pham@gmail.com',  '0903000003', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-02 09:00:00'),
-(N'Lê Thị Dung',       'dung.le@gmail.com',     '0903000004', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-02 09:00:00'),
-(N'Hoàng Văn Em',      'em.hoang@gmail.com',    '0903000005', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-03 09:00:00'),
-(N'Võ Thị Phương',     'phuong.vo@gmail.com',   '0903000006', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-03 09:00:00'),
-(N'Đặng Văn Giang',    'giang.dang@gmail.com',  '0903000007', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-04 09:00:00'),
-(N'Bùi Thị Hà',        'ha.bui@gmail.com',      '0903000008', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-04 09:00:00'),
-(N'Ngô Văn Hùng',      'hung.ngo@gmail.com',    '0903000009', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-05 09:00:00'),
-(N'Đinh Thị Khanh',    'khanh.dinh@gmail.com',  '0903000010', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-05 09:00:00'),
-(N'Lý Văn Long',       'long.ly@gmail.com',     '0903000011', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-06 09:00:00'),
-(N'Mai Thị My',        'my.mai@gmail.com',      '0903000012', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-06 09:00:00'),
-(N'Phan Văn Nam',      'nam.phan@gmail.com',    '0903000013', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-07 09:00:00'),
-(N'Quách Thị Oanh',    'oanh.quach@gmail.com',  '0903000014', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-07 09:00:00'),
-(N'Tạ Văn Phong',      'phong.ta@gmail.com',    '0903000015', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-08 09:00:00'),
-(N'Trịnh Thị Quỳnh',   'quynh.trinh@gmail.com', '0903000016', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-08 09:00:00'),
-(N'Vũ Văn Rồng',       'rong.vu@gmail.com',     '0903000017', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-09 09:00:00'),
-(N'Lưu Thị Sen',       'sen.luu@gmail.com',     '0903000018', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-09 09:00:00'),
-(N'Cao Văn Tùng',      'tung.cao@gmail.com',    '0903000019', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-10 09:00:00'),
-(N'Hồ Thị Uyên',       'uyen.ho@gmail.com',     '0903000020', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-10 09:00:00'),
-(N'Dương Văn Vinh',    'vinh.duong@gmail.com',  '0903000021', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-01 09:00:00'),
-(N'Kiều Thị Xuân',     'xuan.kieu@gmail.com',   '0903000022', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-01 09:00:00'),
-(N'Mạc Văn Yên',       'yen.mac@gmail.com',     '0903000023', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-02 09:00:00'),
-(N'Tống Thị Zoan',     'zoan.tong@gmail.com',   '0903000024', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-02 09:00:00'),
-(N'Chu Văn Anh',       'anh.chu@gmail.com',     '0903000025', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-03 09:00:00');
+(N'Quản trị hệ thống', 'admin@englishcenter.local', 'admin',        '0901000000', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Admin',   NULL, 1, '2024-01-01 08:00:00'),
+(N'Nguyễn Thị Hương',  'huong.nguyen@dol.com',      'huong.nguyen', '0902000001', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-05 08:00:00'),
+(N'Trần Văn Minh',     'minh.tran@dol.com',         'minh.tran',    '0902000002', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-05 08:00:00'),
+(N'Phạm Thanh Lan',    'lan.pham@dol.com',          'lan.pham',     '0902000003', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-06 08:00:00'),
+(N'Lê Quốc Bảo',       'bao.le@dol.com',            'bao.le',       '0902000004', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-06 08:00:00'),
+(N'Hoàng Thị Thu',     'thu.hoang@dol.com',         'thu.hoang',    '0902000005', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 1, '2024-01-07 08:00:00'),
+(N'Võ Đình Khoa',      'khoa.vo@dol.com',           'khoa.vo',      '0902000006', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Teacher', NULL, 0, '2024-01-07 08:00:00'),
+(N'Nguyễn Văn An',     'an.nguyen@gmail.com',       'an.nguyen',    '0903000001', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-01 09:00:00'),
+(N'Trần Thị Bích',     'bich.tran@gmail.com',       'bich.tran',    '0903000002', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-01 09:00:00'),
+(N'Phạm Văn Cường',    'cuong.pham@gmail.com',      'cuong.pham',   '0903000003', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-02 09:00:00'),
+(N'Lê Thị Dung',       'dung.le@gmail.com',         'dung.le',      '0903000004', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-02 09:00:00'),
+(N'Hoàng Văn Em',      'em.hoang@gmail.com',        'em.hoang',     '0903000005', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-03 09:00:00'),
+(N'Võ Thị Phương',     'phuong.vo@gmail.com',       'phuong.vo',    '0903000006', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-03 09:00:00'),
+(N'Đặng Văn Giang',    'giang.dang@gmail.com',      'giang.dang',   '0903000007', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-04 09:00:00'),
+(N'Bùi Thị Hà',        'ha.bui@gmail.com',          'ha.bui',       '0903000008', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-04 09:00:00'),
+(N'Ngô Văn Hùng',      'hung.ngo@gmail.com',        'hung.ngo',     '0903000009', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-05 09:00:00'),
+(N'Đinh Thị Khanh',    'khanh.dinh@gmail.com',      'khanh.dinh',   '0903000010', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-05 09:00:00'),
+(N'Lý Văn Long',       'long.ly@gmail.com',         'long.ly',      '0903000011', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-06 09:00:00'),
+(N'Mai Thị My',        'my.mai@gmail.com',          'my.mai',       '0903000012', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-06 09:00:00'),
+(N'Phan Văn Nam',      'nam.phan@gmail.com',        'nam.phan',     '0903000013', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-07 09:00:00'),
+(N'Quách Thị Oanh',    'oanh.quach@gmail.com',      'oanh.quach',   '0903000014', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-07 09:00:00'),
+(N'Tạ Văn Phong',      'phong.ta@gmail.com',        'phong.ta',     '0903000015', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-08 09:00:00'),
+(N'Trịnh Thị Quỳnh',   'quynh.trinh@gmail.com',     'quynh.trinh',  '0903000016', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-08 09:00:00'),
+(N'Vũ Văn Rồng',       'rong.vu@gmail.com',         'rong.vu',      '0903000017', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-09 09:00:00'),
+(N'Lưu Thị Sen',       'sen.luu@gmail.com',         'sen.luu',      '0903000018', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-09 09:00:00'),
+(N'Cao Văn Tùng',      'tung.cao@gmail.com',        'tung.cao',     '0903000019', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-10 09:00:00'),
+(N'Hồ Thị Uyên',       'uyen.ho@gmail.com',         'uyen.ho',      '0903000020', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-02-10 09:00:00'),
+(N'Dương Văn Vinh',    'vinh.duong@gmail.com',      'vinh.duong',   '0903000021', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-01 09:00:00'),
+(N'Kiều Thị Xuân',     'xuan.kieu@gmail.com',       'xuan.kieu',    '0903000022', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-01 09:00:00'),
+(N'Mạc Văn Yên',       'yen.mac@gmail.com',         'yen.mac',      '0903000023', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-02 09:00:00'),
+(N'Tống Thị Zoan',     'zoan.tong@gmail.com',       'zoan.tong',    '0903000024', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-02 09:00:00'),
+(N'Chu Văn Anh',       'anh.chu@gmail.com',         'anh.chu',      '0903000025', '$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', 'Student', NULL, 1, '2024-03-03 09:00:00');
 GO
 
 INSERT INTO Courses (Name, Level, Description, TuitionFee, ThumbnailUrl, IsActive)
@@ -202,5 +219,10 @@ UNION ALL SELECT 'Courses',     COUNT(*) FROM Courses
 UNION ALL SELECT 'Classes',     COUNT(*) FROM Classes
 UNION ALL SELECT 'Schedules',   COUNT(*) FROM ClassSchedules
 UNION ALL SELECT 'Enrollments', COUNT(*) FROM Enrollments
-UNION ALL SELECT 'Attendances', COUNT(*) FROM Attendances;
+UNION ALL SELECT 'Attendances', COUNT(*) FROM Attendances
+UNION ALL SELECT 'Quizzes',     COUNT(*) FROM Quizzes
+UNION ALL SELECT 'QuizQuestions', COUNT(*) FROM QuizQuestions
+UNION ALL SELECT 'QuizResults', COUNT(*) FROM QuizResults
+UNION ALL SELECT 'EmailOtps',   COUNT(*) FROM EmailOtps
+UNION ALL SELECT 'EmailLogs',   COUNT(*) FROM EmailLogs;
 GO

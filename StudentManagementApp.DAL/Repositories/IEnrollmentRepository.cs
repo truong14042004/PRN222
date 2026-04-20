@@ -8,4 +8,5 @@ public interface IEnrollmentRepository : IRepository<Enrollment>
     Task<IEnumerable<Enrollment>> GetByStudentIdAsync(int studentId);
     Task<IEnumerable<Enrollment>> GetByClassIdAsync(int classId);
     Task<Enrollment?> GetByStudentAndClassAsync(int studentId, int classId);
+    Task<Enrollment?> GetByIdWithDetailsAsync(int id);
 }

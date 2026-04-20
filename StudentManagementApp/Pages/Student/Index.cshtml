@@ -1,0 +1,135 @@
+@page
+@model StudentManagementApp.Pages.Student.IndexModel
+@{
+    ViewData["Title"] = "Trang học viên";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - English Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/Student">English Center - Học viên</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/Student">Tổng quan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Course">Khóa học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Student/Schedule">Lịch học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Student/AttendanceReport">Điểm danh</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Student/Quizzes">Quiz</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Student/Progress">Tiến độ</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            @HttpContext.Session.GetString("UserName")
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card h-100 border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Khóa học</h5>
+                        <p class="card-text text-muted">Xem khóa học và đăng ký lớp mới.</p>
+                        <a href="/Course" class="btn btn-primary btn-sm">Mở khóa học</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Lịch học</h5>
+                        <p class="card-text text-muted">Theo dõi lịch học theo tuần của bạn.</p>
+                        <a href="/Student/Schedule" class="btn btn-success btn-sm">Xem lịch</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-info">
+                    <div class="card-body">
+                        <h5 class="card-title">Quiz</h5>
+                        <p class="card-text text-muted">Làm bài trắc nghiệm và điền đáp án.</p>
+                        <a href="/Student/Quizzes" class="btn btn-info btn-sm text-white">Làm quiz</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">Tiến độ</h5>
+                        <p class="card-text text-muted">Xem mức hoàn thành các khóa đã học.</p>
+                        <a href="/Student/Progress" class="btn btn-warning btn-sm">Xem tiến độ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header fw-semibold">Lớp học đã đăng ký</div>
+            <div class="card-body p-0">
+                @if (!Model.Enrollments.Any())
+                {
+                    <div class="p-3 text-muted">Bạn chưa đăng ký lớp nào.</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Khóa học</th>
+                                    <th>Lớp</th>
+                                    <th>Thời gian</th>
+                                    <th>Trạng thái đăng ký</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var enrollment in Model.Enrollments)
+                                {
+                                    <tr>
+                                        <td>@enrollment.CourseName</td>
+                                        <td>@enrollment.ClassName</td>
+                                        <td>@enrollment.EnrolledAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            @{
+                                                var badgeClass = enrollment.Status switch
+                                                {
+                                                    "Confirmed" => "bg-success",
+                                                    "Registered" => "bg-warning text-dark",
+                                                    "Cancelled" => "bg-danger",
+                                                    _ => "bg-secondary"
+                                                };
+                                            }
+                                            <span class="badge @badgeClass">@enrollment.Status</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

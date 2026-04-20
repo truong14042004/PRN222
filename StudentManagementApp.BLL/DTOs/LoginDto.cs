@@ -4,9 +4,8 @@ namespace StudentManagementApp.BLL.DTOs;
 
 public class LoginDto
 {
-    [Required(ErrorMessage = "Email không được để trống.")]
-    [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
-    public string Email { get; set; } = null!;
+    [Required(ErrorMessage = "Tên đăng nhập hoặc email không được để trống.")]
+    public string Username { get; set; } = null!;
 
     [Required(ErrorMessage = "Mật khẩu không được để trống.")]
     [MinLength(6, ErrorMessage = "Mật khẩu tối thiểu 6 ký tự.")]

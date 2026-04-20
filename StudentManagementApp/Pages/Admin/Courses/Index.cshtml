@@ -1,0 +1,107 @@
+@page
+@model StudentManagementApp.Pages.Admin.Courses.IndexModel
+@{
+    ViewData["Title"] = "Quản lý khóa học";
+    var userName = HttpContext.Session.GetString("UserName");
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - English Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/Admin">English Center - Admin</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/Admin">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Users">Người dùng</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/Admin/Courses">Khóa học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Classes">Lớp học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Enrollments">Đăng ký</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Quizzes">Quiz</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Quản lý khóa học</h1>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="mb-3">
+            <a href="/Admin/Courses/Create" class="btn btn-primary">+ Thêm khóa học</a>
+        </div>
+
+        @if (Model.Courses.Any())
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Tên khóa học</th>
+                        <th>Cấp độ</th>
+                        <th>Học phí</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var course in Model.Courses)
+                    {
+                        <tr>
+                            <td>@course.Name</td>
+                            <td>@course.Level</td>
+                            <td>@course.TuitionFee.ToString("N0") VNĐ</td>
+                            <td>
+                                <span class="badge bg-@(course.IsActive ? "success" : "secondary")">
+                                    @(course.IsActive ? "Đang mở" : "Đã ẩn")
+                                </span>
+                            </td>
+                            <td class="d-flex gap-1">
+                                <a href="/Admin/Courses/Edit/@course.Id" class="btn btn-sm btn-warning">Sửa</a>
+                                <form method="post" asp-page="/Admin/Courses/ToggleActive">
+                                    <input type="hidden" name="id" value="@course.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-dark">
+                                        @(course.IsActive ? "Ẩn" : "Mở")
+                                    </button>
+                                </form>
+                                <form method="post" asp-page="/Admin/Courses/Delete">
+                                    <input type="hidden" name="id" value="@course.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa khóa học này?');">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-muted">Không có khóa học nào.</p>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

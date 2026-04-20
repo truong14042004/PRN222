@@ -15,22 +15,42 @@ public class AuthService : IAuthService
 
     public async Task<UserDto?> LoginAsync(LoginDto dto)
     {
-        var user = await _userRepository.GetByEmailAsync(dto.Email);
+        var credential = dto.Username.Trim();
+        if (string.IsNullOrWhiteSpace(credential) || string.IsNullOrWhiteSpace(dto.Password))
+        {
+            return null;
+        }
+
+        var user = await _userRepository.GetByUsernameAsync(credential);
+        if (user is null)
+        {
+            user = await _userRepository.GetByEmailAsync(credential);
+        }
+
         if (user is null) return null;
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash)) return null;
 
         return MapToDto(user);
     }
 
-    public async Task<UserDto> RegisterAsync(CreateUserDto dto)
+    public async Task EnsureRegistrationAllowedAsync(CreateUserDto dto)
     {
         if (await _userRepository.ExistsByEmailAsync(dto.Email))
             throw new InvalidOperationException("Email đã được sử dụng.");
+
+        if (await _userRepository.ExistsByUsernameAsync(dto.Username))
+            throw new InvalidOperationException("Tên đăng nhập đã được sử dụng.");
+    }
+
+    public async Task<UserDto> RegisterAsync(CreateUserDto dto)
+    {
+        await EnsureRegistrationAllowedAsync(dto);
 
         var user = new User
         {
             FullName = dto.FullName,
             Email = dto.Email,
+            Username = dto.Username,
             Phone = dto.Phone,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Role = dto.Role,
@@ -56,6 +76,7 @@ public class AuthService : IAuthService
         Id = user.Id,
         FullName = user.FullName,
         Email = user.Email,
+        Username = user.Username,
         Phone = user.Phone,
         Role = user.Role,
         AvatarUrl = user.AvatarUrl,

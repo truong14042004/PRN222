@@ -1,0 +1,108 @@
+@page
+@model StudentManagementApp.Pages.Admin.QuizzesModel
+@{
+    ViewData["Title"] = "Quản lý quiz";
+    var total = Model.Quizzes.Count();
+    var active = Model.Quizzes.Count(q => q.IsActive);
+    var totalQuestions = Model.Quizzes.Sum(q => q.QuestionCount);
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - English Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1 class="mb-1">Quản lý quiz</h1>
+                <div class="text-muted">Vai trò: @Model.CurrentRole</div>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-secondary" href="/">Quay lại</a>
+                <a class="btn btn-primary" href="/Admin/QuizEdit">Tạo quiz</a>
+            </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-md-3">
+                <div class="border rounded p-2 bg-white">
+                    <div class="small text-muted">Tổng quiz</div>
+                    <div class="fw-bold fs-5">@total</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border rounded p-2 bg-white">
+                    <div class="small text-muted">Quiz đang mở</div>
+                    <div class="fw-bold fs-5">@active</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border rounded p-2 bg-white">
+                    <div class="small text-muted">Tổng câu hỏi</div>
+                    <div class="fw-bold fs-5">@totalQuestions</div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Quizzes.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered bg-white">
+                    <thead>
+                        <tr>
+                            <th>Tiêu đề</th>
+                            <th>Khóa học</th>
+                            <th>Số câu</th>
+                            <th>Tổng điểm</th>
+                            <th>Thời gian</th>
+                            <th>Bắt đầu</th>
+                            <th>Kết thúc</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var quiz in Model.Quizzes)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">@quiz.Title</div>
+                                    @if (!string.IsNullOrWhiteSpace(quiz.Description))
+                                    {
+                                        <div class="text-muted small">@quiz.Description</div>
+                                    }
+                                </td>
+                                <td>@quiz.CourseName</td>
+                                <td>@quiz.QuestionCount</td>
+                                <td>@quiz.TotalPoints</td>
+                                <td>@quiz.TimeLimitMinutes phút</td>
+                                <td>@(quiz.StartAt.HasValue ? quiz.StartAt.Value.ToString("dd/MM/yyyy HH:mm") : "-")</td>
+                                <td>@(quiz.EndAt.HasValue ? quiz.EndAt.Value.ToString("dd/MM/yyyy HH:mm") : "-")</td>
+                                <td>
+                                    <span class="badge bg-@(quiz.IsActive ? "success" : "secondary")">
+                                        @(quiz.IsActive ? "Đang mở" : "Tạm khóa")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-primary" href="/Admin/QuizEdit?id=@quiz.Id">Sửa</a>
+                                    <a class="btn btn-sm btn-outline-dark" href="/Admin/QuizQuestions?quizId=@quiz.Id">Câu hỏi</a>
+                                    <a class="btn btn-sm btn-outline-success" href="/Admin/QuizResults?quizId=@quiz.Id">Kết quả</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">Chưa có quiz phù hợp với vai trò hiện tại.</div>
+        }
+    </div>
+</body>
+</html>

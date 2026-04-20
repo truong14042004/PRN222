@@ -14,6 +14,18 @@ public class AppDbContext : DbContext
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
     public DbSet<Attendance> Attendances => Set<Attendance>();
     public DbSet<OtpCode> OtpCodes => Set<OtpCode>();
+    
+    // Quiz System
+    public DbSet<Quiz> Quizzes => Set<Quiz>();
+    public DbSet<QuizQuestion> QuizQuestions => Set<QuizQuestion>();
+    public DbSet<QuizOption> QuizOptions => Set<QuizOption>();
+    public DbSet<QuizResult> QuizResults => Set<QuizResult>();
+    public DbSet<StudentAnswer> StudentAnswers => Set<StudentAnswer>();
+    public DbSet<CourseProgress> CourseProgresses => Set<CourseProgress>();
+    
+    // Email System
+    public DbSet<EmailOtp> EmailOtps => Set<EmailOtp>();
+    public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,5 +59,61 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Attendance>()
             .HasIndex(a => new { a.ClassId, a.StudentId, a.Date })
             .IsUnique();
+
+        // Quiz - Course relationship
+        modelBuilder.Entity<Quiz>()
+            .HasOne(q => q.Course)
+            .WithMany(c => c.Quizzes)
+            .HasForeignKey(q => q.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // QuizQuestion - Quiz relationship
+        modelBuilder.Entity<QuizQuestion>()
+            .HasOne(q => q.Quiz)
+            .WithMany(q => q.Questions)
+            .HasForeignKey(q => q.QuizId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // QuizOption - Question relationship
+        modelBuilder.Entity<QuizOption>()
+            .HasOne(o => o.Question)
+            .WithMany(q => q.Options)
+            .HasForeignKey(o => o.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // QuizResult relationships
+        modelBuilder.Entity<QuizResult>()
+            .HasOne(r => r.Student)
+            .WithMany(u => u.QuizResults)
+            .HasForeignKey(r => r.StudentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<QuizResult>()
+            .HasOne(r => r.Quiz)
+            .WithMany(q => q.Results)
+            .HasForeignKey(r => r.QuizId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // StudentAnswer relationships - Use Restrict to avoid multiple cascade paths
+        modelBuilder.Entity<StudentAnswer>()
+            .HasOne(a => a.QuizResult)
+            .WithMany(r => r.StudentAnswers)
+            .HasForeignKey(a => a.QuizResultId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<StudentAnswer>()
+            .HasOne(a => a.Question)
+            .WithMany()
+            .HasForeignKey(a => a.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // CourseProgress unique (StudentId, CourseId)
+        modelBuilder.Entity<CourseProgress>()
+            .HasIndex(cp => new { cp.StudentId, cp.CourseId })
+            .IsUnique();
+
+        // EmailOtps - Index on Email + Type
+        modelBuilder.Entity<EmailOtp>()
+            .HasIndex(e => new { e.Email, e.Type });
     }
 }

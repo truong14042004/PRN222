@@ -12,6 +12,11 @@ public class CreateUserDto
     [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
     public string Email { get; set; } = null!;
 
+    [Required(ErrorMessage = "Tên đăng nhập không được để trống.")]
+    [MaxLength(50, ErrorMessage = "Tên đăng nhập tối đa 50 ký tự.")]
+    [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Tên đăng nhập chỉ chứa chữ cái, số và dấu gạch dưới.")]
+    public string Username { get; set; } = null!;
+
     [Phone(ErrorMessage = "Số điện thoại không hợp lệ.")]
     [RegularExpression(@"^(0|\+84)\d{9}$", ErrorMessage = "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0.")]
     public string? Phone { get; set; }

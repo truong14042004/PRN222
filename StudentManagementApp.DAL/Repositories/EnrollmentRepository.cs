@@ -8,6 +8,17 @@ public class EnrollmentRepository : Repository<Enrollment>, IEnrollmentRepositor
 {
     public EnrollmentRepository(AppDbContext context) : base(context) { }
 
+    public async Task<Enrollment?> GetByIdWithDetailsAsync(int id) =>
+        await _dbSet
+            .Include(e => e.Student)
+            .Include(e => e.Class)
+                .ThenInclude(c => c.Course)
+            .Include(e => e.Class)
+                .ThenInclude(c => c.Teacher)
+            .Include(e => e.Class)
+                .ThenInclude(c => c.Schedules)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
     public async Task<IEnumerable<Enrollment>> GetAllWithDetailsAsync() =>
         await _dbSet
             .Include(e => e.Student)

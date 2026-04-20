@@ -73,6 +73,7 @@ public class UserService : IUserService
         Id = user.Id,
         FullName = user.FullName,
         Email = user.Email,
+        Username = user.Username,
         Phone = user.Phone,
         Role = user.Role,
         AvatarUrl = user.AvatarUrl,

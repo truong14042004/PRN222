@@ -16,6 +16,10 @@ public class User
     [EmailAddress]
     public string Email { get; set; } = null!;
 
+    [Required]
+    [MaxLength(50)]
+    public string Username { get; set; } = null!;
+
     [MaxLength(15)]
     public string? Phone { get; set; }
 
@@ -37,4 +41,6 @@ public class User
     public ICollection<Class> TeachingClasses { get; set; } = new List<Class>();
     public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
+    public ICollection<QuizResult> QuizResults { get; set; } = new List<QuizResult>();
+    public ICollection<CourseProgress> CourseProgresses { get; set; } = new List<CourseProgress>();
 }

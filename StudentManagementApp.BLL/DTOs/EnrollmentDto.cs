@@ -10,5 +10,7 @@ public class EnrollmentDto
     public string CourseName { get; set; } = null!;
     public DateTime EnrolledAt { get; set; }
     public string Status { get; set; } = null!;
+    public string? ConfirmationCode { get; set; }
+    public DateTime? ConfirmedAt { get; set; }
     public ClassDto? Class { get; set; }
 }

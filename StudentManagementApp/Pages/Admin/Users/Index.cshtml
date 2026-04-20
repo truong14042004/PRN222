@@ -1,0 +1,143 @@
+@page
+@model StudentManagementApp.Pages.Admin.Users.IndexModel
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    var userName = HttpContext.Session.GetString("UserName");
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - English Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/Admin">English Center - Admin</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/Admin">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/Admin/Users">Người dùng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Courses">Khóa học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Classes">Lớp học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Enrollments">Đăng ký</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Admin/Quizzes">Quiz</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Quản lý người dùng</h1>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item">
+                <a class="nav-link @(Model.Tab == "students" ? "active" : "")" href="/Admin/Users?tab=students">Học viên</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(Model.Tab == "teachers" ? "active" : "")" href="/Admin/Users?tab=teachers">Giáo viên</a>
+            </li>
+        </ul>
+
+        <form method="get" class="mb-3">
+            <input type="hidden" name="tab" value="@Model.Tab" />
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" name="q" class="form-control" placeholder="Tìm kiếm..." value="@Model.Q">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary">Tìm kiếm</button>
+                </div>
+                @if (Model.Tab == "teachers")
+                {
+                    <div class="col-md-2">
+                        <a href="/Admin/Users/CreateTeacher" class="btn btn-primary">+ Thêm giáo viên</a>
+                    </div>
+                }
+            </div>
+        </form>
+
+        <p>Tổng cộng: @Model.TotalCount người dùng</p>
+
+        @if (Model.Users.Any())
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Điện thoại</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@user.Phone</td>
+                            <td>
+                                <span class="badge bg-@(user.IsActive ? "success" : "danger")">
+                                    @(user.IsActive ? "Hoạt động" : "Vô hiệu")
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/Admin/Users/Edit/@user.Id?tab=@Model.Tab" class="btn btn-sm btn-outline-primary">Sửa</a>
+                                <form method="post" asp-page="/Admin/Users/Toggle" style="display:inline;">
+                                    <input type="hidden" name="id" value="@user.Id" />
+                                    <input type="hidden" name="tab" value="@Model.Tab" />
+                                    <button type="submit" class="btn btn-sm @(user.IsActive ? "btn-danger" : "btn-success")">
+                                        @(user.IsActive ? "Vô hiệu" : "Kích hoạt")
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (Model.TotalPages > 1)
+            {
+                <nav>
+                    <ul class="pagination">
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.Page ? "active" : "")">
+                                <a class="page-link" href="/Admin/Users?tab=@Model.Tab&page=@i&q=@Model.Q">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <p class="text-muted">Không có người dùng nào.</p>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

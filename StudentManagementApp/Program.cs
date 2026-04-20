@@ -1,6 +1,7 @@
 using StudentManagementApp.BLL;
 using StudentManagementApp.BLL.DTOs;
 using StudentManagementApp.BLL.Services;
+using StudentManagementApp.Hubs;
 
 namespace StudentManagementApp
 {
@@ -10,7 +11,8 @@ namespace StudentManagementApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
+            builder.Services.AddSignalR();
             builder.Services.AddApplicationServices(builder.Configuration);
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
@@ -19,22 +21,19 @@ namespace StudentManagementApp
 
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Home/Index");
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
-
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapRazorPages();
+            app.MapHub<NotificationHub>("/hubs/notifications");
 
-            // Seed admin account từ appsettings.json
+            // Seed admin account from appsettings.json
             using (var scope = app.Services.CreateScope())
             {
                 var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
@@ -49,6 +48,7 @@ namespace StudentManagementApp
                     {
                         FullName = config["FullName"]!,
                         Email = email,
+                        Username = config["Username"]!,
                         Phone = config["Phone"],
                         Password = config["Password"]!,
                         Role = "Admin"

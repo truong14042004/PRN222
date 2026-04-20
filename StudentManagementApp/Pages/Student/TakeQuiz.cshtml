@@ -1,0 +1,262 @@
+@page
+@model StudentManagementApp.Pages.Student.TakeQuizModel
+@{
+    ViewData["Title"] = "Làm bài quiz";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - English Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f6f9ff;
+            --panel: #ffffff;
+            --ink: #0f172a;
+            --muted: #64748b;
+            --line: #dae4f2;
+            --brand: #1d4ed8;
+            --warn: #b45309;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Be Vietnam Pro", "Segoe UI", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(760px 380px at 0% 0%, #dbeafe 0%, transparent 70%),
+                radial-gradient(760px 380px at 100% 100%, #e0e7ff 0%, transparent 70%),
+                var(--bg);
+            min-height: 100vh;
+        }
+
+        .shell {
+            width: min(980px, 94vw);
+            margin: 0 auto;
+            padding: 20px 0 42px;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 12px;
+            z-index: 10;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: rgba(255,255,255,.92);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 14px 30px rgba(15, 23, 42, .1);
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .timer {
+            border: 1px solid #c9d7f0;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-weight: 700;
+            color: #0b4a94;
+            background: #eff6ff;
+        }
+
+        .timer.warning {
+            color: #9a3412;
+            border-color: #fdba74;
+            background: #fff7ed;
+        }
+
+        .card-question {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--panel);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, .06);
+            margin-bottom: 12px;
+        }
+
+        .question-head {
+            border-bottom: 1px solid #edf2f8;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .question-body {
+            padding: 14px;
+        }
+
+        .q-label {
+            font-weight: 700;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .answer-progress-wrap {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        @if (Model.Quiz is null)
+        {
+            <div class="alert alert-danger">Không thể tải bài quiz.</div>
+            <a class="btn btn-outline-secondary" href="/Student/Quizzes">Quay lại danh sách quiz</a>
+        }
+        else
+        {
+            <div class="topbar">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                    <div>
+                        <h2 class="mb-1">@Model.Quiz.Title</h2>
+                        <div class="muted">@Model.Quiz.CourseName</div>
+                        @if (!string.IsNullOrWhiteSpace(Model.Quiz.Description))
+                        {
+                            <p class="mb-0 mt-2">@Model.Quiz.Description</p>
+                        }
+                    </div>
+                    <div class="text-end">
+                        <div class="muted mb-1">Thời gian tối đa: @Model.Quiz.TimeLimitMinutes phút</div>
+                        <div class="muted">Bắt đầu: @(Model.Quiz.StartAt.HasValue ? Model.Quiz.StartAt.Value.ToString("dd/MM/yyyy HH:mm") : "Ngay khi mở")</div>
+                        <div class="muted mb-1">Kết thúc: @(Model.Quiz.EndAt.HasValue ? Model.Quiz.EndAt.Value.ToString("dd/MM/yyyy HH:mm") : "Không giới hạn")</div>
+                        <div class="timer" id="timer">--:--</div>
+                    </div>
+                </div>
+                <div class="answer-progress-wrap">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="muted">Tiến độ chọn đáp án</span>
+                        <strong id="answerProgressText">0/@Model.Quiz.Questions.Count câu (0%)</strong>
+                    </div>
+                    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" id="answerProgressBar" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Error))
+            {
+                <div class="alert alert-danger">@Model.Error</div>
+            }
+
+            <form method="post" id="quizForm">
+                <input type="hidden" asp-for="QuizId" />
+
+                @for (var i = 0; i < Model.Quiz.Questions.Count; i++)
+                {
+                    var question = Model.Quiz.Questions[i];
+                    <article class="card-question quiz-question">
+                        <header class="question-head">
+                            <div class="q-label">Câu @question.SortOrder</div>
+                            <span class="badge bg-secondary">@question.Point điểm</span>
+                        </header>
+                        <div class="question-body">
+                            <input type="hidden" asp-for="Answers[i].QuestionId" value="@question.Id" />
+                            <p class="mb-3">@question.QuestionText</p>
+
+                            @if (question.QuestionType == "MultipleChoice")
+                            {
+                                @foreach (var option in question.Options)
+                                {
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input"
+                                               type="radio"
+                                               asp-for="Answers[i].SelectedOptionId"
+                                               value="@option.Id"
+                                               id="q@(question.Id)_o@(option.Id)">
+                                        <label class="form-check-label" for="q@(question.Id)_o@(option.Id)">
+                                            @option.OptionText
+                                        </label>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <input class="form-control fill-answer"
+                                       asp-for="Answers[i].FillInAnswer"
+                                       placeholder="Nhập đáp án của bạn">
+                            }
+                        </div>
+                    </article>
+                }
+
+                <div class="d-flex gap-2 mt-3">
+                    <a class="btn btn-outline-secondary" href="/Student/Quizzes">Hủy</a>
+                    <button type="submit" class="btn btn-success">Nộp bài</button>
+                </div>
+            </form>
+        }
+    </div>
+
+    <script>
+        (function () {
+            const timeLimitMinutes = @((Model.Quiz?.TimeLimitMinutes ?? 0).ToString());
+            const timerEl = document.getElementById("timer");
+            const form = document.getElementById("quizForm");
+            const questionBlocks = Array.from(document.querySelectorAll(".quiz-question"));
+            const progressTextEl = document.getElementById("answerProgressText");
+            const progressBarEl = document.getElementById("answerProgressBar");
+            const totalQuestions = questionBlocks.length;
+
+            function updateAnswerProgress() {
+                if (!progressTextEl || !progressBarEl || totalQuestions <= 0) return;
+
+                const answered = questionBlocks.filter(block => {
+                    const checkedRadio = block.querySelector('input[type="radio"]:checked');
+                    if (checkedRadio) return true;
+
+                    const fillInput = block.querySelector(".fill-answer");
+                    return !!fillInput && fillInput.value.trim().length > 0;
+                }).length;
+
+                const percent = Math.round((answered * 100) / totalQuestions);
+                progressTextEl.textContent = `${answered}/${totalQuestions} câu (${percent}%)`;
+                progressBarEl.style.width = `${percent}%`;
+            }
+
+            updateAnswerProgress();
+            if (form) {
+                form.addEventListener("change", updateAnswerProgress);
+                form.addEventListener("input", updateAnswerProgress);
+            }
+
+            if (!timeLimitMinutes || timeLimitMinutes <= 0) return;
+
+            let remaining = timeLimitMinutes * 60;
+
+            function format(totalSeconds) {
+                const m = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+                const s = (totalSeconds % 60).toString().padStart(2, "0");
+                return `${m}:${s}`;
+            }
+
+            function tick() {
+                if (!timerEl) return;
+                timerEl.textContent = format(remaining);
+
+                if (remaining <= 300) {
+                    timerEl.classList.add("warning");
+                }
+
+                if (remaining <= 0) {
+                    if (form) form.submit();
+                    return;
+                }
+
+                remaining -= 1;
+            }
+
+            tick();
+            setInterval(tick, 1000);
+        })();
+    </script>
+</body>
+</html>

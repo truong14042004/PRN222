@@ -19,6 +19,11 @@ public class Enrollment
     [MaxLength(20)]
     public string Status { get; set; } = "Registered"; // Registered, Confirmed
 
+    [MaxLength(10)]
+    public string? ConfirmationCode { get; set; }
+
+    public DateTime? ConfirmedAt { get; set; }
+
     public User Student { get; set; } = null!;
     public Class Class { get; set; } = null!;
 }

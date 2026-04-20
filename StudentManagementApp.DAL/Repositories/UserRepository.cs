@@ -13,4 +13,10 @@ public class UserRepository : Repository<User>, IUserRepository
 
     public async Task<bool> ExistsByEmailAsync(string email) =>
         await _dbSet.AnyAsync(u => u.Email == email);
+
+    public async Task<User?> GetByUsernameAsync(string username) =>
+        await _dbSet.FirstOrDefaultAsync(u => u.Username == username);
+
+    public async Task<bool> ExistsByUsernameAsync(string username) =>
+        await _dbSet.AnyAsync(u => u.Username == username);
 }

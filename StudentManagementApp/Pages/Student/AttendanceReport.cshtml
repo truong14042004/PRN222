@@ -1,0 +1,116 @@
+@page
+@model StudentManagementApp.Pages.Student.AttendanceReportModel
+@{
+    ViewData["Title"] = "Báo cáo điểm danh";
+    var userName = HttpContext.Session.GetString("UserName");
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - English Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">English Center</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/Student">Học viên</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Student/Schedule">Lịch học</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/Student/AttendanceReport">Điểm danh</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Student/Quizzes">Quiz</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Báo cáo điểm danh</h1>
+
+        <form method="get" class="mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <select name="classId" class="form-select">
+                        <option value="">-- Chọn lớp học --</option>
+                        @foreach (var e in Model.Enrollments)
+                        {
+                            <option value="@e.ClassId" selected="@(Model.SelectedClassId == e.ClassId)">@e.ClassName - @e.CourseName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary">Xem</button>
+                </div>
+            </div>
+        </form>
+
+        @if (Model.Class != null && Model.AllSessions.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>@Model.Class.ClassName - @Model.Class.CourseName</h5>
+                    <p><strong>Tiến độ:</strong> @Model.PresentCount / @Model.PastSessions buổi đã học</p>
+                    <p><strong>Tỷ lệ có mặt:</strong> @(Model.PastSessions > 0 ? (Model.PresentCount * 100.0 / Model.PastSessions).ToString("F1") : "0")%</p>
+                </div>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var session in Model.AllSessions.OrderByDescending(s => s))
+                    {
+                        var isPast = session <= Model.Today;
+                        var hasAttendance = Model.AttByDate.TryGetValue(session, out var att);
+                        <tr>
+                            <td>@session.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (!isPast)
+                                {
+                                    <span class="badge bg-secondary">Chưa đến</span>
+                                }
+                                else if (hasAttendance)
+                                {
+                                    <span class="badge bg-@(att!.IsPresent ? "success" : "danger")">
+                                        @(att!.IsPresent ? "Có mặt" : "Vắng mặt")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Chưa điểm danh</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else if (Model.SelectedClassId == null)
+        {
+            <p class="text-muted">Vui lòng chọn lớp học để xem báo cáo điểm danh.</p>
+        }
+        else
+        {
+            <p class="text-muted">Không có dữ liệu điểm danh.</p>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

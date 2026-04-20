@@ -1,0 +1,119 @@
+@page
+@model StudentManagementApp.Pages.Admin.QuizResultsModel
+@{
+    ViewData["Title"] = "Kết quả quiz";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - English Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="mb-0">Kết quả quiz</h1>
+            <a class="btn btn-outline-secondary" href="/Admin/Quizzes">Quay lại quiz</a>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <form method="get" class="card mb-3">
+            <div class="card-body row g-2 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label">Chọn bài quiz</label>
+                    <select name="quizId" class="form-select">
+                        <option value="">-- Chọn quiz để xem kết quả --</option>
+                        @foreach (var quiz in Model.AvailableQuizzes)
+                        {
+                            <option value="@quiz.Id" selected="@(Model.QuizId == quiz.Id)">
+                                @quiz.CourseName - @quiz.Title
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Xem</button>
+                </div>
+            </div>
+        </form>
+
+        @if (Model.SelectedQuiz != null)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h4 class="mb-1">@Model.SelectedQuiz.Title</h4>
+                    <div class="text-muted">@Model.SelectedQuiz.CourseName</div>
+                    <div class="row mt-3 g-2">
+                        <div class="col-md-3">
+                            <div class="border rounded p-2 text-center">
+                                <div class="small text-muted">Lượt làm</div>
+                                <div class="fw-bold fs-5">@Model.TotalAttempts</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-2 text-center">
+                                <div class="small text-muted">Đạt</div>
+                                <div class="fw-bold fs-5">@Model.PassedCount</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-2 text-center">
+                                <div class="small text-muted">Điểm TB (%)</div>
+                                <div class="fw-bold fs-5">@Model.AveragePercent.ToString("F1")%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Results.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered bg-white">
+                        <thead>
+                            <tr>
+                                <th>Học viên</th>
+                                <th>Điểm</th>
+                                <th>Tỷ lệ</th>
+                                <th>Câu đúng</th>
+                                <th>Thời gian làm</th>
+                                <th>Nộp lúc</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var result in Model.Results)
+                            {
+                                <tr>
+                                    <td>@result.StudentName</td>
+                                    <td>@result.Score / @result.TotalPoints</td>
+                                    <td>@result.PercentageScore</td>
+                                    <td>@result.CorrectCount / @result.TotalQuestions</td>
+                                    <td>@result.TimeTaken.ToString(@"hh\:mm\:ss")</td>
+                                    <td>@result.CompletedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        <span class="badge bg-@(result.Passed ? "success" : "danger")">
+                                            @(result.Passed ? "Đạt" : "Chưa đạt")
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">Chưa có lượt làm nào cho quiz này.</p>
+            }
+        }
+    </div>
+</body>
+</html>

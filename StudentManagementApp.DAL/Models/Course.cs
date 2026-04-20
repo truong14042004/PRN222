@@ -27,4 +27,6 @@ public class Course
     public bool IsActive { get; set; } = true;
 
     public ICollection<Class> Classes { get; set; } = new List<Class>();
+    public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
+    public ICollection<CourseProgress> Progresses { get; set; } = new List<CourseProgress>();
 }

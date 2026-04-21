@@ -41,6 +41,12 @@ public static class DependencyInjection
         // Email Service
         services.AddScoped<IEmailService, EmailService>();
 
+        // Payment & E-commerce
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IPurchasableItemService, PurchasableItemService>();
+
         return services;
     }
 }

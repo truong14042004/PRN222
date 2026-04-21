@@ -27,6 +27,12 @@ public class AppDbContext : DbContext
     public DbSet<EmailOtp> EmailOtps => Set<EmailOtp>();
     public DbSet<EmailLog> EmailLogs => Set<EmailLog>();
 
+    // Payment & Products
+    public DbSet<PurchasableItem> PurchasableItems => Set<PurchasableItem>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Teacher nullable FK - tránh multiple cascade paths

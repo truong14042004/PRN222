@@ -2,145 +2,132 @@
 @model StudentManagementApp.Pages.Home.IndexModel
 @{
     ViewData["Title"] = "Trang chủ";
-    var userName = HttpContext.Session.GetString("UserName");
-    var userRole = HttpContext.Session.GetString("UserRole");
     var userId = HttpContext.Session.GetString("UserId");
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">English Center</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Course">Khóa học</a></li>
-                    @if (userRole == "Student" && userId != null)
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Student">Học viên</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Student/Schedule">Lịch học</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Student/AttendanceReport">Điểm danh</a></li>
-                    }
-                    @if (userRole == "Teacher" && userId != null)
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Teacher">Lớp dạy</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Teacher/Schedule">Lịch dạy</a></li>
-                    }
-                    @if (userRole == "Admin" && userId != null)
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Admin">Quản trị</a></li>
-                    }
-                </ul>
-                <ul class="navbar-nav">
-                    @if (userId != null)
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                Xin chào, @userName
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
-                            </ul>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Auth/Login">Đăng nhập</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Auth/Register">Đăng ký</a></li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-4">
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">@TempData["Error"]</div>
+@section Styles {
+    <style>
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: url('/images/banner.jpg') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-top: -10px; /* Offset to connect with navbar */
         }
 
-        <div class="jumbotron bg-light p-5 rounded">
-            <h1 class="display-4">Chào mừng đến với English Center</h1>
-            <p class="lead">Nền tảng quản lý trung tâm Anh ngữ hiện đại</p>
-            <hr class="my-4">
-            @if (userId == null)
-            {
-                <p>Đăng ký ngay để tham gia các khóa học tiếng Anh chất lượng cao.</p>
-                <a class="btn btn-primary btn-lg" href="/Auth/Register">Đăng ký ngay</a>
-            }
-        </div>
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.2));
+        }
 
-        <div class="row mt-5">
-            <div class="col-md-12">
-                <h2>Danh sách khóa học</h2>
-                
-                <form method="get" class="mb-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <input type="text" name="q" class="form-control" placeholder="Tìm kiếm khóa học..." value="@ViewData["Q"]">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-secondary">Tìm kiếm</button>
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .search-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .course-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+}
+
+<div class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>Nền tảng Quản lý Tiếng Anh Hiện đại</h1>
+        <p class="lead">Đồng hành cùng học viên vươn tới đỉnh cao tri thức cùng trung tâm English Center.</p>
+        @if (userId == null)
+        {
+            <a class="btn btn-primary-res btn-lg rounded-pill px-5 py-3 shadow-lg mt-3" href="/Auth/Register">KHÁM PHÁ NGAY</a>
+        }
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="search-container">
+                <form method="get" class="row g-2">
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Bạn muốn tìm khóa học nào?" value="@ViewData["Q"]">
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary-res w-100 rounded-pill">Tìm kiếm</button>
+                    </div>
                 </form>
-
-                <div class="row">
-                    @if (Model.Courses != null && Model.Courses.Any())
-                    {
-                        @foreach (var course in Model.Courses)
-                        {
-                            <div class="col-md-4 mb-4">
-                                <div class="card h-100">
-                                    @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
-                                    {
-                                        <img src="@course.ThumbnailUrl" class="card-img-top" alt="@course.Name">
-                                    }
-                                    <div class="card-body">
-                                        <h5 class="card-title">@course.Name</h5>
-                                        <span class="badge bg-info">@course.Level</span>
-                                        <p class="card-text">@course.Description</p>
-                                        <p class="card-text"><strong>Học phí:</strong> @course.TuitionFee.ToString("N0") VNĐ</p>
-                                    </div>
-                                    <div class="card-footer">
-                                        <a href="/Course/Detail/@course.Id" class="btn btn-primary">Xem chi tiết</a>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="col-12">
-                            <p class="text-muted">Không có khóa học nào.</p>
-                        </div>
-                    }
-                </div>
             </div>
         </div>
     </div>
 
-    <footer class="bg-dark text-white mt-5 py-3">
-        <div class="container text-center">
-            <p>&copy; 2026 English Center. All rights reserved.</p>
+    <div class="mt-5">
+        <h2 class="res-section-title center">CÁC KHÓA HỌC NỔI BẬT</h2>
+        
+        <div class="row mt-4">
+            @if (Model.Courses != null && Model.Courses.Any())
+            {
+                @foreach (var course in Model.Courses)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="res-card course-card">
+                            @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                            {
+                                <img src="@course.ThumbnailUrl" class="card-img-top" alt="@course.Name">
+                            }
+                            else
+                            {
+                                <img src="https://via.placeholder.com/400x250?text=English+Course" class="card-img-top" alt="Default Thumbnail">
+                            }
+                            <div class="card-body">
+                                <span class="badge-res bg-res-red text-white mb-2 d-inline-block">LEVEL: @course.Level</span>
+                                <h5 class="card-title fw-bold">@course.Name</h5>
+                                <p class="card-text text-muted small">@course.Description</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="text-res-red fw-bold h5 mb-0">@course.TuitionFee.ToString("N0") <small>VNĐ</small></span>
+                                    <a href="/Course/Detail/@course.Id" class="btn btn-outline-res btn-sm rounded-pill px-3">Chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">Không tìm thấy khóa học phù hợp.</p>
+                </div>
+            }
         </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    </div>
+</div>

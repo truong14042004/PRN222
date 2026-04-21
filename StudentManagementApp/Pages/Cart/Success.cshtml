@@ -1,0 +1,21 @@
+@page
+@model StudentManagementApp.Pages.Cart.SuccessModel
+@{
+    ViewData["Title"] = "Thanh toán thành công";
+}
+
+<div class="container mt-5 text-center">
+    <div class="card shadow-sm border-0 py-5">
+        <div class="card-body">
+            <div class="mb-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+            </div>
+            <h2 class="text-success mb-3">Thanh toán hoàn tất!</h2>
+            <p class="lead mb-4">Cảm ơn bạn đã tin dùng dịch vụ của English Center. Đơn hàng <strong>#@Request.Query["orderCode"]</strong> đã được ghi nhận.</p>
+            <div class="d-grid gap-2 d-md-block">
+                <a href="/PurchasableItems" class="btn btn-outline-primary px-4 me-md-2">Tiếp tục mua sắm</a>
+                <a href="/Student" class="btn btn-primary px-4">Xem khóa học của tôi</a>
+            </div>
+        </div>
+    </div>
+</div>

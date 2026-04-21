@@ -24,6 +24,8 @@ project.lock.json
 appsettings.Development.json
 appsettings.Local.json
 secrets.json
+appsettings.json
+StudentManagementApp.DAL/Data/DesignTimeDbContextFactory.cs
 
 # Uploaded files
 wwwroot/images/courses/

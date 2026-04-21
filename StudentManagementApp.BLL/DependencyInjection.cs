@@ -15,6 +15,8 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+        services.AddHttpClient();
+
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ICourseRepository, CourseRepository>();
@@ -25,6 +27,10 @@ public static class DependencyInjection
 
         // Services
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IPurchasableItemService, PurchasableItemService>();
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<IClassService, ClassService>();
@@ -40,6 +46,12 @@ public static class DependencyInjection
 
         // Email Service
         services.AddScoped<IEmailService, EmailService>();
+
+        // Payment & E-commerce
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IPurchasableItemService, PurchasableItemService>();
 
         return services;
     }

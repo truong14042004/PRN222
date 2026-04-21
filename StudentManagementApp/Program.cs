@@ -14,6 +14,7 @@ namespace StudentManagementApp
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddRazorPages();
+            builder.Services.AddControllers();
             builder.Services.AddSignalR();
             builder.Services.AddApplicationServices(builder.Configuration);
             builder.Services.AddSession();
@@ -33,6 +34,7 @@ namespace StudentManagementApp
             app.UseAuthorization();
 
             app.MapRazorPages();
+            app.MapControllers();
             app.MapHub<NotificationHub>("/hubs/notifications");
 
             // Seed admin account from appsettings.json

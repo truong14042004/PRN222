@@ -56,6 +56,33 @@ namespace StudentManagementApp.DAL.Migrations
                     b.ToTable("Attendances");
                 });
 
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("StudentManagementApp.DAL.Models.Class", b =>
                 {
                     b.Property<int>("Id")
@@ -313,6 +340,74 @@ namespace StudentManagementApp.DAL.Migrations
                     b.ToTable("Enrollments");
                 });
 
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BalanceUsed")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("OrderCode")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("PayOSAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("PurchasableItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("PurchasableItemId");
+
+                    b.ToTable("OrderItems");
+                });
+
             modelBuilder.Entity("StudentManagementApp.DAL.Models.OtpCode", b =>
                 {
                     b.Property<int>("Id")
@@ -343,6 +438,40 @@ namespace StudentManagementApp.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OtpCodes");
+                });
+
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.PurchasableItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PurchasableItems");
                 });
 
             modelBuilder.Entity("StudentManagementApp.DAL.Models.Quiz", b =>
@@ -573,6 +702,9 @@ namespace StudentManagementApp.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<decimal>("WalletBalance")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
@@ -595,6 +727,17 @@ namespace StudentManagementApp.DAL.Migrations
                     b.Navigation("Class");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.CartItem", b =>
+                {
+                    b.HasOne("StudentManagementApp.DAL.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StudentManagementApp.DAL.Models.Class", b =>
@@ -673,6 +816,32 @@ namespace StudentManagementApp.DAL.Migrations
                     b.Navigation("Class");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.Order", b =>
+                {
+                    b.HasOne("StudentManagementApp.DAL.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.OrderItem", b =>
+                {
+                    b.HasOne("StudentManagementApp.DAL.Models.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StudentManagementApp.DAL.Models.PurchasableItem", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("PurchasableItemId");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("StudentManagementApp.DAL.Models.Quiz", b =>
@@ -768,6 +937,16 @@ namespace StudentManagementApp.DAL.Migrations
                     b.Navigation("Progresses");
 
                     b.Navigation("Quizzes");
+                });
+
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.PurchasableItem", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("StudentManagementApp.DAL.Models.Quiz", b =>

@@ -1,0 +1,129 @@
+@page
+@model StudentManagementApp.Pages.Cart.IndexModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <h2 class="res-section-title">GIỎ HÀNG CỦA BẠN</h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="res-card">
+                <div class="res-card-header bg-white">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-cart3 me-2"></i> Sản phẩm trong giỏ</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Cart.Items != null && Model.Cart.Items.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var item in Model.Cart.Items)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center p-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-res-red bg-opacity-10 rounded-3 p-3 me-3 text-res-red">
+                                            <i class="bi bi-box-seam h4 mb-0"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1 fw-bold">@item.Name</h6>
+                                            <span class="badge bg-light text-dark border small">@item.ItemType</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold text-res-red mb-2">@item.Price.ToString("N0") VNĐ</div>
+                                        <form method="post" asp-page-handler="Remove">
+                                            <input type="hidden" name="cartItemId" value="@item.ItemId" />
+                                            <button type="submit" class="btn btn-link text-muted btn-sm p-0 text-decoration-none">
+                                                <i class="bi bi-trash me-1"></i> Loại bỏ
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
+                            <p class="mt-3 h5 text-muted">Giỏ hàng của bạn đang trống.</p>
+                            <a href="/PurchasableItems" class="btn btn-primary-res rounded-pill mt-3 px-4">ĐI MUA SẮM NGAY</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="res-card border-top border-res-red border-4 shadow">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Tóm tắt đơn hàng</h5>
+                    
+                    <div class="d-flex justify-content-between mb-3 text-muted">
+                        <span>Tạm tính (@Model.Cart.Items.Count món):</span>
+                        <span class="fw-bold text-dark">@Model.Cart.TotalAmount.ToString("N0") VNĐ</span>
+                    </div>
+                    
+                    <div class="bg-light p-3 rounded-3 mb-4 border">
+                        <div class="d-flex justify-content-between mb-2 small fw-bold">
+                            <span>SỐ DƯ VÍ:</span>
+                            <span class="text-success">@Model.WalletBalance.ToString("N0") VNĐ</span>
+                        </div>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" id="useBalanceCheck" name="useBalance" value="true" checked>
+                            <label class="form-check-label small fw-semibold" for="useBalanceCheck">Ưu tiên dùng số dư ví</label>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="h5 fw-bold">Tổng cộng:</span>
+                        <div class="text-end">
+                            <div class="h4 fw-bold text-res-red mb-0" id="finalPrice">@Model.Cart.TotalAmount.ToString("N0") VNĐ</div>
+                            <small class="text-muted">Đã bao gồm thuế</small>
+                        </div>
+                    </div>
+
+                    <form method="post" asp-page-handler="Checkout">
+                        <input type="hidden" name="useBalance" id="useBalanceHidden" value="true" />
+                        <button type="submit" class="btn btn-primary-res btn-lg w-100 py-3 mb-3 shadow rounded-pill" @(Model.Cart.Items.Any() ? "" : "disabled")>
+                            TIẾN HÀNH THANH TOÁN
+                        </button>
+                    </form>
+                    
+                    <div class="text-center">
+                        <div class="d-flex align-items-center justify-content-center text-muted small">
+                            <i class="bi bi-shield-check me-2 text-success h5 mb-0"></i>
+                            Thanh toán an toàn qua PayOS
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const totalAmount = @Model.Cart.TotalAmount;
+        const walletBalance = @Model.WalletBalance;
+        const useBalanceCheck = document.getElementById('useBalanceCheck');
+        const finalPriceLabel = document.getElementById('finalPrice');
+        const useBalanceHidden = document.getElementById('useBalanceHidden');
+
+        function updatePrice() {
+            let finalPrice = totalAmount;
+            if (useBalanceCheck.checked) {
+                finalPrice = Math.max(0, totalAmount - walletBalance);
+            }
+            finalPriceLabel.innerText = finalPrice.toLocaleString('vi-VN') + ' VNĐ';
+            useBalanceHidden.value = useBalanceCheck.checked;
+        }
+
+        useBalanceCheck.addEventListener('change', updatePrice);
+        updatePrice();
+    </script>
+}

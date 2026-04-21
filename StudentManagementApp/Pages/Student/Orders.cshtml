@@ -1,0 +1,91 @@
+@page
+@model StudentManagementApp.Pages.Student.OrdersModel
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+}
+
+<div class="container py-5">
+    <div class="mb-5">
+        <h2 class="res-section-title">LỊCH SỬ GIAO DỊCH</h2>
+        <p class="text-muted">Theo dõi tất cả các đơn hàng và trạng thái thanh toán của bạn.</p>
+    </div>
+
+    @if (!Model.Orders.Any())
+    {
+        <div class="res-card p-5 text-center">
+            <i class="bi bi-journal-x text-muted" style="font-size: 4rem;"></i>
+            <p class="h5 text-muted mt-3">Bạn chưa có giao dịch nào.</p>
+            <a href="/PurchasableItems" class="btn btn-primary-res rounded-pill mt-3 px-4">ĐI MUA SẮM NGAY</a>
+        </div>
+    }
+    else
+    {
+        <div class="res-card overflow-hidden">
+            <div class="table-responsive">
+                <table class="table res-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn hàng</th>
+                            <th>Nội dung</th>
+                            <th>Tổng cộng</th>
+                            <th>Thanh toán</th>
+                            <th>Ngày mua</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr>
+                                <td class="fw-bold">#@order.OrderCode</td>
+                                <td>
+                                    <div class="small">
+                                        @foreach (var item in order.OrderItems)
+                                        {
+                                            <div class="mb-1">• @item.ItemName</div>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="fw-bold">@order.TotalAmount.ToString("N0") VNĐ</td>
+                                <td>
+                                    @if (order.BalanceUsed > 0) {
+                                        <div class="small text-success"><i class="bi bi-wallet2"></i> Ví: -@order.BalanceUsed.ToString("N0")</div>
+                                    }
+                                    @if (order.PayOSAmount > 0) {
+                                        <div class="small text-danger"><i class="bi bi-credit-card"></i> PayOS: @order.PayOSAmount.ToString("N0")</div>
+                                    }
+                                </td>
+                                <td class="text-muted">@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @{
+                                        var badgeClass = order.Status switch
+                                        {
+                                            "Paid" => "badge-paid",
+                                            "Pending" => "badge-pending",
+                                            "Cancelled" => "badge-cancelled",
+                                            _ => "bg-secondary text-white"
+                                        };
+                                        var statusText = order.Status switch
+                                        {
+                                            "Paid" => "Đã thanh toán",
+                                            "Pending" => "Chờ thanh toán",
+                                            "Cancelled" => "Đã hủy",
+                                            _ => order.Status
+                                        };
+                                    }
+                                    <span class="badge-res @badgeClass">@statusText</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <div class="mt-4">
+        <a href="/Student" class="btn btn-outline-res rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại Dashboard
+        </a>
+    </div>
+</div>

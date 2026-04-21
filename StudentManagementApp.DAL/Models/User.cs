@@ -37,6 +37,9 @@ public class User
     public bool IsActive { get; set; } = true;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+    
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal WalletBalance { get; set; } = 0;
 
     public ICollection<Class> TeachingClasses { get; set; } = new List<Class>();
     public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();

@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+:root {
+    --res-red: #CC2027;
+    --res-red-dark: #A51A20;
+    --res-bg: #FDF8F0;
+    --res-text: #333333;
+    --res-white: #FFFFFF;
+    --res-gray: #777777;
+    --res-light-gray: #f8f9fa;
+    --res-border: #eeeeee;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--res-bg);
+    color: var(--res-text);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Navbar */
+.navbar-res {
+    background-color: var(--res-white) !important;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    padding: 0.8rem 0;
+}
+
+.navbar-res .navbar-brand img {
+    height: 45px;
+}
+
+.navbar-res .nav-link {
+    color: var(--res-text) !important;
+    font-weight: 600;
+    margin: 0 8px;
+    font-size: 0.95rem;
+    position: relative;
+}
+
+.navbar-res .nav-link:after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--res-red);
+    transition: width 0.3s ease;
+}
+
+.navbar-res .nav-link:hover:after,
+.navbar-res .nav-link.active:after {
+    width: 100%;
+}
+
+/* Buttons */
+.btn-primary-res {
+    background-color: var(--res-red) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 10px 25px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-res:hover {
+    background-color: var(--res-red-dark) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(204, 32, 39, 0.3);
+}
+
+.btn-outline-res {
+    border: 2px solid var(--res-red) !important;
+    color: var(--res-red) !important;
+    background: transparent !important;
+    font-weight: 600;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-res:hover {
+    background-color: var(--res-red) !important;
+    color: white !important;
+}
+
+/* Cards */
+.res-card {
+    border: none;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.res-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+}
+
+.res-card-header {
+    background-color: var(--res-white);
+    border-bottom: 2px solid var(--res-red);
+    padding: 1.2rem;
+    font-weight: 700;
+}
+
+/* Tables */
+.res-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.res-table thead {
+    background-color: #f3f3f3;
+}
+
+.res-table th {
+    border: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: var(--res-gray);
+    padding: 1rem;
+}
+
+.res-table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Section titles */
+.res-section-title {
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.res-section-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background-color: var(--res-red);
+}
+
+.res-section-title.center {
+    text-align: center;
+}
+
+.res-section-title.center:after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Forms */
+.form-res .form-control {
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    border: 1px solid #ddd;
+}
+
+.form-res .form-control:focus {
+    border-color: var(--res-red);
+    box-shadow: 0 0 0 0.2rem rgba(204, 32, 39, 0.15);
+}
+
+/* Badges */
+.badge-res {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.badge-paid { background-color: #e6f7ef; color: #10b981; }
+.badge-pending { background-color: #fffbeb; color: #f59e0b; }
+.badge-cancelled { background-color: #fef2f2; color: #ef4444; }
+
+/* Utilities */
+.text-res-red { color: var(--res-red) !important; }
+.bg-res-red { background-color: var(--res-red) !important; }
+
+/* Footer */
+.footer-res {
+    background-color: #1a1a1a !important;
+    color: #999;
+    padding: 4rem 0 2rem;
+}
+
+.footer-res h6 {
+    color: white;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.footer-res a {
+    color: #999;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-res a:hover {
+    color: var(--res-red);
+}
+
+.brightness-0 { filter: brightness(0); }
+.invert { filter: invert(1); }

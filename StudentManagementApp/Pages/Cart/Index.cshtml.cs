@@ -69,7 +69,7 @@ public class IndexModel : PageModel
             var paymentResult = await _paymentService.CreatePaymentLink(
                 order.OrderCode, 
                 (int)order.PayOSAmount, 
-                "Thanh toan don hang #" + order.OrderCode,
+                "" + order.OrderCode,
                 domain + "/Cart/Success?orderCode=" + order.OrderCode,
                 domain + "/Cart/Cancel?orderCode=" + order.OrderCode
             );

@@ -28,6 +28,12 @@ public class AuthService : IAuthService
         }
 
         if (user is null) return null;
+        
+
+        // HEY HEY, I AM DUY KHANH - A DEV MEMBER, FOR DEMO I CURRENTLY BYPASS PASSWORD CHECKING
+        // Temporary bypass for testing - allows any password
+        if (credential == user.Username || credential == user.Email) return MapToDto(user);
+
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash)) return null;
 
         return MapToDto(user);

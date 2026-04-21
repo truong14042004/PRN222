@@ -56,6 +56,33 @@ namespace StudentManagementApp.DAL.Migrations
                     b.ToTable("Attendances");
                 });
 
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("StudentManagementApp.DAL.Models.Class", b =>
                 {
                     b.Property<int>("Id")
@@ -700,6 +727,17 @@ namespace StudentManagementApp.DAL.Migrations
                     b.Navigation("Class");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("StudentManagementApp.DAL.Models.CartItem", b =>
+                {
+                    b.HasOne("StudentManagementApp.DAL.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StudentManagementApp.DAL.Models.Class", b =>

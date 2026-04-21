@@ -11,6 +11,7 @@ public interface IOrderService
     Task<OrderDto?> GetByOrderCodeAsync(long orderCode);
     Task CompleteOrderAsync(long orderCode);
     Task CancelOrderAsync(long orderCode);
+    Task<List<OrderDto>> GetOrdersByUserIdAsync(int userId);
 }
 
 public class OrderService : IOrderService
@@ -47,7 +48,7 @@ public class OrderService : IOrderService
             TotalAmount = totalAmount,
             BalanceUsed = balanceUsed,
             PayOSAmount = payOSAmount,
-            OrderCode = DateTime.Now.Ticks, // Simple unique order code
+            OrderCode = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss")), // Use date format to stay under PayOS limit (2^53-1)
             Status = OrderStatus.Pending
         };
 
@@ -81,28 +82,39 @@ public class OrderService : IOrderService
 
     public async Task CompleteOrderAsync(long orderCode)
     {
-        var order = await _context.Orders
-            .Include(o => o.User)
-            .Include(o => o.OrderItems)
-            .FirstOrDefaultAsync(o => o.OrderCode == orderCode);
-
-        if (order == null || order.Status == OrderStatus.Paid) return;
-
-        // Deduct balance if used
-        if (order.BalanceUsed > 0)
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            if (order.User.WalletBalance < order.BalanceUsed)
-                throw new Exception("Insufficient balance to complete order");
+            var order = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.OrderCode == orderCode);
+
+            if (order == null || order.Status == OrderStatus.Paid) 
+            {
+                await transaction.RollbackAsync();
+                return;
+            }
+
+            // Deduct balance if used
+            if (order.BalanceUsed > 0)
+            {
+                if (order.User.WalletBalance < order.BalanceUsed)
+                    throw new Exception("Insufficient balance to complete order");
+                
+                order.User.WalletBalance -= order.BalanceUsed;
+            }
+
+            order.Status = OrderStatus.Paid;
             
-            order.User.WalletBalance -= order.BalanceUsed;
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
         }
-
-        order.Status = OrderStatus.Paid;
-
-        // Perform side effects (give ownership)
-        // Note: For now we just mark as Paid as per user's "khúc sau tôi tính tiếp"
-        
-        await _context.SaveChangesAsync();
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task CancelOrderAsync(long orderCode)
@@ -113,6 +125,23 @@ public class OrderService : IOrderService
             order.Status = OrderStatus.Cancelled;
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<List<OrderDto>> GetOrdersByUserIdAsync(int userId)
+    {
+        var orders = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderItems)
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+
+        var dtos = new List<OrderDto>();
+        foreach (var order in orders)
+        {
+            dtos.Add(await MapToDto(order));
+        }
+        return dtos;
     }
 
     private async Task<OrderDto> MapToDto(Order order)

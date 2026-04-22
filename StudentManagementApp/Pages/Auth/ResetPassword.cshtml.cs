@@ -7,12 +7,12 @@ namespace StudentManagementApp.Pages.Auth
 {
     public class ResetPasswordModel : PageModel
     {
-        private readonly IOtpService _otpService;
+        private readonly IEmailService _emailService;
         private readonly IAuthService _authService;
 
-        public ResetPasswordModel(IOtpService otpService, IAuthService authService)
+        public ResetPasswordModel(IEmailService emailService, IAuthService authService)
         {
-            _otpService = otpService;
+            _emailService = emailService;
             _authService = authService;
         }
 
@@ -40,7 +40,7 @@ namespace StudentManagementApp.Pages.Auth
                 return Page();
             }
 
-            var valid = await _otpService.ValidateOtpAsync(Email, OtpCode);
+            var valid = await _emailService.ValidateOtpAsync(Email, OtpCode, "PasswordReset");
             if (!valid)
             {
                 ViewData["Email"] = Email;

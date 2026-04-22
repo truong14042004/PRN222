@@ -11,7 +11,10 @@
                 <i class="bi bi-x-circle-fill text-danger" style="font-size: 5rem;"></i>
             </div>
             <h2 class="text-danger mb-3">Thanh toán không thành công</h2>
-            <p class="lead mb-4">Giao dịch đã bị hủy hoặc gặp sự cố. Bạn có thể thử lại hoặc chọn phương thức thanh toán khác.</p>
+            <p class="lead mb-4">
+                Giao dịch cho đơn hàng <strong>#@(Model.Order?.OrderCode)</strong> đã bị hủy hoặc gặp sự cố.
+                Bạn có thể thử lại hoặc chọn phương thức thanh toán khác.
+            </p>
             <div class="d-grid gap-2 d-md-block">
                 <a href="/Cart" class="btn btn-primary px-4 me-md-2">Quay lại giỏ hàng</a>
                 <a href="/PurchasableItems" class="btn btn-outline-secondary px-4">Tiếp tục mua sắm</a>

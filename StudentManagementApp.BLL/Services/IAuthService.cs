@@ -8,4 +8,5 @@ public interface IAuthService
     Task EnsureRegistrationAllowedAsync(CreateUserDto dto);
     Task<UserDto> RegisterAsync(CreateUserDto dto);
     Task<bool> ResetPasswordAsync(ResetPasswordDto dto);
+    Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
 }

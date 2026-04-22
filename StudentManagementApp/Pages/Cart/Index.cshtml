@@ -16,7 +16,7 @@
                     <h5 class="mb-0 fw-bold"><i class="bi bi-cart3 me-2"></i> Sản phẩm trong giỏ</h5>
                 </div>
                 <div class="card-body p-0">
-                    @if (Model.Cart.Items != null && Model.Cart.Items.Any())
+                    @if (Model.Cart.Items.Any())
                     {
                         <div class="list-group list-group-flush">
                             @foreach (var item in Model.Cart.Items)
@@ -34,7 +34,8 @@
                                     <div class="text-end">
                                         <div class="fw-bold text-res-red mb-2">@item.Price.ToString("N0") VNĐ</div>
                                         <form method="post" asp-page-handler="Remove">
-                                            <input type="hidden" name="cartItemId" value="@item.ItemId" />
+                                            <input type="hidden" name="itemId" value="@item.ItemId" />
+                                            <input type="hidden" name="itemType" value="@item.ItemType" />
                                             <button type="submit" class="btn btn-link text-muted btn-sm p-0 text-decoration-none">
                                                 <i class="bi bi-trash me-1"></i> Loại bỏ
                                             </button>
@@ -49,7 +50,7 @@
                         <div class="text-center py-5">
                             <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
                             <p class="mt-3 h5 text-muted">Giỏ hàng của bạn đang trống.</p>
-                            <a href="/PurchasableItems" class="btn btn-primary-res rounded-pill mt-3 px-4">ĐI MUA SẮM NGAY</a>
+                            <a href="/PurchasableItems" class="btn btn-primary-res rounded-pill mt-3 px-4">ĐI MUA NGAY</a>
                         </div>
                     }
                 </div>
@@ -60,12 +61,12 @@
             <div class="res-card border-top border-res-red border-4 shadow">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-4">Tóm tắt đơn hàng</h5>
-                    
+
                     <div class="d-flex justify-content-between mb-3 text-muted">
                         <span>Tạm tính (@Model.Cart.Items.Count món):</span>
                         <span class="fw-bold text-dark">@Model.Cart.TotalAmount.ToString("N0") VNĐ</span>
                     </div>
-                    
+
                     <div class="bg-light p-3 rounded-3 mb-4 border">
                         <div class="d-flex justify-content-between mb-2 small fw-bold">
                             <span>SỐ DƯ VÍ:</span>
@@ -78,7 +79,7 @@
                     </div>
 
                     <hr class="my-4">
-                    
+
                     <div class="d-flex justify-content-between mb-4">
                         <span class="h5 fw-bold">Tổng cộng:</span>
                         <div class="text-end">
@@ -93,7 +94,7 @@
                             TIẾN HÀNH THANH TOÁN
                         </button>
                     </form>
-                    
+
                     <div class="text-center">
                         <div class="d-flex align-items-center justify-content-center text-muted small">
                             <i class="bi bi-shield-check me-2 text-success h5 mb-0"></i>
@@ -119,6 +120,7 @@
             if (useBalanceCheck.checked) {
                 finalPrice = Math.max(0, totalAmount - walletBalance);
             }
+
             finalPriceLabel.innerText = finalPrice.toLocaleString('vi-VN') + ' VNĐ';
             useBalanceHidden.value = useBalanceCheck.checked;
         }

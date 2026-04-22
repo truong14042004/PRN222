@@ -9,7 +9,7 @@ public interface ICartService
 {
     Task<CartDto> GetCartAsync(int userId);
     Task AddToCartAsync(int userId, OrderItemType itemType, int itemId);
-    Task RemoveFromCartAsync(int userId, int cartItemId);
+    Task RemoveFromCartAsync(int userId, OrderItemType itemType, int itemId);
     Task ClearCartAsync(int userId);
 }
 
@@ -40,6 +40,7 @@ public class CartService : ICartService
                 {
                     cartDto.Items.Add(new CartItemDto
                     {
+                        CartItemId = item.Id,
                         ItemType = "Course",
                         ItemId = course.Id,
                         Name = course.Name,
@@ -55,6 +56,7 @@ public class CartService : ICartService
                 {
                     cartDto.Items.Add(new CartItemDto
                     {
+                        CartItemId = item.Id,
                         ItemType = "PurchasableItem",
                         ItemId = product.Id,
                         Name = product.Name,
@@ -85,10 +87,10 @@ public class CartService : ICartService
         }
     }
 
-    public async Task RemoveFromCartAsync(int userId, int cartItemId)
+    public async Task RemoveFromCartAsync(int userId, OrderItemType itemType, int itemId)
     {
         var item = await _context.CartItems
-            .FirstOrDefaultAsync(c => c.Id == cartItemId && c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.UserId == userId && c.ItemType == itemType && c.ItemId == itemId);
         
         if (item != null)
         {

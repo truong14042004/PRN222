@@ -6,12 +6,12 @@ namespace StudentManagementApp.Pages.Auth
 {
     public class ForgotPasswordModel : PageModel
     {
-        private readonly IOtpService _otpService;
+        private readonly IEmailService _emailService;
         private readonly IUserService _userService;
 
-        public ForgotPasswordModel(IOtpService otpService, IUserService userService)
+        public ForgotPasswordModel(IEmailService emailService, IUserService userService)
         {
-            _otpService = otpService;
+            _emailService = emailService;
             _userService = userService;
         }
 
@@ -33,10 +33,10 @@ namespace StudentManagementApp.Pages.Auth
                 return Page();
             }
 
-            var code = await _otpService.GenerateOtpAsync(email);
-            TempData["OtpDemo"] = $"OTP của bạn là: {code}";
+            await _emailService.GenerateOtpAsync(email, "PasswordReset");
             TempData["Email"] = email;
-            
+            TempData["Success"] = $"Đã gửi mã OTP tới {email}.";
+
             return RedirectToPage("/Auth/ResetPassword");
         }
     }

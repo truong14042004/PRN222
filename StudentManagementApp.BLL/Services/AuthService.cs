@@ -28,11 +28,6 @@ public class AuthService : IAuthService
         }
 
         if (user is null) return null;
-        
-
-        // HEY HEY, I AM DUY KHANH - A DEV MEMBER, FOR DEMO I CURRENTLY BYPASS PASSWORD CHECKING
-        // Temporary bypass for testing - allows any password
-        if (credential == user.Username || credential == user.Email) return MapToDto(user);
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash)) return null;
 
@@ -73,6 +68,29 @@ public class AuthService : IAuthService
         if (user is null) return false;
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        await _userRepository.UpdateAsync(user);
+        return true;
+    }
+
+    public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
+    {
+        if (string.IsNullOrWhiteSpace(currentPassword) || string.IsNullOrWhiteSpace(newPassword))
+        {
+            return false;
+        }
+
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user is null)
+        {
+            return false;
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+        {
+            return false;
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
         await _userRepository.UpdateAsync(user);
         return true;
     }

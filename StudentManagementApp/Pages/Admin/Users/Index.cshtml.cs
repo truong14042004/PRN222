@@ -17,7 +17,7 @@ namespace StudentManagementApp.Pages.Admin.Users
 
         public string Tab { get; set; } = "students";
         public string? Q { get; set; }
-        public int Page { get; set; } = 1;
+        public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
         public int TotalCount { get; set; }
         public IEnumerable<UserDto> Users { get; set; } = Enumerable.Empty<UserDto>();
@@ -32,7 +32,7 @@ namespace StudentManagementApp.Pages.Admin.Users
 
             Tab = tab;
             Q = q;
-            Page = page;
+            CurrentPage = page;
 
             var all = await _userService.GetAllAsync();
             var role = tab == "teachers" ? "Teacher" : "Student";
@@ -49,9 +49,9 @@ namespace StudentManagementApp.Pages.Admin.Users
 
             TotalCount = users.Count();
             TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
-            Page = Math.Max(1, Math.Min(page, TotalPages == 0 ? 1 : TotalPages));
+            CurrentPage = Math.Max(1, Math.Min(page, TotalPages == 0 ? 1 : TotalPages));
 
-            Users = users.Skip((Page - 1) * PageSize).Take(PageSize);
+            Users = users.Skip((CurrentPage - 1) * PageSize).Take(PageSize);
         }
     }
 }

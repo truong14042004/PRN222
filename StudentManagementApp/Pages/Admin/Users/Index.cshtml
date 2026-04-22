@@ -220,7 +220,7 @@
 
                             @for (int i = 1; i <= Model.TotalPages; i++)
                             {
-                                <li class="page-item @(i == Model.Page ? "active" : "")">
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
                                     <a class="page-link"
                                            href="/Admin/Users?tab=@Model.Tab&page=@i&q=@Model.Q">
                                         @i

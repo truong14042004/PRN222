@@ -17,7 +17,7 @@ public class Enrollment
 
     [Required]
     [MaxLength(20)]
-    public string Status { get; set; } = "Registered"; // Registered, Confirmed
+    public string Status { get; set; } = "Registered"; // Registered, Confirmed, Cancelled
 
     [MaxLength(10)]
     public string? ConfirmationCode { get; set; }

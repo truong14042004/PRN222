@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using StudentManagementApp.BLL.DTOs;
 using StudentManagementApp.BLL.Services;
 using StudentManagementApp.DAL.Data;
+using StudentManagementApp.DAL.Models;
 
 namespace StudentManagementApp.Pages.Cart;
 
@@ -37,12 +38,18 @@ public class IndexModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostRemoveAsync(int cartItemId)
+    public async Task<IActionResult> OnPostRemoveAsync(string itemType, int itemId)
     {
         var userIdStr = HttpContext.Session.GetString("UserId");
         if (string.IsNullOrEmpty(userIdStr)) return RedirectToPage("/Auth/Login");
 
-        await _cartService.RemoveFromCartAsync(int.Parse(userIdStr), cartItemId);
+        if (!Enum.TryParse<OrderItemType>(itemType, true, out var parsedItemType))
+        {
+            TempData["Error"] = "KhĂ´ng xĂ¡c Ä‘á»‹nh Ä‘Æ°á»£c sáº£n pháº©m cáº§n xĂ³a.";
+            return RedirectToPage();
+        }
+
+        await _cartService.RemoveFromCartAsync(int.Parse(userIdStr), parsedItemType, itemId);
         return RedirectToPage();
     }
 

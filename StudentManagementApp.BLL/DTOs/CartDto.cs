@@ -8,6 +8,7 @@ public class CartDto
 
 public class CartItemDto
 {
+    public int CartItemId { get; set; }
     public string ItemType { get; set; } = null!; // "Course" or "PurchasableItem"
     public int ItemId { get; set; }
     public string Name { get; set; } = null!;

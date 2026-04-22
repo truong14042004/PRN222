@@ -214,3 +214,22 @@ body {
 
 .brightness-0 { filter: brightness(0); }
 .invert { filter: invert(1); }
+
+.notification-toast-container {
+    z-index: 1085;
+    max-width: min(100vw - 1.5rem, 420px);
+}
+
+.notification-toast {
+    background: rgba(255, 255, 255, 0.98);
+    border-left: 4px solid var(--res-red) !important;
+}
+
+.notification-toast .toast-header {
+    background: transparent;
+    color: var(--res-text);
+}
+
+.notification-toast .toast-body {
+    color: var(--res-text);
+}

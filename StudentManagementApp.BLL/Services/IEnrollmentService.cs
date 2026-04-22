@@ -9,5 +9,6 @@ public interface IEnrollmentService
     Task<IEnumerable<EnrollmentDto>> GetByClassIdAsync(int classId);
     Task EnrollAsync(int studentId, int classId);
     Task ConfirmAsync(int enrollmentId);
+    Task CancelAsync(int enrollmentId);
     Task DeleteAsync(int id);
 }

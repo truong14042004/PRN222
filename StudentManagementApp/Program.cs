@@ -4,6 +4,7 @@ using StudentManagementApp.BLL.Services;
 using StudentManagementApp.DAL.Data;
 using StudentManagementApp.Hubs;
 using Microsoft.EntityFrameworkCore;
+using StudentManagementApp.Services;
 
 namespace StudentManagementApp
 {
@@ -17,6 +18,7 @@ namespace StudentManagementApp
             builder.Services.AddControllers();
             builder.Services.AddSignalR();
             builder.Services.AddApplicationServices(builder.Configuration);
+            builder.Services.AddScoped<IEnrollmentNotificationPublisher, SignalREnrollmentNotificationPublisher>();
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
 

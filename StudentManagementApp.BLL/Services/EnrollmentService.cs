@@ -8,11 +8,16 @@ public class EnrollmentService : IEnrollmentService
 {
     private readonly IEnrollmentRepository _enrollmentRepository;
     private readonly IEmailService _emailService;
+    private readonly IEnrollmentNotificationPublisher _notificationPublisher;
 
-    public EnrollmentService(IEnrollmentRepository enrollmentRepository, IEmailService emailService)
+    public EnrollmentService(
+        IEnrollmentRepository enrollmentRepository,
+        IEmailService emailService,
+        IEnrollmentNotificationPublisher notificationPublisher)
     {
         _enrollmentRepository = enrollmentRepository;
         _emailService = emailService;
+        _notificationPublisher = notificationPublisher;
     }
 
     public async Task<IEnumerable<EnrollmentDto>> GetAllAsync()
@@ -37,7 +42,19 @@ public class EnrollmentService : IEnrollmentService
     {
         var existing = await _enrollmentRepository.GetByStudentAndClassAsync(studentId, classId);
         if (existing is not null)
+        {
+            if (existing.Status == "Cancelled")
+            {
+                existing.Status = "Registered";
+                existing.EnrolledAt = DateTime.Now;
+                existing.ConfirmationCode = null;
+                existing.ConfirmedAt = null;
+                await _enrollmentRepository.UpdateAsync(existing);
+                return;
+            }
+
             throw new InvalidOperationException("Học viên đã đăng ký lớp này.");
+        }
 
         await _enrollmentRepository.AddAsync(new Enrollment
         {
@@ -52,15 +69,26 @@ public class EnrollmentService : IEnrollmentService
         var enrollment = await _enrollmentRepository.GetByIdWithDetailsAsync(enrollmentId)
             ?? throw new InvalidOperationException("Không tìm thấy đăng ký.");
 
-        // Generate 6-digit confirmation code
-        var confirmationCode = new Random().Next(100000, 999999).ToString();
+        var confirmationCode = Random.Shared.Next(100000, 999999).ToString();
+        var confirmedAt = DateTime.Now;
         enrollment.Status = "Confirmed";
         enrollment.ConfirmationCode = confirmationCode;
-        enrollment.ConfirmedAt = DateTime.Now;
+        enrollment.ConfirmedAt = confirmedAt;
         await _enrollmentRepository.UpdateAsync(enrollment);
 
-        // Send confirmation email with schedule
         await SendConfirmationEmailAsync(enrollment, confirmationCode);
+        await PublishEnrollmentConfirmedAsync(enrollment, confirmationCode, confirmedAt);
+    }
+
+    public async Task CancelAsync(int enrollmentId)
+    {
+        var enrollment = await _enrollmentRepository.GetByIdAsync(enrollmentId)
+            ?? throw new InvalidOperationException("Không tìm thấy đăng ký.");
+
+        enrollment.Status = "Cancelled";
+        enrollment.ConfirmationCode = null;
+        enrollment.ConfirmedAt = null;
+        await _enrollmentRepository.UpdateAsync(enrollment);
     }
 
     private async Task SendConfirmationEmailAsync(Enrollment enrollment, string code)
@@ -115,7 +143,43 @@ public class EnrollmentService : IEnrollmentService
         }
         catch
         {
-            // Log error but don't fail the confirmation
+            // Email delivery should not break enrollment confirmation.
+        }
+    }
+
+    private async Task PublishEnrollmentConfirmedAsync(Enrollment enrollment, string code, DateTime confirmedAt)
+    {
+        var student = enrollment.Student;
+        var classInfo = enrollment.Class;
+        if (student is null || classInfo is null)
+        {
+            return;
+        }
+
+        var courseName = classInfo.Course?.Name ?? string.Empty;
+        var title = "Đăng ký lớp đã được xác nhận";
+        var message = string.IsNullOrWhiteSpace(courseName)
+            ? $"Lớp {classInfo.ClassName} đã được xác nhận. Mã xác nhận của bạn là {code}."
+            : $"Lớp {classInfo.ClassName} thuộc khóa {courseName} đã được xác nhận. Mã xác nhận của bạn là {code}.";
+
+        try
+        {
+            await _notificationPublisher.PublishEnrollmentConfirmedAsync(new EnrollmentConfirmedNotification
+            {
+                EnrollmentId = enrollment.Id,
+                StudentId = student.Id,
+                ClassId = classInfo.Id,
+                ClassName = classInfo.ClassName,
+                CourseName = courseName,
+                ConfirmationCode = code,
+                ConfirmedAt = confirmedAt,
+                Title = title,
+                Message = message
+            });
+        }
+        catch
+        {
+            // Realtime notification should not break enrollment confirmation.
         }
     }
 

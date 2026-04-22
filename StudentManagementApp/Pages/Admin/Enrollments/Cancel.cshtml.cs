@@ -20,7 +20,7 @@ namespace StudentManagementApp.Pages.Admin.Enrollments
                 return RedirectToPage("/Auth/Login");
             }
 
-            await _enrollmentService.DeleteAsync(id);
+            await _enrollmentService.CancelAsync(id);
             TempData["Success"] = "Đã hủy đăng ký.";
             return RedirectToPage("/Admin/Enrollments");
         }

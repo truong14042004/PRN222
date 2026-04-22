@@ -4,40 +4,50 @@
     ViewData["Title"] = "Danh sách khóa học";
 }
 
-<section class="py-5 bg-light">
+<section class="py-5">
     <div class="container py-4">
-        <div class="text-center mb-5">
-            <h2 class="res-section-title center">CÁC KHÓA HỌC TẠI MESH</h2>
-            <p class="text-muted">Chúng tôi cung cấp đa dạng các lộ trình phù hợp với mọi trình độ và nhu cầu học tập.</p>
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h6 class="text-res-red fw-bold text-uppercase ls-1">Chương trình đào tạo</h6>
+            <h2 class="display-5 fw-bold mb-3">KHÁM PHÁ CÁC KHÓA HỌC</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                MESH cung cấp các lộ trình từ mất gốc đến thành thạo, giúp bạn tự tin giao tiếp và chinh phục các kỳ thi quốc tế.
+            </p>
         </div>
 
         <div id="courseGrid" class="row g-4">
-            @if (Model.Courses != null && Model.Courses.Any())
+            @if (Model.Courses != null)
             {
+                int delay = 0;
                 @foreach (var course in Model.Courses)
                 {
-                    var imageUrl = string.IsNullOrWhiteSpace(course.ThumbnailUrl)
-                        ? "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop"
-                        : course.ThumbnailUrl;
-
-                    <div class="col-lg-4 col-md-6" data-course-id="@course.Id">
-                        <div class="res-card d-flex flex-column h-100">
-                            <div class="position-relative">
-                                <img src="@imageUrl" class="card-img-top" alt="@course.Name" style="height: 200px; object-fit: cover;">
-                                <div class="position-absolute top-0 end-0 m-3">
-                                    <span class="badge bg-res-red text-white px-3 py-2 rounded-pill fw-bold">@course.Level</span>
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="@delay" data-course-id="@course.Id">
+                        <div class="promax-card h-100 d-flex flex-column">
+                            <div class="position-relative overflow-hidden" style="height: 220px; border-radius: 20px 20px 0 0;">
+                                <img src="@(string.IsNullOrEmpty(course.ThumbnailUrl) ? "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" : course.ThumbnailUrl)" 
+                                     class="w-100 h-100 object-fit-cover transition-all" alt="@course.Name" />
+                                <div class="position-absolute top-0 end-0 p-3">
+                                    <span class="badge glass-effect text-dark fw-bold rounded-pill shadow-sm px-3 py-2 border-0">
+                                        <i class="bi bi-bar-chart-fill text-res-red me-1"></i> @course.Level
+                                    </span>
                                 </div>
                             </div>
-                            <div class="card-body p-4 flex-grow-1">
-                                <h5 class="fw-bold mb-3" data-role="course-name">@course.Name</h5>
-                                <p class="text-muted small mb-4 text-truncate-3" data-role="course-description">@(course.Description ?? "Khóa học đang được cập nhật nội dung.")</p>
-                                <div class="d-flex justify-content-between align-items-center mt-auto">
-                                    <div class="text-res-red fw-bold h5 mb-0" data-role="course-fee">@course.TuitionFee.ToString("N0") VNĐ</div>
-                                    <a href="/Course/Detail/@course.Id" class="btn btn-outline-res btn-sm">CHI TIẾT</a>
+                            <div class="p-4 flex-grow-1 d-flex flex-column">
+                                <h4 class="fw-bold mb-3 line-clamp-1" data-role="course-name">@course.Name</h4>
+                                <p class="text-muted small line-clamp-3 mb-4 flex-grow-1" data-role="course-description">@(course.Description ?? "Khóa học đang được cập nhật nội dung.")</p>
+                                
+                                <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                    <div>
+                                        <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Học phí</div>
+                                        <div class="h5 fw-bold text-res-red mb-0" data-role="course-fee">@course.TuitionFee.ToString("N0") <small>đ</small></div>
+                                    </div>
+                                    <a href="/Course/Detail/@course.Id" class="btn btn-primary-res py-2 px-4 rounded-pill shadow-sm">
+                                        CHI TIẾT <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    delay += 100;
                 }
             }
         </div>

@@ -360,16 +360,16 @@ public class QuizQuestionsModel : PageModel
         public int SortOrder { get; set; } = 0;
 
         [MaxLength(500)]
-        public string OptionA { get; set; } = string.Empty;
+        public string? OptionA { get; set; }
 
         [MaxLength(500)]
-        public string OptionB { get; set; } = string.Empty;
+        public string? OptionB { get; set; }
 
         [MaxLength(500)]
-        public string OptionC { get; set; } = string.Empty;
+        public string? OptionC { get; set; }
 
         [MaxLength(500)]
-        public string OptionD { get; set; } = string.Empty;
+        public string? OptionD { get; set; }
 
         [Range(1, 4)]
         public int CorrectOptionSlot { get; set; } = 1;

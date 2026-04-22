@@ -1,88 +1,127 @@
 @page
 @model StudentManagementApp.Pages.Teacher.IndexModel
 @{
-    ViewData["Title"] = "Giáo viên";
-    var userName = HttpContext.Session.GetString("UserName");
+    ViewData["Title"] = "Bảng điều khiển Giáo viên";
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">English Center</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link active" href="/Teacher">Lớp dạy</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Teacher/Schedule">Lịch dạy</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Quizzes">Quiz</a></li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                </ul>
+<section class="py-5 bg-light min-vh-100">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h6 class="text-res-red fw-bold text-uppercase mb-1">Cổng thông tin Giáo viên</h6>
+                <h2 class="fw-bold mb-0">DANH SÁCH LỚP DẠY</h2>
             </div>
         </div>
-    </nav>
 
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1 class="mb-0">Danh sách lớp dạy</h1>
-            <a href="/Admin/Quizzes" class="btn btn-outline-primary">Quản lý Quiz</a>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="res-card p-4 bg-white shadow-sm border-0">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-res-red-light p-3 rounded-circle text-res-red">
+                            <i class="bi bi-mortarboard-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="h4 fw-bold mb-0">@Model.Classes.Count()</div>
+                            <div class="small text-muted">Tổng số lớp đang dạy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="res-card p-4 bg-white shadow-sm border-0">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary-subtle p-3 rounded-circle text-primary">
+                            <i class="bi bi-people-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="h4 fw-bold mb-0">Hơn 50</div>
+                            <div class="small text-muted">Tổng số học viên</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="res-card p-4 bg-white shadow-sm border-0">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-success-subtle p-3 rounded-circle text-success">
+                            <i class="bi bi-calendar-check-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="h4 fw-bold mb-0">@Model.Classes.Count(c => c.Status == "Ongoing")</div>
+                            <div class="small text-muted">Lớp đang hoạt động</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-
-        @if (Model.Classes.Any())
-        {
-            <table class="table table-striped mt-3">
-                <thead>
-                    <tr>
-                        <th>Lớp</th>
-                        <th>Khóa học</th>
-                        <th>Ngày bắt đầu</th>
-                        <th>Ngày kết thúc</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var cls in Model.Classes)
-                    {
-                        <tr>
-                            <td>@cls.ClassName</td>
-                            <td>@cls.CourseName</td>
-                            <td>@cls.StartDate.ToString("dd/MM/yyyy")</td>
-                            <td>@cls.EndDate.ToString("dd/MM/yyyy")</td>
-                            <td><span class="badge bg-@(cls.Status == "Ongoing" ? "success" : cls.Status == "Upcoming" ? "info" : "secondary")">@cls.Status</span></td>
-                            <td>
-                                <a href="/Teacher/Attendance/@cls.Id" class="btn btn-sm btn-primary">Điểm danh</a>
-                                <a href="/Teacher/AttendanceReport/@cls.Id" class="btn btn-sm btn-secondary">Báo cáo</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <p class="text-muted">Bạn chưa có lớp dạy nào.</p>
-        }
+        <div class="res-card shadow-sm border-0 overflow-hidden">
+            <div class="res-card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-table me-2"></i>DANH SÁCH CHI TIẾT</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Classes.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Tên Lớp</th>
+                                    <th>Khóa học</th>
+                                    <th>Thời gian</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-end pe-4">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cls in Model.Classes)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold text-dark">@cls.ClassName</div>
+                                            <div class="small text-muted">ID: #@cls.Id</div>
+                                        </td>
+                                        <td>@cls.CourseName</td>
+                                        <td>
+                                            <div class="small">
+                                                <i class="bi bi-calendar3 me-1"></i> @cls.StartDate.ToString("dd/MM/yyyy")
+                                            </div>
+                                            <div class="small text-muted">
+                                                đến @cls.EndDate.ToString("dd/MM/yyyy")
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge-res @(cls.Status == "Ongoing" ? "badge-paid" : "badge-pending")">
+                                                @(cls.Status == "Ongoing" ? "Đang dạy" : "Sắp mở")
+                                            </span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                                                <a href="/Teacher/Attendance/@cls.Id" class="btn btn-primary-res btn-sm px-3">
+                                                    <i class="bi bi-check2-square me-1"></i>Điểm danh
+                                                </a>
+                                                <a href="/Teacher/AttendanceReport/@cls.Id" class="btn btn-outline-res btn-sm px-3">
+                                                    <i class="bi bi-file-earmark-bar-graph me-1"></i>Báo cáo
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-emoji-smile text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                        <p class="text-muted">Bạn chưa được phân công lớp dạy nào.</p>
+                        <a href="/" class="btn btn-light btn-sm text-res-red fw-bold">QUAY LẠI TRANG CHỦ</a>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</section>

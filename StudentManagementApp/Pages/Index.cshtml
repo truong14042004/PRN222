@@ -1,2 +1,115 @@
-@page "/"
+@page
 @model StudentManagementApp.Pages.IndexModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<!-- Hero Section Promax -->
+<section class="hero-section position-relative overflow-hidden py-5 mb-5" style="background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%); min-height: 85vh; display: flex; align-items: center;">
+    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
+    
+    <!-- Trang trí bóng tròn -->
+    <div class="position-absolute bg-res-red rounded-circle opacity-10 blur-3xl" style="width: 500px; height: 500px; top: -10%; right: -10%; filter: blur(100px);"></div>
+    <div class="position-absolute bg-primary rounded-circle opacity-5 blur-3xl" style="width: 400px; height: 400px; bottom: -5%; left: -5%; filter: blur(80px);"></div>
+
+    <div class="container position-relative z-1">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h6 class="text-res-red fw-800 text-uppercase ls-2 mb-3" style="letter-spacing: 3px;">Hệ thống Anh ngữ MESH</h6>
+                <h1 class="display-3 fw-900 mb-4 ls-n1" style="line-height: 1.1; font-family: 'Playfair Display', serif;">
+                    Nâng Tầm <span class="text-gradient">Tri Thức</span> <br> Chinh Phục Thế Giới
+                </h1>
+                <p class="lead text-muted mb-5 pe-lg-5">
+                    Trải nghiệm phương pháp học tập cá nhân hóa, lộ trình tối ưu và đội ngũ giáo viên tận tâm. Bắt đầu hành trình của bạn ngay hôm nay.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="/Course" class="btn btn-primary-res px-5 py-3 fs-6">KHÁM PHÁ KHÓA HỌC</a>
+                    <a href="#about" class="btn btn-light glass-effect border rounded-4 px-5 py-3 fw-bold text-dark fs-6 shadow-sm">TÌM HIỂU THÊM</a>
+                </div>
+                
+                <div class="mt-5 d-flex align-items-center gap-4">
+                    <div class="d-flex -space-x-3">
+                        <img src="https://i.pravatar.cc/150?u=1" class="rounded-circle border border-white border-4" style="width: 45px; height: 45px; margin-right: -15px;" />
+                        <img src="https://i.pravatar.cc/150?u=2" class="rounded-circle border border-white border-4" style="width: 45px; height: 45px; margin-right: -15px;" />
+                        <img src="https://i.pravatar.cc/150?u=3" class="rounded-circle border border-white border-4" style="width: 45px; height: 45px;" />
+                    </div>
+                    <div class="small fw-bold text-muted">
+                        <span class="text-dark">1,000+</span> học viên đã tin tưởng
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="200">
+                <div class="position-relative">
+                    <div class="promax-card p-2 shadow-2xl rotate-2">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Students" class="img-fluid rounded-4 shadow-sm" />
+                    </div>
+                    <!-- Thẻ con nổi -->
+                    <div class="position-absolute glass-effect p-3 rounded-4 shadow-lg" style="bottom: -20px; left: -20px; width: 180px;" data-aos="fade-up" data-aos-delay="500">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <div class="bg-success rounded-circle" style="width: 10px; height: 10px;"></div>
+                            <span class="small fw-bold">Live Classes</span>
+                        </div>
+                        <div class="h5 fw-bold mb-0">24/7 Support</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features section -->
+<div class="container py-5 mb-5" id="about">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h6 class="text-res-red fw-bold text-uppercase ls-1">Tại sao chọn MESH?</h6>
+        <h2 class="res-section-title">Giá Trị Cốt Lõi</h2>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="promax-card p-5 text-center h-100">
+                <div class="bg-res-red-light text-res-red rounded-4 d-inline-flex p-3 mb-4">
+                    <i class="bi bi-lightning-charge h2 mb-0"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Lộ trình Tốc biến</h4>
+                <p class="text-muted small">Thiết kế riêng biệt giúp bạn đạt mục tiêu trong thời gian ngắn nhất.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="promax-card p-5 text-center h-100">
+                <div class="bg-res-red-light text-res-red rounded-4 d-inline-flex p-3 mb-4">
+                    <i class="bi bi-people h2 mb-0"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Giáo viên Chuyên gia</h4>
+                <p class="text-muted small">Đội ngũ giảng viên IELTS 8.0+ với phương pháp sư phạm hiện đại.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="promax-card p-5 text-center h-100">
+                <div class="bg-res-red-light text-res-red rounded-4 d-inline-flex p-3 mb-4">
+                    <i class="bi bi-cpu h2 mb-0"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Công nghệ AI</h4>
+                <p class="text-muted small">Ứng dụng AI giúp chấm điểm và sửa lỗi phát âm tức thì.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Promax -->
+<section class="py-5 mb-5 overflow-hidden">
+    <div class="container">
+        <div class="bg-dark rounded-5 p-5 position-relative overflow-hidden shadow-2xl" data-aos="zoom-in">
+            <div class="position-absolute top-0 end-0 p-5 opacity-10">
+                <i class="bi bi-rocket-takeoff text-white" style="font-size: 15rem;"></i>
+            </div>
+            <div class="row position-relative z-1 align-items-center">
+                <div class="col-lg-8 text-white">
+                    <h2 class="display-5 fw-bold mb-3">Sẵn sàng nâng tầm bản thân?</h2>
+                    <p class="lead opacity-75 mb-0">Đăng ký ngay để nhận ưu đãi lên đến 20% cho học viên mới.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    <a href="/Auth/Register" class="btn btn-primary-res btn-lg px-5 py-3">BẮT ĐẦU NGAY</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

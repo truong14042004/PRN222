@@ -22,6 +22,8 @@ public class PurchasableItem
 
     public bool IsActive { get; set; } = true;
 
+    public int Quantity { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

@@ -2,211 +2,121 @@
 @model StudentManagementApp.Pages.Admin.QuizEditModel
 @{
     ViewData["Title"] = Model.IsEdit ? "Sửa quiz" : "Tạo quiz";
+    ViewData["ActivePage"] = "Quizzes";
+    Layout = "/Pages/Admin/_AdminLayout.cshtml";
     var userName = HttpContext.Session.GetString("UserName");
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-            body {
-                font-family: "Be Vietnam Pro", sans-serif;
-                background: #f5f7fb;
-                margin: 0;
-            }
-
-            /* SIDEBAR */
-            .sidebar {
-                width: 250px;
-                height: 100vh;
-                position: fixed;
-                background: #0f172a;
-                color: white;
-                padding: 20px;
-            }
-
-                .sidebar h4 {
-                    font-weight: 700;
-                    margin-bottom: 30px;
-                }
-
-                .sidebar a {
-                    display: block;
-                    color: #cbd5f1;
-                    padding: 10px 12px;
-                    border-radius: 10px;
-                    text-decoration: none;
-                    margin-bottom: 8px;
-                }
-
-                    .sidebar a:hover,
-                    .sidebar a.active {
-                        background: #1e293b;
-                        color: #fff;
-                    }
-
-            /* MAIN */
-            .main {
-                margin-left: 250px;
-                padding: 20px 30px;
-            }
-
-            /* CARD */
-            .card-box {
-                background: #fff;
-                border-radius: 16px;
-                padding: 24px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            }
-
-            .section-title {
-                font-weight: 700;
-                margin-bottom: 6px;
-            }
-
-            .hint {
-                font-size: 0.85rem;
-                color: #64748b;
-            }
-
-            .btn-green {
-                background: linear-gradient(135deg, #22c55e, #16a34a);
-                border: none;
-                color: white;
-                font-weight: 600;
-            }
-
-                .btn-green:hover {
-                    filter: brightness(0.95);
-                }
-
-            /* TOP HEADER */
-            .page-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-    </style>
-</head>
-
-<body>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h4>🎓 Admin</h4>
-
-        <a href="/Admin">Dashboard</a>
-        <a href="/Admin/Users">Người dùng</a>
-        <a href="/Admin/Courses">Khóa học</a>
-        <a href="/Admin/Classes">Lớp học</a>
-        <a href="/Admin/Enrollments">Đăng ký</a>
-        <a class="active" href="/Admin/Quizzes">Quiz</a>
-
-        <hr style="border-color:#334155">
-
-        <a href="/Auth/Logout">🚪 Đăng xuất</a>
+<div class="admin-header d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h6 class="text-res-red fw-bold text-uppercase mb-1">Thiết lập bài thi</h6>
+        <h2 class="fw-bold mb-0">@(Model.IsEdit ? "Sửa thông tin Quiz" : "Tạo bài Quiz mới")</h2>
     </div>
+    <a href="/Admin/Quizzes" class="btn btn-light border fw-bold px-4">
+        <i class="bi bi-arrow-left me-2"></i>Quay lại
+    </a>
+</div>
 
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- HEADER -->
-        <div class="page-header">
-            <div>
-                <h3 class="mb-0">
-                    @(Model.IsEdit ? "Sửa quiz" : "Tạo quiz mới")
-                </h3>
-                <small class="text-muted">Thiết lập bài kiểm tra</small>
-            </div>
-
-            <a href="/Admin/Quizzes" class="btn btn-outline-secondary">← Quay lại</a>
-        </div>
-
-        <!-- FORM -->
-        <div class="card-box">
-
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="admin-card">
             <form method="post">
                 <input type="hidden" asp-for="Input.Id" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 shadow-sm rounded-4 mb-4"></div>
 
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <div class="row g-4">
+                    <!-- LEFT COLUMN -->
+                    <div class="col-md-7">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Tiêu đề Quiz</label>
+                            <input asp-for="Input.Title" class="form-control fw-bold fs-5" placeholder="Ví dụ: Kiểm tra cuối khóa IELTS Foundation..." />
+                            <span asp-validation-for="Input.Title" class="text-danger small"></span>
+                        </div>
 
-                <div class="row g-3">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Mô tả bài thi</label>
+                            <textarea asp-for="Input.Description" rows="6" class="form-control" placeholder="Nhập hướng dẫn làm bài hoặc mô tả tổng quan..."></textarea>
+                        </div>
 
-                    <!-- COURSE -->
-                    <div class="col-md-6">
-                        <label class="form-label section-title">Khóa học</label>
-                        <select asp-for="Input.CourseId" class="form-select">
-                            <option value="">-- Chọn khóa học --</option>
-                            @foreach (var course in Model.AvailableCourses)
-                            {
-                                <option value="@course.Id">
-                                    @course.Name (@course.Level)
-                                </option>
-                            }
-                        </select>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Khóa học áp dụng</label>
+                                <select asp-for="Input.CourseId" class="form-select fw-bold">
+                                    <option value="">-- Chọn khóa học --</option>
+                                    @foreach (var course in Model.AvailableCourses)
+                                    {
+                                        <option value="@course.Id">@course.Name (@course.Level)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Thời gian làm bài (phút)</label>
+                                <div class="input-group">
+                                    <input asp-for="Input.TimeLimitMinutes" type="number" min="1" class="form-control fw-bold" />
+                                    <span class="input-group-text bg-white">phút</span>
+                                </div>
+                                <div class="small text-muted mt-1 italic">Khuyến nghị: 20-60 phút</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- TIME -->
-                    <div class="col-md-6">
-                        <label class="form-label section-title">Thời gian (phút)</label>
-                        <input asp-for="Input.TimeLimitMinutes" type="number" min="1" class="form-control" />
-                        <div class="hint">Khuyến nghị: 20 - 60 phút</div>
-                    </div>
+                    <!-- RIGHT COLUMN -->
+                    <div class="col-md-5">
+                        <div class="p-4 bg-light rounded-4 h-100">
+                            <h6 class="fw-bold mb-4 border-bottom pb-2">Cấu hình thời gian</h6>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Ngày bắt đầu</label>
+                                <input asp-for="Input.StartAt" type="datetime-local" class="form-control" />
+                                <div class="small text-muted mt-1">Để trống nếu muốn mở ngay lập tức</div>
+                            </div>
 
-                    <!-- START -->
-                    <div class="col-md-6">
-                        <label class="form-label section-title">Bắt đầu</label>
-                        <input asp-for="Input.StartAt" type="datetime-local" class="form-control" />
-                        <div class="hint">Để trống = mở ngay</div>
-                    </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Ngày kết thúc</label>
+                                <input asp-for="Input.EndAt" type="datetime-local" class="form-control" />
+                                <div class="small text-muted mt-1">Để trống nếu không giới hạn hạn cuối</div>
+                            </div>
 
-                    <!-- END -->
-                    <div class="col-md-6">
-                        <label class="form-label section-title">Kết thúc</label>
-                        <input asp-for="Input.EndAt" type="datetime-local" class="form-control" />
-                    </div>
+                            <hr class="opacity-50">
 
-                    <!-- TITLE -->
-                    <div class="col-12">
-                        <label class="form-label section-title">Tiêu đề</label>
-                        <input asp-for="Input.Title" class="form-control" />
-                    </div>
+                            <div class="form-check form-switch mt-4 p-0 ms-4">
+                                <input asp-for="Input.IsActive" class="form-check-input" style="width: 3.5em; height: 1.7em; float: none; margin-left: -3em;" />
+                                <label class="form-check-label ms-2 fw-bold text-dark mt-1">Kích hoạt bài thi ngay</label>
+                            </div>
 
-                    <!-- DESC -->
-                    <div class="col-12">
-                        <label class="form-label section-title">Mô tả</label>
-                        <textarea asp-for="Input.Description" rows="4" class="form-control"></textarea>
+                            <div class="mt-4 p-3 bg-white rounded-3 border border-warning shadow-sm">
+                                <div class="d-flex align-items-center gap-2 text-warning mb-2">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    <span class="fw-bold small">Lưu ý</span>
+                                </div>
+                                <div class="small text-muted">Sau khi tạo Quiz, hãy vào phần <strong>"Câu hỏi"</strong> để thiết lập nội dung bài thi.</div>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- ACTIVE -->
-                    <div class="col-12 form-check form-switch ms-2">
-                        <input asp-for="Input.IsActive" class="form-check-input" />
-                        <label class="form-check-label">Kích hoạt ngay</label>
-                    </div>
-
                 </div>
 
-                <!-- ACTION -->
-                <div class="mt-4 d-flex gap-2">
-                    <a href="/Admin/Quizzes" class="btn btn-outline-secondary">Hủy</a>
-                    <button type="submit" class="btn btn-green">
-                        @(Model.IsEdit ? "Lưu thay đổi" : "Tạo quiz")
+                <hr class="my-5 opacity-50">
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary-res px-5 py-3 fw-bold shadow-sm">
+                        <i class="bi bi-save me-2"></i>@(Model.IsEdit ? "Lưu bài Quiz" : "Tạo bài Quiz")
                     </button>
+                    <a href="/Admin/Quizzes" class="btn btn-light border px-5 py-3 fw-bold">Hủy</a>
                 </div>
-
             </form>
-
         </div>
-
     </div>
+</div>
 
-</body>
-</html>
+<style>
+    .form-control, .form-select {
+        padding: 0.75rem 1rem;
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--res-red);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+    .italic { font-style: italic; }
+</style>

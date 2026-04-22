@@ -19,5 +19,7 @@ public class CartItem
     [Required]
     public int ItemId { get; set; }
 
+    public int Quantity { get; set; } = 1;
+
     public DateTime AddedAt { get; set; } = DateTime.Now;
 }

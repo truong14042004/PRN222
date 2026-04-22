@@ -72,6 +72,7 @@ namespace StudentManagementApp.Pages.Teacher
                             DayOfWeek = schedule.DayOfWeek,
                             StartTime = schedule.StartTime.ToString(@"hh\:mm"),
                             EndTime = schedule.EndTime.ToString(@"hh\:mm"),
+                            ClassId = cls.Id,
                             ClassName = cls.ClassName,
                             CourseName = cls.CourseName
                         });
@@ -93,6 +94,7 @@ namespace StudentManagementApp.Pages.Teacher
         public int DayOfWeek { get; set; }
         public string StartTime { get; set; } = string.Empty;
         public string EndTime { get; set; } = string.Empty;
+        public int ClassId { get; set; }
         public string ClassName { get; set; } = string.Empty;
         public string CourseName { get; set; } = string.Empty;
     }

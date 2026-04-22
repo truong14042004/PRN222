@@ -54,17 +54,27 @@ public class OrderService : IOrderService
 
         foreach (var item in cart.Items)
         {
+            if (item.ItemType == "PurchasableItem")
+            {
+                var product = await _context.PurchasableItems.FindAsync(item.ItemId);
+                if (product == null || product.Quantity < item.Quantity)
+                {
+                    throw new Exception($"Sản phẩm '{item.Name}' không đủ số lượng tồn kho (Còn lại: {product?.Quantity ?? 0}).");
+                }
+            }
+
             order.OrderItems.Add(new OrderItem
             {
                 ItemType = item.ItemType == "Course" ? OrderItemType.Course : OrderItemType.PurchasableItem,
                 ItemId = item.ItemId,
-                Price = item.Price
+                Price = item.Price,
+                Quantity = item.Quantity
             });
         }
 
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
-        await _cartService.ClearCartAsync(userId);
+
 
         return await MapToDto(order);
     }
@@ -106,7 +116,23 @@ public class OrderService : IOrderService
             }
 
             await EnsureCourseEnrollmentsAsync(order);
+            
+            // Deduct stock for purchasable items
+            foreach (var item in order.OrderItems.Where(i => i.ItemType == OrderItemType.PurchasableItem))
+            {
+                var product = await _context.PurchasableItems.FindAsync(item.ItemId);
+                if (product != null)
+                {
+                    if (product.Quantity < item.Quantity) 
+                        throw new Exception($"Sản phẩm '{product.Name}' không đủ số lượng trong lúc xử lý thanh toán.");
+                    
+                    product.Quantity -= item.Quantity;
+                }
+            }
+
             order.Status = OrderStatus.Paid;
+            await _cartService.ClearCartAsync(order.UserId);
+
             
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();

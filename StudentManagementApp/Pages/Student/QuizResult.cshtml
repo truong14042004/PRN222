@@ -1,214 +1,203 @@
 @page
 @model StudentManagementApp.Pages.Student.QuizResultModel
 @{
-    ViewData["Title"] = "Kết quả quiz";
+    ViewData["Title"] = "Kết quả bài thi";
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
+<style>
+    .result-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: none;
+    }
 
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    .stat-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        border: 1px solid #eee;
+        transition: transform 0.2s;
+    }
 
-    <style>
-            :root {
-                --bg: #f4f7fd;
-                --ink: #0f172a;
-                --muted: #64748b;
-                --line: #dbe4f1;
-                --success: #22c55e;
-                --danger: #ef4444;
-            }
+    .stat-box:hover {
+        transform: translateY(-5px);
+    }
 
-            body {
-                font-family: "Be Vietnam Pro", sans-serif;
-                background: radial-gradient(760px 380px at 0% 0%, #dbeafe 0%, transparent 70%), radial-gradient(760px 380px at 100% 100%, #dcfce7 0%, transparent 70%), var(--bg);
-            }
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--res-red);
+        display: block;
+    }
 
-            .shell {
-                max-width: 900px;
-                margin: auto;
-                padding: 30px 15px;
-            }
+    .stat-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #777;
+        letter-spacing: 1px;
+    }
 
-            .panel {
-                background: #fff;
-                border-radius: 20px;
-                padding: 24px;
-                box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-            }
+    .review-card {
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border: 1px solid #eee;
+        transition: all 0.2s;
+    }
 
-            .muted {
-                color: var(--muted);
-            }
+    .review-card.correct {
+        border-left: 5px solid #10b981;
+        background: #f0fdf4;
+    }
 
-            .kpi {
-                border-radius: 14px;
-                padding: 14px;
-                text-align: center;
-                background: #f8fbff;
-                transition: 0.2s;
-            }
+    .review-card.wrong {
+        border-left: 5px solid var(--res-red);
+        background: #fef2f2;
+    }
 
-                .kpi:hover {
-                    transform: translateY(-3px);
-                }
+    .result-status-badge {
+        font-size: 1.2rem;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+</style>
 
-            .kpi-value {
-                font-size: 1.4rem;
-                font-weight: 800;
-            }
-
-            .progress {
-                height: 10px;
-                border-radius: 10px;
-            }
-
-            .review-item {
-                border-radius: 14px;
-                padding: 14px;
-                transition: 0.2s;
-            }
-
-                .review-item.correct {
-                    border-left: 5px solid var(--success);
-                    background: #f0fdf4;
-                }
-
-                .review-item.wrong {
-                    border-left: 5px solid var(--danger);
-                    background: #fef2f2;
-                }
-
-                .review-item:hover {
-                    transform: translateY(-2px);
-                }
-
-            .result-badge {
-                font-size: 1.1rem;
-                padding: 8px 14px;
-            }
-    </style>
-</head>
-
-<body>
-    <div class="shell">
-
+<section class="py-5 bg-light min-vh-100">
+    <div class="container py-4">
         @if (Model.Result is null)
         {
-            <div class="alert alert-warning">Không tìm thấy kết quả bài làm.</div>
-            <a class="btn btn-outline-secondary" href="/Student/Quizzes">Quay lại</a>
+            <div class="text-center py-5">
+                <i class="bi bi-search display-1 text-muted opacity-25"></i>
+                <h3 class="mt-4 fw-bold">Không tìm thấy kết quả</h3>
+                <a href="/Student" class="btn btn-primary-res mt-3 px-5">QUAY LẠI DASHBOARD</a>
+            </div>
         }
         else
         {
-            <section class="panel">
-
-                <!-- HEADER -->
-                <h2 class="fw-bold">@Model.Result.QuizTitle</h2>
-                <div class="muted mb-3">
-                    Nộp bài lúc @Model.Result.CompletedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
-                </div>
-
-                <!-- KPI -->
-                <div class="row g-3 mb-3">
-                    <div class="col-md-3 col-6">
-                        <div class="kpi">
-                            <div class="muted">Điểm</div>
-                            <div class="kpi-value">@Model.Result.Score / @Model.Result.TotalPoints</div>
-                        </div>
+            <div class="max-width-900 mx-auto">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h6 class="text-res-red fw-bold text-uppercase mb-1">Hoàn thành bài thi</h6>
+                        <h2 class="fw-bold mb-0">@Model.Result.QuizTitle</h2>
+                        <p class="text-muted small">Nộp bài lúc: @Model.Result.CompletedAt.ToString("dd/MM/yyyy HH:mm")</p>
                     </div>
-
-                    <div class="col-md-3 col-6">
-                        <div class="kpi">
-                            <div class="muted">Tỷ lệ</div>
-                            <div class="kpi-value">@Model.Result.PercentageScore</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3 col-6">
-                        <div class="kpi">
-                            <div class="muted">Đúng</div>
-                            <div class="kpi-value">@Model.Result.CorrectCount / @Model.Result.TotalQuestions</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3 col-6">
-                        <div class="kpi">
-                            <div class="muted">Thời gian</div>
-                            <div class="kpi-value">@Model.Result.TimeTaken.ToString(@"hh\:mm\:ss")</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PROGRESS BAR -->
-                <div class="mb-3">
-                    <div class="progress">
-                        <div class="progress-bar bg-success"
-                             style="width:@Model.Result.PercentageScore.Replace("%", "")%">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PASS / FAIL -->
-                <div class="mb-3">
-                    <span class="badge result-badge bg-@(Model.Result.Passed ? "success" : "danger")">
-                        @(Model.Result.Passed ? "🎉 Đạt" : "❌ Chưa đạt")
-                    </span>
-                </div>
-
-                <!-- REVIEW -->
-                @if (Model.Result.AnswerReviews.Any())
-                {
-                    <h5 class="mb-3">Chi tiết bài làm</h5>
-
-                    <div class="d-grid gap-2">
-                        @foreach (var review in Model.Result.AnswerReviews)
+                    <div>
+                        @if (Model.Result.Passed)
                         {
-                            <div class="review-item @(review.IsCorrect ? "correct" : "wrong")">
-
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <strong>Câu @review.SortOrder:</strong>
-                                        @review.QuestionText
-                                    </div>
-
-                                    <span class="badge bg-@(review.IsCorrect ? "success" : "danger")">
-                                        @(review.IsCorrect ? "Đúng" : "Sai")
-                                    </span>
-                                </div>
-
-                                <div class="mt-2 small text-muted">
-                                    Bạn chọn:
-                                    @(string.IsNullOrWhiteSpace(review.StudentAnswer)
-                                        ? "(Không trả lời)"
-                                        : review.StudentAnswer)
-                                </div>
-
-                                <div class="small">
-                                    Đáp án đúng: <strong>@review.CorrectAnswer</strong>
-                                </div>
-
-                                <div class="small text-muted">
-                                    Điểm: @review.PointsEarned / @review.Point
-                                </div>
-                            </div>
+                            <span class="result-status-badge bg-success text-white">
+                                <i class="bi bi-check-circle-fill"></i> VƯỢT QUA
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="result-status-badge bg-danger text-white">
+                                <i class="bi bi-x-circle-fill"></i> CHƯA ĐẠT
+                            </span>
                         }
                     </div>
-                }
-
-                <!-- ACTION -->
-                <div class="mt-4 d-flex gap-2">
-                    <a class="btn btn-primary" href="/Student/Quizzes">Làm bài khác</a>
-                    <a class="btn btn-outline-secondary" href="/Student">Trang học viên</a>
                 </div>
 
-            </section>
-        }
+                <div class="result-card mb-5">
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <span class="stat-label">Tổng điểm</span>
+                                <span class="stat-value">@Model.Result.Score/@Model.Result.TotalPoints</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <span class="stat-label">Tỷ lệ đúng</span>
+                                <span class="stat-value">@Model.Result.PercentageScore</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <span class="stat-label">Số câu đúng</span>
+                                <span class="stat-value">@Model.Result.CorrectCount/@Model.Result.TotalQuestions</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box">
+                                <span class="stat-label">Thời gian làm</span>
+                                <span class="stat-value text-dark" style="font-size: 1.4rem;">@Model.Result.TimeTaken.ToString(@"mm\:ss")</span>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="mb-5">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold small text-muted">TIẾN ĐỘ ĐIỂM SỐ</span>
+                            <span class="fw-bold text-res-red">@Model.Result.PercentageScore</span>
+                        </div>
+                        <div class="progress" style="height: 12px; border-radius: 10px;">
+                            <div class="progress-bar @(Model.Result.Passed ? "bg-success" : "bg-danger")" 
+                                 style="width: @Model.Result.PercentageScore"></div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <a href="/Student?tab=quizzes" class="btn btn-primary-res px-5 py-3 fw-bold flex-grow-1">TIẾP TỤC HỌC TẬP</a>
+                        <a href="/Student" class="btn btn-light px-5 py-3 fw-bold text-muted border">VỀ TRANG CHỦ</a>
+                    </div>
+                </div>
+
+                <h4 class="fw-bold mb-4"><i class="bi bi-journal-text text-res-red me-2"></i>CHI TIẾT BÀI LÀM</h4>
+                
+                @if (Model.Result.AnswerReviews.Any())
+                {
+                    foreach (var review in Model.Result.AnswerReviews)
+                    {
+                        <div class="review-card @(review.IsCorrect ? "correct" : "wrong")">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="fw-bold" style="font-size: 1.1rem;">
+                                    Câu @review.SortOrder: @review.QuestionText
+                                </div>
+                                <span class="badge @(review.IsCorrect ? "bg-success" : "bg-danger") rounded-pill px-3">
+                                    @(review.IsCorrect ? "ĐÚNG" : "SAI")
+                                </span>
+                            </div>
+
+                            <div class="p-3 rounded-3 bg-white border mb-2 small">
+                                <span class="text-muted fw-bold">BẠN CHỌN:</span> 
+                                <span class="@(review.IsCorrect ? "text-success" : "text-danger") fw-bold">
+                                    @(string.IsNullOrWhiteSpace(review.StudentAnswer) ? "(Bỏ trống)" : review.StudentAnswer)
+                                </span>
+                            </div>
+
+                            @if (!review.IsCorrect)
+                            {
+                                <div class="p-3 rounded-3 bg-white border small">
+                                    <span class="text-muted fw-bold">ĐÁP ÁN ĐÚNG:</span> 
+                                    <span class="text-success fw-bold">@review.CorrectAnswer</span>
+                                </div>
+                            }
+                            
+                            <div class="mt-3 small text-muted">
+                                <i class="bi bi-award me-1"></i> Điểm đạt được: @review.PointsEarned / @review.Point
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-4 bg-white rounded-4 border">
+                        <p class="text-muted mb-0">Không có dữ liệu đánh giá chi tiết.</p>
+                    </div>
+                }
+            </div>
+        }
     </div>
-</body>
-</html>
+</section>
+
+<style>
+    .max-width-900 { max-width: 900px; }
+</style>

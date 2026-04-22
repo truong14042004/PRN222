@@ -45,11 +45,25 @@ public class IndexModel : PageModel
 
         if (!Enum.TryParse<OrderItemType>(itemType, true, out var parsedItemType))
         {
-            TempData["Error"] = "KhĂ´ng xĂ¡c Ä‘á»‹nh Ä‘Æ°á»£c sáº£n pháº©m cáº§n xĂ³a.";
+            TempData["Error"] = "Không xác định được sản phẩm cần xóa.";
             return RedirectToPage();
         }
 
         await _cartService.RemoveFromCartAsync(int.Parse(userIdStr), parsedItemType, itemId);
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostUpdateQuantityAsync(string itemType, int itemId, int quantity)
+    {
+        var userIdStr = HttpContext.Session.GetString("UserId");
+        if (string.IsNullOrEmpty(userIdStr)) return RedirectToPage("/Auth/Login");
+
+        if (!Enum.TryParse<OrderItemType>(itemType, true, out var parsedItemType))
+        {
+            return RedirectToPage();
+        }
+
+        await _cartService.UpdateQuantityAsync(int.Parse(userIdStr), parsedItemType, itemId, quantity);
         return RedirectToPage();
     }
 

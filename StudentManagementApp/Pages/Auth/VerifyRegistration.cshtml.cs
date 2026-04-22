@@ -99,7 +99,7 @@ public class VerifyRegistrationModel : PageModel
         {
             await _authService.EnsureRegistrationAllowedAsync(registration);
             await _emailService.GenerateOtpAsync(registration.Email, RegistrationOtpType);
-            TempData["Success"] = $"Đã gửi lại mã OTP tới {registration.Email}.";
+
         }
         catch (InvalidOperationException ex)
         {

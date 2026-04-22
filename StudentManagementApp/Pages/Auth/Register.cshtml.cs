@@ -72,7 +72,7 @@ namespace StudentManagementApp.Pages.Auth
                 await _authService.EnsureRegistrationAllowedAsync(dto);
                 RegistrationSessionStore.Save(HttpContext.Session, dto);
                 await _emailService.GenerateOtpAsync(dto.Email, RegistrationOtpType);
-                TempData["Success"] = $"Đã gửi mã OTP tới {dto.Email}. Vui lòng nhập mã để hoàn tất đăng ký.";
+
                 return RedirectToPage("/Auth/VerifyRegistration");
             }
             catch (InvalidOperationException ex)

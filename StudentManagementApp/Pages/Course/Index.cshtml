@@ -11,24 +11,28 @@
             <p class="text-muted">Chúng tôi cung cấp đa dạng các lộ trình phù hợp với mọi trình độ và nhu cầu học tập.</p>
         </div>
 
-        <div class="row g-4">
+        <div id="courseGrid" class="row g-4">
             @if (Model.Courses != null && Model.Courses.Any())
             {
                 @foreach (var course in Model.Courses)
                 {
-                    <div class="col-lg-4 col-md-6">
-                        <div class="res-card d-flex flex-column">
+                    var imageUrl = string.IsNullOrWhiteSpace(course.ThumbnailUrl)
+                        ? "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop"
+                        : course.ThumbnailUrl;
+
+                    <div class="col-lg-4 col-md-6" data-course-id="@course.Id">
+                        <div class="res-card d-flex flex-column h-100">
                             <div class="position-relative">
-                                <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop" class="card-img-top" alt="@course.Name" style="height: 200px; object-fit: cover;">
+                                <img src="@imageUrl" class="card-img-top" alt="@course.Name" style="height: 200px; object-fit: cover;">
                                 <div class="position-absolute top-0 end-0 m-3">
                                     <span class="badge bg-res-red text-white px-3 py-2 rounded-pill fw-bold">@course.Level</span>
                                 </div>
                             </div>
                             <div class="card-body p-4 flex-grow-1">
-                                <h5 class="fw-bold mb-3">@course.Name</h5>
-                                <p class="text-muted small mb-4 text-truncate-3">@course.Description</p>
+                                <h5 class="fw-bold mb-3" data-role="course-name">@course.Name</h5>
+                                <p class="text-muted small mb-4 text-truncate-3" data-role="course-description">@(course.Description ?? "Khóa học đang được cập nhật nội dung.")</p>
                                 <div class="d-flex justify-content-between align-items-center mt-auto">
-                                    <div class="text-res-red fw-bold h5 mb-0">@course.TuitionFee.ToString("N0") VNĐ</div>
+                                    <div class="text-res-red fw-bold h5 mb-0" data-role="course-fee">@course.TuitionFee.ToString("N0") VNĐ</div>
                                     <a href="/Course/Detail/@course.Id" class="btn btn-outline-res btn-sm">CHI TIẾT</a>
                                 </div>
                             </div>
@@ -36,12 +40,10 @@
                     </div>
                 }
             }
-            else
-            {
-                <div class="col-12 text-center py-5">
-                    <p class="text-muted">Hiện chưa có khóa học nào được đăng tải.</p>
-                </div>
-            }
+        </div>
+
+        <div id="courseEmptyState" class="col-12 text-center py-5" @(Model.Courses != null && Model.Courses.Any() ? "hidden" : null)>
+            <p class="text-muted">Hiện chưa có khóa học nào được đăng tải.</p>
         </div>
     </div>
 </section>
@@ -55,4 +57,37 @@
             overflow: hidden;
         }
     </style>
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/js/course-realtime.js"></script>
+    <script>
+        (() => {
+            const realtime = window.meshCourseRealtime;
+            const grid = document.getElementById("courseGrid");
+            const emptyState = document.getElementById("courseEmptyState");
+            if (!realtime || !grid || !emptyState) {
+                return;
+            }
+
+            realtime.connect({
+                onCourseChanged: (notification) => {
+                    const course = notification && notification.course ? notification.course : null;
+                    if (!notification || !course) {
+                        return;
+                    }
+
+                    const isDeleted = notification.action === "Deleted";
+                    if (isDeleted || course.isActive === false) {
+                        realtime.removeCourseCard(grid, notification.courseId);
+                    } else {
+                        realtime.upsertCourseCard(grid, course);
+                    }
+
+                    realtime.syncEmptyState(grid, emptyState);
+                }
+            });
+        })();
+    </script>
 }

@@ -9,25 +9,25 @@
     <div class="container">
         @if (Model.Course != null)
         {
-            <div class="row g-4">
+            <div id="courseDetailContent" class="row g-4">
                 <div class="col-lg-8">
                     <div class="res-card mb-4">
                         <div class="res-card-header">
                             THÔNG TIN KHÓA HỌC
                         </div>
                         <div class="card-body p-4">
-                            <h2 class="fw-bold mb-3">@Model.Course.Name</h2>
+                            <h2 id="courseTitle" class="fw-bold mb-3">@Model.Course.Name</h2>
                             <div class="mb-4">
-                                <span class="badge bg-res-red text-white px-4 py-2 rounded-pill fw-bold">TRÌNH ĐỘ: @Model.Course.Level</span>
+                                <span id="courseLevel" class="badge bg-res-red text-white px-4 py-2 rounded-pill fw-bold">TRÌNH ĐỘ: @Model.Course.Level</span>
                             </div>
-                            <div class="text-muted h5 fw-normal mb-5" style="line-height: 1.8;">
-                                @Model.Course.Description
+                            <div id="courseDescription" class="text-muted h5 fw-normal mb-5" style="line-height: 1.8;">
+                                @(Model.Course.Description ?? "Khóa học đang được cập nhật nội dung.")
                             </div>
-                            
+
                             <div class="p-4 bg-light rounded-3 border-start border-4 border-res-red d-flex align-items-center justify-content-between">
                                 <div>
                                     <div class="small text-muted fw-bold text-uppercase">Học phí ưu đãi</div>
-                                    <div class="h3 mb-0 fw-bold text-res-red">@Model.Course.TuitionFee.ToString("N0") VNĐ</div>
+                                    <div id="courseFee" class="h3 mb-0 fw-bold text-res-red">@Model.Course.TuitionFee.ToString("N0") VNĐ</div>
                                 </div>
                                 <i class="bi bi-gift text-res-red h1 mb-0 opacity-25"></i>
                             </div>
@@ -137,10 +137,17 @@
                     </div>
                 </div>
             </div>
+
+            <div id="courseUnavailableState" class="text-center py-5" hidden>
+                <i class="bi bi-search text-muted display-1 mb-3"></i>
+                <h2 class="text-muted">Khóa học hiện không còn khả dụng</h2>
+                <p class="text-muted">Thông tin khóa học đã thay đổi. Bạn có thể chọn một khóa học khác.</p>
+                <a href="/Course" class="btn btn-primary-res mt-3">XEM CÁC KHÓA HỌC KHÁC</a>
+            </div>
         }
         else
         {
-            <div class="text-center py-5">
+            <div id="courseUnavailableState" class="text-center py-5">
                 <i class="bi bi-search text-muted display-1 mb-3"></i>
                 <h2 class="text-muted">Không tìm thấy khóa học</h2>
                 <a href="/Course" class="btn btn-primary-res mt-3">XEM CÁC KHÓA HỌC KHÁC</a>
@@ -148,3 +155,61 @@
         }
     </div>
 </section>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/js/course-realtime.js"></script>
+    <script>
+        (() => {
+            const realtime = window.meshCourseRealtime;
+            const detailContent = document.getElementById("courseDetailContent");
+            const unavailableState = document.getElementById("courseUnavailableState");
+            const currentCourseId = @(Model.Course?.Id ?? 0);
+            if (!realtime || !detailContent || !unavailableState || !currentCourseId) {
+                return;
+            }
+
+            const courseTitle = document.getElementById("courseTitle");
+            const courseLevel = document.getElementById("courseLevel");
+            const courseDescription = document.getElementById("courseDescription");
+            const courseFee = document.getElementById("courseFee");
+
+            const showUnavailableState = (message) => {
+                detailContent.hidden = true;
+                unavailableState.hidden = false;
+                document.title = "Chi tiết khóa học - English Center";
+            };
+
+            const showCourseContent = (course, message) => {
+                if (!course) {
+                    return;
+                }
+
+                detailContent.hidden = false;
+                unavailableState.hidden = true;
+                courseTitle.textContent = course.name;
+                courseLevel.textContent = `TRÌNH ĐỘ: ${course.level}`;
+                courseDescription.textContent = course.description || "Khóa học đang được cập nhật nội dung.";
+                courseFee.textContent = realtime.formatCurrency(course.tuitionFee);
+                document.title = `${course.name} - English Center`;
+            };
+
+            realtime.connect({
+                onCourseChanged: (notification) => {
+                    if (!notification || notification.courseId !== currentCourseId) {
+                        return;
+                    }
+
+                    const course = notification.course || null;
+                    const isUnavailable = notification.action === "Deleted" || (course && course.isActive === false);
+
+                    if (isUnavailable) {
+                        showUnavailableState(notification.message);
+                    } else {
+                        showCourseContent(course, notification.message);
+                    }
+                }
+            });
+        })();
+    </script>
+}

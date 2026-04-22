@@ -19,6 +19,7 @@ namespace StudentManagementApp
             builder.Services.AddSignalR();
             builder.Services.AddApplicationServices(builder.Configuration);
             builder.Services.AddScoped<IEnrollmentNotificationPublisher, SignalREnrollmentNotificationPublisher>();
+            builder.Services.AddScoped<ICourseNotificationPublisher, SignalRCourseNotificationPublisher>();
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
 

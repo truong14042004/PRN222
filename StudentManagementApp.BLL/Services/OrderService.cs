@@ -74,7 +74,7 @@ public class OrderService : IOrderService
 
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
-        await _cartService.ClearCartAsync(userId);
+
 
         return await MapToDto(order);
     }
@@ -131,6 +131,8 @@ public class OrderService : IOrderService
             }
 
             order.Status = OrderStatus.Paid;
+            await _cartService.ClearCartAsync(order.UserId);
+
             
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();

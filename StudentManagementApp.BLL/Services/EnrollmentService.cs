@@ -76,7 +76,7 @@ public class EnrollmentService : IEnrollmentService
         enrollment.ConfirmedAt = confirmedAt;
         await _enrollmentRepository.UpdateAsync(enrollment);
 
-        await SendConfirmationEmailAsync(enrollment, confirmationCode);
+        SendConfirmationEmailAsync(enrollment, confirmationCode);
         await PublishEnrollmentConfirmedAsync(enrollment, confirmationCode, confirmedAt);
     }
 
@@ -121,10 +121,6 @@ public class EnrollmentService : IEnrollmentService
 
  Lịch học:
  {scheduleText}
-
- Mã xác nhận: {code}
-
- Vui lòng đến trung tâm đúng giờ và mang theo mã xác nhận này.
 
  Trân trọng,
  English Center

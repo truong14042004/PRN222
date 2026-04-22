@@ -2,204 +2,127 @@
 @model StudentManagementApp.Pages.Admin.Enrollments.IndexModel
 @{
     ViewData["Title"] = "Quản lý đăng ký";
+    ViewData["ActivePage"] = "Enrollments";
+    Layout = "/Pages/Admin/_AdminLayout.cshtml";
     var userName = HttpContext.Session.GetString("UserName");
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
+<div class="admin-header d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h6 class="text-res-red fw-bold text-uppercase mb-1">Quy trình đăng ký</h6>
+        <h2 class="fw-bold mb-0">Quản lý ghi danh</h2>
+    </div>
+</div>
 
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<div class="admin-card">
+    <!-- TABS -->
+    <ul class="nav nav-pills mb-4 bg-light p-2 rounded-3" style="width: fit-content;">
+        <li class="nav-item">
+            <a class="nav-link px-4 fw-bold @(Model.Pending ? "text-muted" : "active bg-res-red")"
+               href="/Admin/Enrollments">
+                Tất cả hồ sơ
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-4 fw-bold @(Model.Pending ? "active bg-res-red" : "text-muted")"
+               href="/Admin/Enrollments?pending=true">
+                Đang chờ duyệt
+            </a>
+        </li>
+    </ul>
 
-    <style>
-            body {
-                font-family: "Be Vietnam Pro", sans-serif;
-                background: #f5f7fb;
-            }
+    <!-- TABLE -->
+    @if (Model.Enrollments.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle custom-table">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Học viên</th>
+                        <th>Thông tin lớp học</th>
+                        <th>Thời gian đăng ký</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Enrollments)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark">@e.StudentName</div>
+                                <div class="text-muted small">ID Đăng ký: #@e.Id</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold">@e.ClassName</div>
+                                <div class="text-muted small">Khóa: @e.CourseName</div>
+                            </td>
+                            <td>
+                                <div class="small">@e.EnrolledAt.ToString("dd/MM/yyyy")</div>
+                                <div class="small text-muted">@e.EnrolledAt.ToString("HH:mm")</div>
+                            </td>
+                            <td>
+                                @{
+                                    var badgeClass = e.Status switch
+                                    {
+                                        "Confirmed" => "bg-success-subtle text-success",
+                                        "Registered" => "bg-warning-subtle text-warning-emphasis",
+                                        _ => "bg-secondary-subtle text-muted"
+                                    };
+                                }
+                                <span class="badge rounded-pill @badgeClass px-3">
+                                    @if(e.Status == "Confirmed") { <i class="bi bi-check-circle-fill me-1"></i> }
+                                    else if(e.Status == "Registered") { <i class="bi bi-clock-history me-1"></i> }
+                                    @e.Status
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                @if (e.Status == "Registered")
+                                {
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <form method="post" asp-page="/Admin/Enrollments/Confirm" class="d-inline">
+                                            <input type="hidden" name="id" value="@e.Id" />
+                                            <button class="btn btn-sm btn-success fw-bold px-3">
+                                                Duyệt
+                                            </button>
+                                        </form>
 
-            /* SIDEBAR */
-            .sidebar {
-                width: 240px;
-                height: 100vh;
-                position: fixed;
-                background: #111827;
-                padding: 20px;
-                color: #e5e7eb;
-            }
-
-                .sidebar a {
-                    display: block;
-                    padding: 10px;
-                    border-radius: 8px;
-                    color: #9ca3af;
-                    text-decoration: none;
-                    margin-bottom: 6px;
-                }
-
-                    .sidebar a.active,
-                    .sidebar a:hover {
-                        background: #1f2937;
-                        color: white;
+                                        <form method="post" asp-page="/Admin/Enrollments/Cancel" class="d-inline">
+                                            <input type="hidden" name="id" value="@e.Id" />
+                                            <button class="btn btn-sm btn-outline-danger fw-bold px-3">
+                                                Từ chối
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small italic">Không có thao tác</span>
+                                }
+                            </td>
+                        </tr>
                     }
-
-            /* MAIN */
-            .main {
-                margin-left: 240px;
-                padding: 24px;
-            }
-
-            /* HEADER */
-            .page-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-
-            /* CARD */
-            .card-custom {
-                background: #fff;
-                border-radius: 12px;
-                padding: 16px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            }
-
-            /* TABS FIX */
-            .nav-tabs .nav-link {
-                border-radius: 8px;
-                font-weight: 500;
-            }
-    </style>
-</head>
-
-<body>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h5 class="mb-3">Admin</h5>
-
-        <a href="/Admin">Dashboard</a>
-        <a href="/Admin/Users">Người dùng</a>
-        <a href="/Admin/Courses">Khóa học</a>
-        <a href="/Admin/Classes">Lớp học</a>
-        <a href="/Admin/Enrollments" class="active">Đăng ký</a>
-        <a href="/Admin/Quizzes">Quiz</a>
-
-        <hr>
-
-        <a href="/Auth/Logout">Đăng xuất</a>
-    </div>
-
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- HEADER -->
-        <div class="page-header">
-            <div>
-                <h4 class="fw-bold mb-0">Quản lý đăng ký</h4>
-                <small class="text-muted">Xin chào, @userName</small>
-            </div>
+                </tbody>
+            </table>
         </div>
-
-        <!-- ALERT -->
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">@TempData["Error"]</div>
-        }
-
-        <!-- TABS -->
-        <ul class="nav nav-tabs mb-3">
-            <li class="nav-item">
-                <a class="nav-link @(Model.Pending ? "" : "active")"
-                       href="/Admin/Enrollments">
-                    Tất cả
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @(Model.Pending ? "active" : "")"
-                       href="/Admin/Enrollments?pending=true">
-                    Chờ xác nhận
-                </a>
-            </li>
-        </ul>
-
-        <!-- TABLE -->
-        <div class="card-custom">
-
-            @if (Model.Enrollments.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-
-                        <thead class="table-light">
-                            <tr>
-                                <th>Học viên</th>
-                                <th>Lớp</th>
-                                <th>Khóa học</th>
-                                <th>Ngày đăng ký</th>
-                                <th>Trạng thái</th>
-                                <th class="text-end">Thao tác</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach (var e in Model.Enrollments)
-                            {
-                                <tr>
-                                    <td><strong>@e.StudentName</strong></td>
-                                    <td>@e.ClassName</td>
-                                    <td>@e.CourseName</td>
-                                    <td>@e.EnrolledAt.ToString("dd/MM/yyyy HH:mm")</td>
-
-                                    <td>
-                                        <span class="badge bg-@(e.Status == "Confirmed" ? "success" : e.Status == "Registered" ? "warning text-dark" : "secondary")">
-                                            @e.Status
-                                        </span>
-                                    </td>
-
-                                    <td class="text-end">
-
-                                        @if (e.Status == "Registered")
-                                        {
-                                            <form method="post" asp-page="/Admin/Enrollments/Confirm" class="d-inline">
-                                                <input type="hidden" name="id" value="@e.Id" />
-                                                <button class="btn btn-sm btn-success">
-                                                    Xác nhận
-                                                </button>
-                                            </form>
-
-                                            <form method="post" asp-page="/Admin/Enrollments/Cancel" class="d-inline">
-                                                <input type="hidden" name="id" value="@e.Id" />
-                                                <button class="btn btn-sm btn-danger">
-                                                    Hủy
-                                                </button>
-                                            </form>
-                                        }
-
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-
-                    </table>
-                </div>
-            }
-            else
-            {
-                <p class="text-muted mb-0">Không có đăng ký nào.</p>
-            }
-
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-clipboard-x text-muted opacity-25 display-1"></i>
+            <p class="mt-3 text-muted fw-bold">Không có hồ sơ đăng ký nào được tìm thấy.</p>
         </div>
+    }
+</div>
 
-    </div>
-
-</body>
-</html>
+<style>
+    .bg-success-subtle { background: #ecfdf5 !important; }
+    .bg-warning-subtle { background: #fffbeb !important; }
+    .bg-secondary-subtle { background: #f8fafc !important; }
+    .text-warning-emphasis { color: #92400e !important; }
+    .custom-table thead th {
+        font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.5px; color: #64748b; padding-top: 15px; padding-bottom: 15px;
+    }
+    .custom-table tbody td { padding-top: 15px; padding-bottom: 15px; }
+</style>

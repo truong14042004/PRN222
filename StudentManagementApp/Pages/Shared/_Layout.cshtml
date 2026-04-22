@@ -11,6 +11,8 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
+    <!-- Unified Top Toast Container -->
+    <div id="unifiedToastContainer" class="toast-container-top"></div>
     @{
         var userName = Context.Session.GetString("UserName");
         var userRole = Context.Session.GetString("UserRole");
@@ -37,6 +39,7 @@
                     @if (userRole == "Teacher" && userId != null)
                     {
                         <li class="nav-item"><a class="nav-link" href="/Teacher">Lớp dạy</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Teacher/Schedule">Lịch dạy</a></li>
                     }
                     @if (userRole == "Admin" && userId != null)
                     {
@@ -46,6 +49,8 @@
                 <ul class="navbar-nav align-items-center">
                     @if (userId != null)
                     {
+                    @if (userId != null && userRole == "Student")
+                    {
                         <li class="nav-item me-3">
                             <a href="/Cart" class="nav-link position-relative p-2">
                                 <i class="bi bi-cart3 fs-5"></i>
@@ -54,6 +59,7 @@
                                 </span>
                             </a>
                         </li>
+                    }
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle btn btn-outline-res px-4 py-2" href="#" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle me-1"></i> @userName
@@ -80,27 +86,60 @@
     </nav>
 
     <main role="main">
-        @if (TempData["Success"] != null)
-        {
-            <div class="container mt-3">
-                <div class="alert alert-success alert-dismissible fade show border-0 border-start border-4 border-success shadow-sm" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="container mt-3">
-                <div class="alert alert-danger alert-dismissible fade show border-0 border-start border-4 border-danger shadow-sm" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </div>
-        }
 
         @RenderBody()
     </main>
+
+    <script>
+        // Global Toast Function
+        function showToast(message, type = 'success', title = '') {
+            const container = document.getElementById('unifiedToastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `res-toast res-toast-${type}`;
+            
+            if (!title) {
+                title = type === 'success' ? 'Thành công' : (type === 'error' ? 'Lỗi' : 'Thông báo');
+            }
+
+            const icons = {
+                success: 'bi-check-circle-fill',
+                error: 'bi-exclamation-triangle-fill',
+                info: 'bi-info-circle-fill'
+            };
+
+            toast.innerHTML = `
+                <div class="res-toast-icon">
+                    <i class="bi ${icons[type] || 'bi-bell-fill'}"></i>
+                </div>
+                <div class="res-toast-content">
+                    <div class="res-toast-title">${title}</div>
+                    <div class="res-toast-message">${message}</div>
+                </div>
+                <div class="res-toast-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x-lg"></i>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto remove after 5s
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+
+        // Trigger TempData notifications
+        document.addEventListener('DOMContentLoaded', () => {
+            @if (TempData["Success"] != null) { <text>showToast('@TempData["Success"]', 'success');</text> }
+            @if (TempData["Error"] != null) { <text>showToast('@TempData["Error"]', 'error');</text> }
+            @if (TempData["Info"] != null) { <text>showToast('@TempData["Info"]', 'info');</text> }
+        });
+    </script>
 
     @if (userRole != "Teacher" && userRole != "Admin")
     {
@@ -161,10 +200,7 @@
     </footer>
     }
 
-    @if (userRole == "Student" && !string.IsNullOrWhiteSpace(userId))
-    {
-        <div id="notificationToastContainer" class="notification-toast-container position-fixed top-0 end-0 p-3"></div>
-    }
+    @* Notification container is now unified at the top *@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @if (userRole == "Student" && !string.IsNullOrWhiteSpace(userId))
@@ -216,20 +252,8 @@
                     return wrapper;
                 };
 
-                const showToast = (notification) => {
-                    const toastElement = buildToast(notification);
-                    toastContainer.appendChild(toastElement);
-
-                    const toast = bootstrap.Toast.getOrCreateInstance(toastElement, {
-                        autohide: true,
-                        delay: 8000
-                    });
-
-                    toastElement.addEventListener("hidden.bs.toast", () => {
-                        toastElement.remove();
-                    }, { once: true });
-
-                    toast.show();
+                const showNotification = (notification) => {
+                    showToast(notification.message || "Bạn có thông báo mới.", 'info', notification.title || "Thông báo");
                 };
 
                 const connection = new signalR.HubConnectionBuilder()
@@ -237,7 +261,7 @@
                     .withAutomaticReconnect()
                     .build();
 
-                connection.on("EnrollmentConfirmed", showToast);
+                connection.on("EnrollmentConfirmed", showNotification);
                 connection.start().catch((error) => {
                     console.error("SignalR enrollment notification connection failed.", error);
                 });

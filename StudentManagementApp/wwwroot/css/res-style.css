@@ -89,6 +89,10 @@ h1, h2, h3, h4, h5, h6, .navbar-nav {
     color: white !important;
 }
 
+.navbar-res .nav-link.btn-outline-res:hover {
+    color: white !important;
+}
+
 /* Cards */
 .res-card {
     border: 1px solid #e0e0e0;
@@ -272,3 +276,79 @@ h1, h2, h3, h4, h5, h6, .navbar-nav {
 .notification-toast {
     border-left: 5px solid var(--res-red) !important;
 }
+
+/* Unified Top-Right Toast Bar */
+.toast-container-top {
+    position: fixed;
+    top: 85px; /* Just below header */
+    right: 20px;
+    z-index: 9999;
+    width: 100%;
+    max-width: 400px;
+    pointer-events: none;
+}
+
+.res-toast {
+    pointer-events: auto;
+    background: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    margin-bottom: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    min-height: 70px;
+    animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.res-toast-icon {
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.res-toast-content {
+    padding: 15px 20px;
+    flex: 1;
+}
+
+.res-toast-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+}
+
+.res-toast-message {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.res-toast-close {
+    padding: 10px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.2s;
+}
+
+.res-toast-close:hover {
+    color: #666;
+}
+
+.res-toast-success .res-toast-icon { background-color: #10b981; }
+.res-toast-success .res-toast-title { color: #10b981; }
+
+.res-toast-error .res-toast-icon { background-color: #ef4444; }
+.res-toast-error .res-toast-title { color: #ef4444; }
+
+.res-toast-info .res-toast-icon { background-color: #3b82f6; }
+.res-toast-info .res-toast-title { color: #3b82f6; }

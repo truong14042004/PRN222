@@ -1,256 +1,157 @@
 @page
 @model StudentManagementApp.Pages.Admin.QuizQuestionsModel
 @{
-    ViewData["Title"] = "Quản lý câu hỏi quiz";
+    ViewData["Title"] = "Quản lý câu hỏi";
+    ViewData["ActivePage"] = "Quizzes";
+    Layout = "/Pages/Admin/_AdminLayout.cshtml";
     var quiz = Model.Quiz;
     var userName = HttpContext.Session.GetString("UserName");
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-            body {
-                font-family: "Be Vietnam Pro", sans-serif;
-                background: #f5f7fb;
-                margin: 0;
-            }
-
-            /* SIDEBAR */
-            .sidebar {
-                width: 250px;
-                height: 100vh;
-                position: fixed;
-                background: #0f172a;
-                color: white;
-                padding: 20px;
-            }
-
-                .sidebar h4 {
-                    font-weight: 700;
-                    margin-bottom: 30px;
-                }
-
-                .sidebar a {
-                    display: block;
-                    color: #cbd5f1;
-                    padding: 10px 12px;
-                    border-radius: 10px;
-                    text-decoration: none;
-                    margin-bottom: 8px;
-                }
-
-                    .sidebar a:hover,
-                    .sidebar a.active {
-                        background: #1e293b;
-                        color: white;
-                    }
-
-            /* MAIN */
-            .main {
-                margin-left: 250px;
-                padding: 20px 30px;
-            }
-
-            /* CARD */
-            .card-box {
-                background: white;
-                border-radius: 16px;
-                padding: 18px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            }
-
-            /* HERO */
-            .hero {
-                border-radius: 16px;
-                padding: 18px;
-                color: #fff;
-                background: linear-gradient(135deg, #3b82f6, #6366f1);
-                margin-bottom: 20px;
-            }
-
-            /* QUESTION */
-            .q-item {
-                padding: 14px;
-                border-bottom: 1px solid #e2e8f0;
-            }
-
-                .q-item:last-child {
-                    border-bottom: none;
-                }
-
-            .answer {
-                display: inline-block;
-                padding: 6px 12px;
-                border-radius: 999px;
-                margin: 4px 4px 0 0;
-                background: #f1f5f9;
-                font-size: 13px;
-            }
-
-                .answer.correct {
-                    background: #dcfce7;
-                    color: #166534;
-                    font-weight: 600;
-                }
-
-            /* FORM */
-            .form-control, select {
-                border-radius: 10px !important;
-            }
-
-            .hidden {
-                display: none;
-            }
-    </style>
-</head>
-
-<body>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h4>🎓 Admin</h4>
-
-        <a href="/Admin">Dashboard</a>
-        <a href="/Admin/Users">Người dùng</a>
-        <a href="/Admin/Courses">Khóa học</a>
-        <a href="/Admin/Classes">Lớp học</a>
-        <a href="/Admin/Enrollments">Đăng ký</a>
-        <a class="active" href="/Admin/Quizzes">Quiz</a>
-
-        <hr style="border-color:#334155">
-
-        <a href="/Auth/Logout">🚪 Đăng xuất</a>
+<div class="admin-header d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h6 class="text-res-red fw-bold text-uppercase mb-1">Thiết lập bài thi</h6>
+        <h2 class="fw-bold mb-0">Quản lý câu hỏi</h2>
     </div>
+    <a href="/Admin/Quizzes" class="btn btn-light border fw-bold px-4">
+        <i class="bi bi-arrow-left me-2"></i>Quay lại
+    </a>
+</div>
 
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- TOP -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h3 class="mb-0">Câu hỏi Quiz</h3>
-                <small class="text-muted">Xin chào, @userName</small>
-            </div>
-
-            <a href="/Admin/Quizzes" class="btn btn-outline-secondary">← Quay lại</a>
+<!-- QUIZ INFO HERO -->
+<div class="res-card p-4 border-0 shadow-sm mb-4 text-white" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h4 class="fw-bold mb-1">@(quiz?.Title ?? "Đang tải...")</h4>
+            <p class="mb-0 opacity-75">Khóa học: @(quiz?.CourseName ?? "N/A") | Tổng câu hỏi hiện tại: <span class="badge bg-res-red">@(quiz?.QuestionCount ?? 0)</span></p>
         </div>
-
-        <!-- HERO -->
-        <div class="hero">
-            <h2>@(quiz?.Title ?? "Quiz")</h2>
-            <div>
-                Khóa học: @quiz?.CourseName |
-                Tổng câu hỏi: @(quiz?.QuestionCount ?? 0)
-            </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="small opacity-75 mb-1 text-uppercase fw-bold">Thời gian làm bài</div>
+            <div class="fs-5 fw-bold">@(quiz?.TimeLimitMinutes ?? 0) phút</div>
         </div>
+    </div>
+</div>
 
-        <div class="row g-3">
+<div class="row g-4">
+    <!-- LIST SECTION -->
+    <div class="col-lg-7">
+        <div class="admin-card h-100">
+            <h5 class="fw-bold mb-4 border-bottom pb-2">Danh sách câu hỏi</h5>
 
-            <!-- LIST -->
-            <div class="col-md-7">
-                <div class="card-box">
-
-                    <h5 class="mb-3">Danh sách câu hỏi</h5>
-
-                    @if (quiz?.Questions?.Any() == true)
+            @if (quiz?.Questions?.Any() == true)
+            {
+                <div class="question-list">
+                    @foreach (var q in quiz.Questions)
                     {
-                        @foreach (var q in quiz.Questions)
-                        {
-                            <div class="q-item">
-                                <div class="fw-bold">
-                                    #@q.SortOrder - @q.QuestionText
-                                </div>
-
-                                <div class="mt-2">
-                                    @foreach (var o in q.Options)
-                                    {
-                                        <span class="answer @(o.IsCorrect ? "correct" : "")">
-                                            @o.OptionText
-                                        </span>
-                                    }
-                                </div>
+                        <div class="question-item mb-4 p-3 rounded-3 bg-light border-start border-4 border-res-red">
+                            <div class="d-flex justify-content-between">
+                                <div class="fw-bold text-dark mb-2">#@q.SortOrder - @q.QuestionText</div>
+                                <span class="badge bg-white text-muted border small h-fit">@q.QuestionType</span>
                             </div>
-                        }
-                    }
-                    else
-                    {
-                        <p class="text-muted">Chưa có câu hỏi</p>
-                    }
 
-                </div>
-            </div>
-
-            <!-- FORM -->
-            <div class="col-md-5">
-                <div class="card-box">
-
-                    <h5 class="mb-3">Thêm / Sửa câu hỏi</h5>
-
-                    <form method="post" asp-page-handler="Save" asp-route-quizId="@Model.QuizId">
-
-                        <input type="hidden" asp-for="Input.QuestionId" />
-
-                        <label class="form-label">Nội dung câu hỏi</label>
-                        <textarea asp-for="Input.QuestionText" class="form-control"></textarea>
-
-                        <label class="form-label mt-2">Loại câu hỏi</label>
-                        <select asp-for="Input.QuestionType" id="type" class="form-select">
-                            <option value="MultipleChoice">Trắc nghiệm</option>
-                            <option value="FillInBlank">Điền đáp án</option>
-                        </select>
-
-                        <!-- MCQ -->
-                        <div id="mcq">
-                            <input asp-for="Input.OptionA" class="form-control mt-2" placeholder="Đáp án A">
-                            <input asp-for="Input.OptionB" class="form-control mt-2" placeholder="Đáp án B">
-                            <input asp-for="Input.OptionC" class="form-control mt-2" placeholder="Đáp án C">
-                            <input asp-for="Input.OptionD" class="form-control mt-2" placeholder="Đáp án D">
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                @foreach (var o in q.Options)
+                                {
+                                    <span class="badge rounded-pill @(o.IsCorrect ? "bg-success" : "bg-white text-muted border") px-3 py-2">
+                                        @if(o.IsCorrect) { <i class="bi bi-check-circle-fill me-1"></i> }
+                                        @o.OptionText
+                                    </span>
+                                }
+                            </div>
                         </div>
-
-                        <!-- FILL -->
-                        <div id="fill" class="hidden mt-2">
-                            <input asp-for="Input.FillInAnswer" class="form-control" placeholder="Đáp án đúng">
-                        </div>
-
-                        <button class="btn btn-primary w-100 mt-3">
-                            Lưu câu hỏi
-                        </button>
-
-                    </form>
-
+                    }
                 </div>
-            </div>
-
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-file-earmark-plus display-1 opacity-25"></i>
+                    <p class="mt-3 fw-bold">Chưa có câu hỏi nào được thêm.</p>
+                </div>
+            }
         </div>
-
     </div>
 
-    <script>
-            const type = document.getElementById("type");
-            const mcq = document.getElementById("mcq");
-            const fill = document.getElementById("fill");
+    <!-- FORM SECTION -->
+    <div class="col-lg-5">
+        <div class="admin-card sticky-top" style="top: 100px;">
+            <h5 class="fw-bold mb-4 border-bottom pb-2">Thêm / Sửa câu hỏi</h5>
 
-            function toggle(){
-                if(type.value === "FillInBlank"){
-                    mcq.classList.add("hidden");
-                    fill.classList.remove("hidden");
+            <form method="post" asp-page-handler="Save" asp-route-quizId="@Model.QuizId">
+                <input type="hidden" asp-for="Input.QuestionId" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Nội dung câu hỏi</label>
+                    <textarea asp-for="Input.QuestionText" class="form-control" rows="3" placeholder="Nhập nội dung câu hỏi..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Loại câu hỏi</label>
+                    <select asp-for="Input.QuestionType" id="typeSelector" class="form-select fw-bold">
+                        <option value="MultipleChoice">Trắc nghiệm (MCQ)</option>
+                        <option value="FillInBlank">Điền vào chỗ trống</option>
+                    </select>
+                </div>
+
+                <!-- MCQ OPTIONS -->
+                <div id="mcqContainer">
+                    <div class="mb-2">
+                        <input asp-for="Input.OptionA" class="form-control" placeholder="Đáp án A">
+                    </div>
+                    <div class="mb-2">
+                        <input asp-for="Input.OptionB" class="form-control" placeholder="Đáp án B">
+                    </div>
+                    <div class="mb-2">
+                        <input asp-for="Input.OptionC" class="form-control" placeholder="Đáp án C">
+                    </div>
+                    <div class="mb-2">
+                        <input asp-for="Input.OptionD" class="form-control" placeholder="Đáp án D">
+                    </div>
+                    <p class="small text-muted mt-2 italic"><i class="bi bi-info-circle me-1"></i>Mặc định đáp án A là đáp án đúng cho Trắc nghiệm.</p>
+                </div>
+
+                <!-- FILL IN BLANK -->
+                <div id="fillContainer" class="d-none">
+                    <div class="mb-2">
+                        <input asp-for="Input.FillInAnswer" class="form-control border-primary" placeholder="Nhập đáp án đúng...">
+                    </div>
+                    <p class="small text-muted mt-2 italic"><i class="bi bi-info-circle me-1"></i>Hệ thống sẽ so khớp chính xác đáp án này.</p>
+                </div>
+
+                <button type="submit" class="btn btn-primary-res w-100 mt-4 py-3 fw-bold">
+                    <i class="bi bi-save me-2"></i>Lưu câu hỏi
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .h-fit { height: fit-content; }
+    .italic { font-style: italic; }
+    .question-item { transition: all 0.2s; }
+    .question-item:hover { transform: translateX(5px); }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const typeSelector = document.getElementById("typeSelector");
+            const mcqContainer = document.getElementById("mcqContainer");
+            const fillContainer = document.getElementById("fillContainer");
+
+            function toggleInputs() {
+                if (typeSelector.value === "FillInBlank") {
+                    mcqContainer.classList.add("d-none");
+                    fillContainer.classList.remove("d-none");
                 } else {
-                    mcq.classList.remove("hidden");
-                    fill.classList.add("hidden");
+                    mcqContainer.classList.remove("d-none");
+                    fillContainer.classList.add("d-none");
                 }
             }
 
-            type.addEventListener("change", toggle);
-            toggle();
+            typeSelector.addEventListener("change", toggleInputs);
+            toggleInputs();
+        });
     </script>
-
-</body>
-</html>
+}

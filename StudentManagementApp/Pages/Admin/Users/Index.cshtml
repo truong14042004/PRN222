@@ -2,244 +2,165 @@
 @model StudentManagementApp.Pages.Admin.Users.IndexModel
 @{
     ViewData["Title"] = "Quản lý người dùng";
+    ViewData["ActivePage"] = "Users";
+    Layout = "/Pages/Admin/_AdminLayout.cshtml";
     var userName = HttpContext.Session.GetString("UserName");
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-            body {
-                font-family: "Be Vietnam Pro", sans-serif;
-                background: #f5f7fb;
-            }
-
-            /* SIDEBAR */
-            .sidebar {
-                width: 240px;
-                height: 100vh;
-                position: fixed;
-                background: #111827;
-                padding: 20px;
-                color: #e5e7eb;
-            }
-
-                .sidebar a {
-                    display: block;
-                    padding: 10px;
-                    border-radius: 8px;
-                    color: #9ca3af;
-                    text-decoration: none;
-                    margin-bottom: 6px;
-                }
-
-                    .sidebar a.active,
-                    .sidebar a:hover {
-                        background: #1f2937;
-                        color: white;
-                    }
-
-            /* MAIN */
-            .main {
-                margin-left: 240px;
-                padding: 24px;
-            }
-
-            /* HEADER */
-            .page-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-
-            /* CARD */
-            .card-custom {
-                background: #fff;
-                border-radius: 12px;
-                padding: 16px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            }
-
-            /* SEARCH BAR */
-            .search-bar {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-    </style>
-</head>
-
-<body>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h5 class="mb-3">Admin</h5>
-
-        <a href="/Admin">Dashboard</a>
-        <a href="/Admin/Users" class="active">Người dùng</a>
-        <a href="/Admin/Courses">Khóa học</a>
-        <a href="/Admin/Classes">Lớp học</a>
-        <a href="/Admin/Enrollments">Đăng ký</a>
-        <a href="/Admin/Quizzes">Quiz</a>
-
-        <hr>
-        <a href="/Auth/Logout">Đăng xuất</a>
+<div class="admin-header d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h6 class="text-res-red fw-bold text-uppercase mb-1">Hệ thống người dùng</h6>
+        <h2 class="fw-bold mb-0">Quản lý người dùng</h2>
     </div>
+    @if (Model.Tab == "teachers")
+    {
+        <a href="/Admin/Users/CreateTeacher" class="btn btn-primary-res px-4">
+            <i class="bi bi-person-plus me-2"></i>Thêm giáo viên
+        </a>
+    }
+</div>
 
-    <!-- MAIN -->
-    <div class="main">
+<div class="admin-card mb-4">
+    <!-- TABS -->
+    <ul class="nav nav-pills mb-4 bg-light p-2 rounded-3" style="width: fit-content;">
+        <li class="nav-item">
+            <a class="nav-link px-4 fw-bold @(Model.Tab == "students" ? "active bg-res-red" : "text-muted")"
+               href="/Admin/Users?tab=students">
+                Học viên
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-4 fw-bold @(Model.Tab == "teachers" ? "active bg-res-red" : "text-muted")"
+               href="/Admin/Users?tab=teachers">
+                Giáo viên
+            </a>
+        </li>
+    </ul>
 
-        <!-- HEADER -->
-        <div class="page-header">
-            <div>
-                <h4 class="fw-bold mb-0">Quản lý người dùng</h4>
-                <small class="text-muted">Xin chào, @userName</small>
+    <!-- FILTER -->
+    <form method="get" class="row g-3 align-items-center mb-4">
+        <input type="hidden" name="tab" value="@Model.Tab" />
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Tìm tên, email, số điện thoại..." value="@Model.Q">
             </div>
         </div>
-
-        <!-- ALERT -->
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">@TempData["Error"]</div>
-        }
-
-        <!-- TABS -->
-        <ul class="nav nav-tabs mb-3">
-            <li class="nav-item">
-                <a class="nav-link @(Model.Tab == "students" ? "active" : "")"
-                       href="/Admin/Users?tab=students">
-                    Học viên
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @(Model.Tab == "teachers" ? "active" : "")"
-                       href="/Admin/Users?tab=teachers">
-                    Giáo viên
-                </a>
-            </li>
-        </ul>
-
-        <!-- FILTER -->
-        <div class="card-custom mb-3">
-            <form method="get" class="search-bar">
-                <input type="hidden" name="tab" value="@Model.Tab" />
-
-                <input type="text"
-                       name="q"
-                       class="form-control"
-                       style="max-width: 300px;"
-                       placeholder="Tìm kiếm..."
-                       value="@Model.Q">
-
-                <button class="btn btn-secondary">Tìm</button>
-
-                @if (Model.Tab == "teachers")
-                {
-                    <a href="/Admin/Users/CreateTeacher" class="btn btn-primary">
-                        + Thêm giáo viên
-                    </a>
-                }
-            </form>
-
-            <div class="mt-2 text-muted">
-                Tổng cộng: <strong>@Model.TotalCount</strong> người dùng
-            </div>
+        <div class="col-md-2">
+            <button class="btn btn-dark px-4 w-100 fw-bold">Tìm kiếm</button>
         </div>
+        <div class="col-md-6 text-end">
+            <span class="text-muted small fw-bold text-uppercase">Tổng số: @Model.TotalCount</span>
+        </div>
+    </form>
 
-        <!-- TABLE -->
-        <div class="card-custom">
-
-            @if (Model.Users.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-
-                        <thead class="table-light">
-                            <tr>
-                                <th>Họ tên</th>
-                                <th>Email</th>
-                                <th>Điện thoại</th>
-                                <th>Trạng thái</th>
-                                <th class="text-end">Thao tác</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach (var user in Model.Users)
-                            {
-                                <tr>
-                                    <td><strong>@user.FullName</strong></td>
-                                    <td>@user.Email</td>
-                                    <td>@user.Phone</td>
-
-                                    <td>
-                                        <span class="badge bg-@(user.IsActive ? "success" : "danger")">
-                                            @(user.IsActive ? "Hoạt động" : "Vô hiệu")
-                                        </span>
-                                    </td>
-
-                                    <td class="text-end">
-                                        <a href="/Admin/Users/Edit/@user.Id?tab=@Model.Tab"
-                                               class="btn btn-sm btn-outline-primary">
-                                            Sửa
-                                        </a>
-
-                                        <form method="post" asp-page="/Admin/Users/Toggle" class="d-inline">
-                                            <input type="hidden" name="id" value="@user.Id" />
-                                            <input type="hidden" name="tab" value="@Model.Tab" />
-
-                                            <button class="btn btn-sm @(user.IsActive ? "btn-danger" : "btn-success")">
-                                                @(user.IsActive ? "Vô hiệu" : "Kích hoạt")
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-
-                    </table>
-                </div>
-
-                <!-- PAGINATION -->
-                @if (Model.TotalPages > 1)
-                {
-                    <nav class="mt-3">
-                        <ul class="pagination">
-
-                            @for (int i = 1; i <= Model.TotalPages; i++)
-                            {
-                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                                    <a class="page-link"
-                                           href="/Admin/Users?tab=@Model.Tab&page=@i&q=@Model.Q">
-                                        @i
+    <!-- TABLE -->
+    @if (Model.Users.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle custom-table">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Thành viên</th>
+                        <th>Thông tin liên hệ</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-circle bg-light text-res-red fw-bold">
+                                        @user.FullName.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">@user.FullName</div>
+                                        <div class="text-muted small">ID: #@user.Id</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small"><i class="bi bi-envelope me-2"></i>@user.Email</div>
+                                <div class="small"><i class="bi bi-telephone me-2"></i>@user.Phone</div>
+                            </td>
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="badge rounded-pill bg-success-subtle text-success px-3">
+                                        <i class="bi bi-check-circle-fill me-1"></i>Hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill bg-danger-subtle text-danger px-3">
+                                        <i class="bi bi-x-circle-fill me-1"></i>Vô hiệu
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="/Admin/Users/Edit/@user.Id?tab=@Model.Tab"
+                                       class="btn btn-sm btn-light border fw-bold text-muted px-3">
+                                        <i class="bi bi-pencil-square me-1"></i>Sửa
                                     </a>
-                                </li>
-                            }
 
-                        </ul>
-                    </nav>
-                }
-            }
-            else
-            {
-                <p class="text-muted mb-0">Không có người dùng nào.</p>
-            }
-
+                                    <form method="post" asp-page="/Admin/Users/Toggle" class="d-inline">
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <input type="hidden" name="tab" value="@Model.Tab" />
+                                        <button class="btn btn-sm @(user.IsActive ? "btn-outline-danger" : "btn-outline-success") fw-bold px-3">
+                                            <i class="bi @(user.IsActive ? "bi-slash-circle" : "bi-check-circle") me-1"></i>
+                                            @(user.IsActive ? "Vô hiệu" : "Kích hoạt")
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
 
-    </div>
+        <!-- PAGINATION -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link px-3 fw-bold @(i == Model.CurrentPage ? "bg-res-red border-res-red" : "text-dark")"
+                               href="/Admin/Users?tab=@Model.Tab&page=@i&q=@Model.Q">
+                                @i
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-people text-muted opacity-25 display-1"></i>
+            <p class="mt-3 text-muted fw-bold">Không tìm thấy người dùng nào phù hợp.</p>
+        </div>
+    }
+</div>
 
-</body>
-</html>
+<style>
+    .avatar-circle {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem; border: 1px solid #eee;
+    }
+    .bg-success-subtle { background: #ecfdf5 !important; }
+    .bg-danger-subtle { background: #fef2f2 !important; }
+    .custom-table thead th {
+        font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.5px; color: #64748b; padding-top: 15px; padding-bottom: 15px;
+    }
+    .custom-table tbody td { padding-top: 15px; padding-bottom: 15px; }
+</style>

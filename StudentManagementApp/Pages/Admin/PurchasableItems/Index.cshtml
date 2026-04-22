@@ -2,109 +2,97 @@
 @model StudentManagementApp.Pages.Admin.PurchasableItems.IndexModel
 @{
     ViewData["Title"] = "Quản lý vật phẩm";
-    var userName = HttpContext.Session.GetString("UserName");
+    ViewData["ActivePage"] = "PurchasableItems";
+    Layout = "/Pages/Admin/_AdminLayout.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        body { font-family: "Be Vietnam Pro", sans-serif; background: #f5f7fb; }
-        .sidebar { width: 240px; height: 100vh; position: fixed; background: #111827; padding: 20px; color: #e5e7eb; }
-        .sidebar a { display: block; padding: 10px; border-radius: 8px; color: #9ca3af; text-decoration: none; margin-bottom: 6px; }
-        .sidebar a.active, .sidebar a:hover { background: #1f2937; color: white; }
-        .main { margin-left: 240px; padding: 24px; }
-        .card-custom { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <h5 class="mb-3">Admin</h5>
-        <a href="/Admin">Dashboard</a>
-        <a href="/Admin/Users">Người dùng</a>
-        <a href="/Admin/Courses">Khóa học</a>
-        <a href="/Admin/Classes">Lớp học</a>
-        <a href="/Admin/Enrollments">Đăng ký</a>
-        <a href="/Admin/PurchasableItems" class="active">Vật phẩm</a>
-        <a href="/Admin/Quizzes">Quiz</a>
-        <hr>
-        <a href="/Auth/Logout">Đăng xuất</a>
+<div class="admin-header d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h6 class="text-res-red fw-bold text-uppercase mb-1">Cửa hàng học liệu</h6>
+        <h2 class="fw-bold mb-0">Danh sách vật phẩm</h2>
     </div>
+    <a asp-page="./Create" class="btn btn-primary-res px-4">
+        <i class="bi bi-plus-lg me-2"></i>Thêm vật phẩm
+    </a>
+</div>
 
-    <div class="main">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="fw-bold mb-0">Danh sách Vật phẩm</h4>
-                <small class="text-muted">Quản lý sách, tài liệu và học liệu</small>
-            </div>
-            <a asp-page="./Create" class="btn btn-primary d-flex align-items-center gap-2">
-                <i class="bi bi-plus-lg"></i> Thêm vật phẩm
-            </a>
-        </div>
-
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
-                @TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        }
-
-        <div class="card-custom">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
+<div class="admin-card">
+    @if (Model.Items.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle custom-table">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Hình ảnh</th>
+                        <th>Tên vật phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>Kho hàng</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
                         <tr>
-                            <th>Hình ảnh</th>
-                            <th>Tên vật phẩm</th>
-                            <th>Giá</th>
-                            <th>Số lượng</th>
-                            <th>Trạng thái</th>
-                            <th class="text-end">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Items)
-                        {
-                            <tr>
-                                <td>
-                                    <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://res.edu.vn/wp-content/uploads/2021/10/banner-ielts-res.jpg" : item.ImageUrl)" 
-                                         alt="@item.Name" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
-                                </td>
-                                <td>
-                                    <div class="fw-bold">@item.Name</div>
-                                    <small class="text-muted line-clamp-1" style="max-width: 300px;">@item.Description</small>
-                                </td>
-                                <td><span class="fw-bold text-primary">@item.Price.ToString("N0") VNĐ</span></td>
-                                <td>@item.Quantity</td>
-                                <td>
-                                    <span class="badge bg-@(item.IsActive ? "success" : "secondary")">
-                                        @(item.IsActive ? "Đang bán" : "Ngừng bán")
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="bi bi-pencil"></i>
+                            <td class="ps-4">
+                                <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://res.edu.vn/wp-content/uploads/2021/10/banner-ielts-res.jpg" : item.ImageUrl)" 
+                                     alt="@item.Name" class="rounded-3 shadow-sm" style="width: 60px; height: 60px; object-fit: cover;">
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">@item.Name</div>
+                                <div class="text-muted small text-truncate" style="max-width: 250px;">@item.Description</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-primary">@item.Price.ToString("N0") <small>đ</small></div>
+                            </td>
+                            <td>
+                                <div class="fw-bold">@item.Quantity</div>
+                                <div class="text-muted small">Đơn vị: Cái/Cuốn</div>
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge rounded-pill bg-success-subtle text-success px-3">Đang bán</span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill bg-secondary-subtle text-muted px-3">Ngừng bán</span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-light border fw-bold text-muted px-3">
+                                        <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa vật phẩm này?');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" class="d-inline" onsubmit="return confirm('Xác nhận xóa vật phẩm này?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-bold px-3">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-box-seam text-muted opacity-25 display-1"></i>
+            <p class="mt-3 text-muted fw-bold">Hiện chưa có vật phẩm nào trong kho.</p>
+        </div>
+    }
+</div>
+
+<style>
+    .bg-success-subtle { background: #ecfdf5 !important; }
+    .bg-secondary-subtle { background: #f8fafc !important; }
+    .custom-table thead th {
+        font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.5px; color: #64748b; padding-top: 15px; padding-bottom: 15px;
+    }
+    .custom-table tbody td { padding-top: 15px; padding-bottom: 15px; }
+</style>

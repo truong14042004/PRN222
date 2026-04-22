@@ -2,239 +2,126 @@
 @model StudentManagementApp.Pages.Admin.IndexModel
 @using System.Text.Json
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Dashboard Quản trị";
+    ViewData["ActivePage"] = "Dashboard";
+    Layout = "_AdminLayout";
     var userName = HttpContext.Session.GetString("UserName");
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
+<style>
+    .admin-stat-card {
+        padding: 24px;
+        border-radius: 20px;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        transition: transform 0.2s;
+    }
+    .admin-stat-card:hover { transform: translateY(-5px); }
+    .stat-icon-box {
+        width: 48px; height: 48px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 15px; font-size: 1.5rem;
+    }
+    .icon-revenue { background: #ecfdf5; color: #10b981; }
+    .icon-student { background: #eff6ff; color: #3b82f6; }
+    .icon-teacher { background: #fdf2f8; color: #db2777; }
+    .icon-course { background: #fff7ed; color: #f59e0b; }
+    .stat-label { color: #64748b; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .stat-value { font-size: 1.75rem; font-weight: 800; color: #1e293b; }
+    .quick-action-card { padding: 20px; border-radius: 15px; text-align: center; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: all 0.2s; }
+    .quick-action-card:hover { transform: scale(1.05); }
+    .chart-container { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 30px; }
+</style>
 
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-            body {
-                font-family: "Be Vietnam Pro", sans-serif;
-                background: #f5f7fb;
-            }
-
-            /* SIDEBAR */
-            .sidebar {
-                width: 240px;
-                height: 100vh;
-                position: fixed;
-                background: #111827;
-                padding: 20px;
-                color: #e5e7eb;
-            }
-
-                .sidebar h5 {
-                    font-weight: 700;
-                    margin-bottom: 25px;
-                }
-
-                .sidebar a {
-                    display: block;
-                    padding: 10px;
-                    border-radius: 8px;
-                    color: #9ca3af;
-                    text-decoration: none;
-                    margin-bottom: 6px;
-                }
-
-                    .sidebar a:hover,
-                    .sidebar a.active {
-                        background: #1f2937;
-                        color: #fff;
-                    }
-
-            /* MAIN */
-            .main {
-                margin-left: 240px;
-                padding: 24px;
-            }
-
-            /* HEADER */
-            .page-header {
-                margin-bottom: 20px;
-            }
-
-            /* CARD */
-            .stat-card {
-                border-radius: 12px;
-                padding: 18px;
-                background: #fff;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            }
-
-            .stat-title {
-                font-size: 0.85rem;
-                color: #6b7280;
-            }
-
-            .stat-value {
-                font-size: 1.6rem;
-                font-weight: 700;
-            }
-
-            .money-card {
-                background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-                border: 1px solid #a7f3d0;
-            }
-
-            .money-card .stat-title {
-                color: #065f46;
-                font-weight: 600;
-            }
-
-            .money-card .stat-value {
-                color: #047857;
-                font-size: 1.85rem;
-            }
-
-            /* ACTION */
-            .action-btn {
-                border-radius: 10px;
-                padding: 10px;
-            }
-
-            .chart-card {
-                border-radius: 12px;
-                padding: 18px;
-                background: #fff;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            }
-
-            .chart-wrap {
-                position: relative;
-                width: 100%;
-                height: 320px;
-            }
-    </style>
-</head>
-
-<body>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h5>Admin</h5>
-
-        <a class="active" href="/Admin">Dashboard</a>
-        <a href="/Admin/Users">Người dùng</a>
-        <a href="/Admin/Courses">Khóa học</a>
-        <a href="/Admin/Classes">Lớp học</a>
-        <a href="/Admin/Enrollments">Đăng ký</a>
-        <a href="/Admin/PurchasableItems">Vật phẩm</a>
-        <a href="/Admin/Quizzes">Quiz</a>
-
-        <hr>
-
-        <a href="/Auth/Logout">Đăng xuất</a>
+<div class="admin-header d-flex justify-content-between align-items-center">
+    <div>
+        <h6 class="text-res-red fw-bold text-uppercase mb-1">Tổng quan hệ thống</h6>
+        <h2 class="fw-bold mb-0">Dashboard</h2>
     </div>
-
-    <!-- MAIN -->
-    <div class="main">
-
-        <!-- HEADER -->
-        <div class="page-header">
-            <h4 class="fw-bold">Dashboard</h4>
-            <p class="text-muted mb-0">Xin chào, @userName</p>
-        </div>
-
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-
-        <!-- STATS -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card money-card">
-                    <div class="stat-title">Tổng doanh thu</div>
-                    <div class="stat-value">@Model.TotalRevenue.ToString("N0") đ</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-title">Học viên</div>
-                    <div class="stat-value">@Model.StudentCount</div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-title">Giáo viên</div>
-                    <div class="stat-value">@Model.TeacherCount</div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-title">Khóa học</div>
-                    <div class="stat-value">@Model.CourseCount</div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-title">Lớp học</div>
-                    <div class="stat-value">@Model.ClassCount</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- QUICK ACTION -->
-        <div class="mb-4">
-            <h6 class="fw-bold mb-3">Thao tác nhanh</h6>
-
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <a href="/Admin/Users/Create" class="btn btn-primary w-100 action-btn shadow-sm">
-                        <i class="bi bi-person-plus me-1"></i> Thêm học viên
-                    </a>
-                </div>
-
-                <div class="col-md-3">
-                    <a href="/Admin/Courses/Create" class="btn btn-outline-primary w-100 action-btn shadow-sm">
-                        <i class="bi bi-book me-1"></i> Thêm khóa học
-                    </a>
-                </div>
-
-                <div class="col-md-3">
-                    <a href="/Admin/Classes/Create" class="btn btn-outline-secondary w-100 action-btn shadow-sm">
-                        <i class="bi bi-door-open me-1"></i> Tạo lớp học
-                    </a>
-                </div>
-
-                <div class="col-md-3">
-                    <a href="/Admin/PurchasableItems/Create" class="btn btn-outline-danger w-100 action-btn shadow-sm">
-                        <i class="bi bi-cart-plus me-1"></i> Thêm vật phẩm
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="chart-card mb-4">
-            <h6 class="fw-bold mb-3">Biểu đồ doanh thu 6 tháng gần nhất</h6>
-            <div class="chart-wrap">
-                <canvas id="revenueChart"></canvas>
-            </div>
-        </div>
-
-        <!-- EXTRA -->
-        <div class="stat-card">
-            <h6 class="fw-bold">Thông tin hệ thống</h6>
-            <p class="text-muted small mb-0">
-                Đây là khu vực dashboard. Bạn có thể thêm biểu đồ, hoạt động gần đây hoặc thống kê nâng cao tại đây.
-            </p>
-        </div>
-
+    <div class="text-end">
+        <div class="fw-bold">@userName</div>
+        <div class="text-muted small">Quyền: Quản trị hệ thống</div>
     </div>
+</div>
 
+<!-- STATS GRID -->
+<div class="row g-4 mb-5">
+    <div class="col-xl-3 col-md-6">
+        <div class="admin-stat-card h-100">
+            <div class="stat-icon-box icon-revenue"><i class="bi bi-currency-dollar"></i></div>
+            <div class="stat-label">Tổng doanh thu</div>
+            <div class="stat-value text-success">@Model.TotalRevenue.ToString("N0") <small style="font-size: 0.6em;">đ</small></div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="admin-stat-card h-100">
+            <div class="stat-icon-box icon-student"><i class="bi bi-person-badge"></i></div>
+            <div class="stat-label">Học viên</div>
+            <div class="stat-value">@Model.StudentCount</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="admin-stat-card h-100">
+            <div class="stat-icon-box icon-teacher"><i class="bi bi-person-workspace"></i></div>
+            <div class="stat-label">Giáo viên</div>
+            <div class="stat-value">@Model.TeacherCount</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="admin-stat-card h-100">
+            <div class="stat-icon-box icon-course"><i class="bi bi-book"></i></div>
+            <div class="stat-label">Khóa học</div>
+            <div class="stat-value">@Model.CourseCount</div>
+        </div>
+    </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="mb-5">
+    <h5 class="fw-bold mb-4"><i class="bi bi-lightning-charge-fill text-res-red me-2"></i>Thao tác nhanh</h5>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <a href="/Admin/Users/Create" class="res-card quick-action-card border-0 bg-white shadow-sm">
+                <i class="bi bi-person-plus fs-2 text-primary"></i>
+                <span class="fw-bold">Học viên mới</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="/Admin/Courses/Create" class="res-card quick-action-card border-0 bg-white shadow-sm">
+                <i class="bi bi-journal-plus fs-2 text-success"></i>
+                <span class="fw-bold">Khóa học mới</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="/Admin/Classes/Create" class="res-card quick-action-card border-0 bg-white shadow-sm">
+                <i class="bi bi-building-add fs-2 text-warning"></i>
+                <span class="fw-bold">Lớp học mới</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="/Admin/PurchasableItems/Create" class="res-card quick-action-card border-0 bg-white shadow-sm">
+                <i class="bi bi-cart-plus fs-2 text-danger"></i>
+                <span class="fw-bold">Thêm vật phẩm</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- REVENUE CHART -->
+<div class="chart-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold mb-0">Biểu đồ tăng trưởng doanh thu</h5>
+        <div class="dropdown">
+            <button class="btn btn-light btn-sm fw-bold border" type="button">6 tháng gần nhất</button>
+        </div>
+    </div>
+    <div style="height: 350px;">
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>
+
+@section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         (function () {
@@ -242,8 +129,10 @@
             const data = @Html.Raw(JsonSerializer.Serialize(Model.RevenueMonthValues));
             const canvas = document.getElementById("revenueChart");
             if (!canvas || !window.Chart) return;
-
             const ctx = canvas.getContext("2d");
+            const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+            gradient.addColorStop(0, 'rgba(220, 38, 38, 0.2)');
+            gradient.addColorStop(1, 'rgba(220, 38, 38, 0)');
             new Chart(ctx, {
                 type: "line",
                 data: {
@@ -251,20 +140,25 @@
                     datasets: [{
                         label: "Doanh thu (VNĐ)",
                         data: data,
-                        borderColor: "#2563eb",
-                        backgroundColor: "rgba(37, 99, 235, 0.12)",
+                        borderColor: "#dc2626",
+                        borderWidth: 3,
+                        backgroundColor: gradient,
                         fill: true,
-                        tension: 0.35,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        tension: 0.4,
+                        pointBackgroundColor: "#fff",
+                        pointBorderColor: "#dc2626",
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: true },
+                        legend: { display: false },
                         tooltip: {
+                            backgroundColor: '#1e293b',
                             callbacks: {
                                 label: function (ctx) {
                                     const value = Number(ctx.raw || 0);
@@ -276,16 +170,18 @@
                     scales: {
                         y: {
                             beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
                             ticks: {
                                 callback: function (value) {
-                                    return Number(value).toLocaleString("vi-VN") + " đ";
+                                    if (value >= 1000000) return (value / 1000000) + "M";
+                                    return value.toLocaleString("vi-VN");
                                 }
                             }
-                        }
+                        },
+                        x: { grid: { display: false } }
                     }
                 }
             });
         })();
     </script>
-</body>
-</html>
+}

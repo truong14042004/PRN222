@@ -2,117 +2,128 @@
 @model StudentManagementApp.Pages.Teacher.AttendanceModel
 @{
     ViewData["Title"] = "Điểm danh lớp";
-    var userName = HttpContext.Session.GetString("UserName");
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">English Center</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/Teacher">Lớp dạy</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Teacher/Schedule">Lịch dạy</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Quizzes">Quiz</a></li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<style>
+    .attendance-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        overflow: hidden;
+        border: none;
+    }
 
-    <div class="container mt-4">
+    .student-row:hover {
+        background-color: var(--res-red-light);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--res-red);
+        border-color: var(--res-red);
+    }
+</style>
+
+<section class="py-5 bg-light min-vh-100">
+    <div class="container py-4">
         @if (Model.Class is null)
         {
-            <div class="alert alert-danger">Không tìm thấy lớp học.</div>
-            <a href="/Teacher" class="btn btn-secondary">Quay lại</a>
+            <div class="text-center py-5">
+                <i class="bi bi-exclamation-triangle text-warning display-1 mb-4"></i>
+                <h2 class="fw-bold">Không tìm thấy lớp học</h2>
+                <a href="/Teacher" class="btn btn-primary-res px-5 mt-3">QUAY LẠI</a>
+            </div>
         }
         else
         {
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-end mb-5">
                 <div>
-                    <h2 class="mb-1">Điểm danh: @Model.Class.ClassName</h2>
-                    <div class="text-muted">@Model.Class.CourseName</div>
+                    <h6 class="text-res-red fw-bold text-uppercase mb-1">Hệ thống điểm danh</h6>
+                    <h2 class="fw-bold mb-0">LỚP: @Model.Class.ClassName</h2>
+                    <p class="text-muted mb-0">@Model.Class.CourseName</p>
                 </div>
-                <a href="/Teacher/AttendanceReport/@Model.ClassId" class="btn btn-outline-secondary">Xem báo cáo</a>
+                <div class="d-flex gap-3">
+                    <a href="/Teacher/AttendanceReport/@Model.ClassId" class="btn btn-outline-res px-4">
+                        <i class="bi bi-file-earmark-bar-graph me-2"></i>XEM BÁO CÁO
+                    </a>
+                    <a href="/Teacher" class="btn btn-light px-4 text-muted fw-bold">
+                        <i class="bi bi-arrow-left me-2"></i>QUAY LẠI
+                    </a>
+                </div>
             </div>
 
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success">@TempData["Success"]</div>
-            }
+            <div class="attendance-card mb-4 p-4">
+                <form method="get" class="row g-3 align-items-end">
+                    <input type="hidden" name="classId" value="@Model.ClassId" />
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Ngày điểm danh</label>
+                        <div class="input-group">
+                            <span class="input-group-text border-0 bg-light"><i class="bi bi-calendar-event"></i></span>
+                            <input type="date" name="date" class="form-control form-control-lg border-0 bg-light" 
+                                   value="@Model.Date.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
+                        </div>
+                    </div>
+                    <div class="col-md-auto ms-auto">
+                        <div class="text-muted small">
+                            <i class="bi bi-info-circle me-1"></i> Hệ thống tự động tải lại khi bạn chọn ngày khác.
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-            <form method="get" class="row g-2 align-items-end mb-3">
-                <input type="hidden" name="classId" value="@Model.ClassId" />
-                <div class="col-md-3">
-                    <label class="form-label">Ngày điểm danh</label>
-                    <input type="date" name="date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" />
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-secondary">Tải lại</button>
-                </div>
-            </form>
+            <div class="attendance-card">
+                <form method="post">
+                    <input type="hidden" asp-for="ClassId" />
+                    <input type="hidden" asp-for="Date" />
 
-            <form method="post">
-                <input type="hidden" asp-for="ClassId" />
-                <input type="hidden" asp-for="Date" />
-
-                @if (Model.Rows.Any())
-                {
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Học viên</th>
-                                <th>Có mặt</th>
-                                <th>Ghi chú</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (var i = 0; i < Model.Rows.Count; i++)
-                            {
-                                <tr>
-                                    <td>
-                                        <input type="hidden" asp-for="Rows[i].StudentId" />
-                                        <input type="hidden" asp-for="Rows[i].StudentName" />
-                                        @Model.Rows[i].StudentName
-                                    </td>
-                                    <td>
-                                        <input asp-for="Rows[i].IsPresent" class="form-check-input" />
-                                    </td>
-                                    <td>
-                                        <input asp-for="Rows[i].Note" class="form-control form-control-sm" />
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-
-                    <button type="submit" class="btn btn-primary">Lưu điểm danh</button>
-                    <a href="/Teacher" class="btn btn-secondary">Quay lại</a>
-                }
-                else
-                {
-                    <p class="text-muted">Lớp chưa có học viên được xác nhận.</p>
-                    <a href="/Teacher" class="btn btn-secondary">Quay lại</a>
-                }
-            </form>
+                    @if (Model.Rows.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4" style="width: 40%;">Học viên</th>
+                                        <th class="text-center" style="width: 15%;">Có mặt</th>
+                                        <th class="pe-4">Ghi chú / Nhận xét</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.Rows.Count; i++)
+                                    {
+                                        <tr class="student-row">
+                                            <td class="ps-4">
+                                                <input type="hidden" asp-for="Rows[i].StudentId" />
+                                                <input type="hidden" asp-for="Rows[i].StudentName" />
+                                                <div class="fw-bold">@Model.Rows[i].StudentName</div>
+                                                <div class="small text-muted">Học viên chính thức</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="form-check d-flex justify-content-center">
+                                                    <input asp-for="Rows[i].IsPresent" class="form-check-input" style="width: 1.5rem; height: 1.5rem;" />
+                                                </div>
+                                            </td>
+                                            <td class="pe-4">
+                                                <input asp-for="Rows[i].Note" class="form-control border-0 bg-light-subtle" placeholder="Nhập ghi chú..." />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-4 bg-light text-end">
+                            <button type="submit" class="btn btn-primary-res px-5 py-3 shadow">
+                                <i class="bi bi-cloud-arrow-up me-2"></i>LƯU DỮ LIỆU ĐIỂM DANH
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-people text-muted opacity-25" style="font-size: 4rem;"></i>
+                            <p class="text-muted mt-3">Lớp chưa có học viên nào được xác nhận tham gia.</p>
+                        </div>
+                    }
+                </form>
+            </div>
         }
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</section>

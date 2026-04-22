@@ -3,7 +3,7 @@ namespace StudentManagementApp.BLL.DTOs;
 public class CartDto
 {
     public List<CartItemDto> Items { get; set; } = new List<CartItemDto>();
-    public decimal TotalAmount => Items.Sum(i => i.Price);
+    public decimal TotalAmount => Items.Sum(i => i.Price * i.Quantity);
 }
 
 public class CartItemDto
@@ -14,4 +14,5 @@ public class CartItemDto
     public string Name { get; set; } = null!;
     public decimal Price { get; set; }
     public string? ImageUrl { get; set; }
+    public int Quantity { get; set; }
 }

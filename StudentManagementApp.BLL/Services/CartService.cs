@@ -10,6 +10,7 @@ public interface ICartService
     Task<CartDto> GetCartAsync(int userId);
     Task AddToCartAsync(int userId, OrderItemType itemType, int itemId);
     Task RemoveFromCartAsync(int userId, OrderItemType itemType, int itemId);
+    Task UpdateQuantityAsync(int userId, OrderItemType itemType, int itemId, int quantity);
     Task ClearCartAsync(int userId);
 }
 
@@ -51,7 +52,8 @@ public class CartService : ICartService
                         ItemId = classItem.Id,
                         Name = $"{course.Name} - {classItem.ClassName}",
                         Price = course.TuitionFee,
-                        ImageUrl = course.ThumbnailUrl
+                        ImageUrl = course.ThumbnailUrl,
+                        Quantity = item.Quantity
                     });
                 }
             }
@@ -67,7 +69,8 @@ public class CartService : ICartService
                         ItemId = product.Id,
                         Name = product.Name,
                         Price = product.Price,
-                        ImageUrl = product.ImageUrl
+                        ImageUrl = product.ImageUrl,
+                        Quantity = item.Quantity
                     });
                 }
             }
@@ -78,19 +81,28 @@ public class CartService : ICartService
 
     public async Task AddToCartAsync(int userId, OrderItemType itemType, int itemId)
     {
-        var exists = await _context.CartItems
-            .AnyAsync(c => c.UserId == userId && c.ItemType == itemType && c.ItemId == itemId);
+        var existing = await _context.CartItems
+            .FirstOrDefaultAsync(c => c.UserId == userId && c.ItemType == itemType && c.ItemId == itemId);
 
-        if (!exists)
+        if (existing == null)
         {
             _context.CartItems.Add(new CartItem
             {
                 UserId = userId,
                 ItemType = itemType,
-                ItemId = itemId
+                ItemId = itemId,
+                Quantity = 1
             });
-            await _context.SaveChangesAsync();
         }
+        else
+        {
+            if (itemType == OrderItemType.PurchasableItem)
+            {
+                existing.Quantity += 1;
+            }
+            // For courses, we don't increment as quantity must stay 1
+        }
+        await _context.SaveChangesAsync();
     }
 
     public async Task RemoveFromCartAsync(int userId, OrderItemType itemType, int itemId)
@@ -101,6 +113,20 @@ public class CartService : ICartService
         if (item != null)
         {
             _context.CartItems.Remove(item);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task UpdateQuantityAsync(int userId, OrderItemType itemType, int itemId, int quantity)
+    {
+        if (itemType == OrderItemType.Course) return; // Cannot update quantity for courses
+
+        var item = await _context.CartItems
+            .FirstOrDefaultAsync(c => c.UserId == userId && c.ItemType == itemType && c.ItemId == itemId);
+
+        if (item != null)
+        {
+            item.Quantity = quantity > 0 ? quantity : 1;
             await _context.SaveChangesAsync();
         }
     }

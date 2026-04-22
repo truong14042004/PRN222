@@ -35,10 +35,22 @@
                                                 <h5 class="fw-bold mb-1">@item.Name</h5>
                                                 <span class="badge-res bg-light text-dark border py-1 px-3" style="font-size: 0.6rem;">@item.ItemType.ToUpper()</span>
                                             </div>
-                                            <div class="col-auto text-end">
-                                                <div class="fw-bold text-res-red h5 mb-2">@item.Price.ToString("N0") VNĐ</div>
+                                            <div class="col-auto">
+                                                <form method="post" asp-page-handler="UpdateQuantity" class="d-flex align-items-center">
+                                                    <input type="hidden" name="itemType" value="@item.ItemType" />
+                                                    <input type="hidden" name="itemId" value="@item.ItemId" />
+                                                    <div class="input-group input-group-sm" style="width: 120px;">
+                                                        <button class="btn btn-outline-secondary" type="button" onclick="this.nextElementSibling.stepDown(); this.form.submit();" @(item.ItemType == "Course" ? "disabled" : "")>-</button>
+                                                        <input type="number" name="quantity" value="@item.Quantity" class="form-control text-center fw-bold" min="1" onchange="this.form.submit()" @(item.ItemType == "Course" ? "disabled" : "") />
+                                                        <button class="btn btn-outline-secondary" type="button" onclick="this.previousElementSibling.stepUp(); this.form.submit();" @(item.ItemType == "Course" ? "disabled" : "")>+</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-auto text-end" style="min-width: 150px;">
+                                                <div class="fw-bold text-res-red h5 mb-2">@((item.Price * item.Quantity).ToString("N0")) VNĐ</div>
                                                 <form method="post" asp-page-handler="Remove">
-                                                    <input type="hidden" name="cartItemId" value="@item.ItemId" />
+                                                    <input type="hidden" name="itemType" value="@item.ItemType" />
+                                                    <input type="hidden" name="itemId" value="@item.ItemId" />
                                                     <button type="submit" class="btn btn-link text-muted btn-sm p-0 text-decoration-none">
                                                         <i class="bi bi-trash me-1"></i> Xóa bỏ
                                                     </button>

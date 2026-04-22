@@ -57,9 +57,9 @@ public class OrderService : IOrderService
             if (item.ItemType == "PurchasableItem")
             {
                 var product = await _context.PurchasableItems.FindAsync(item.ItemId);
-                if (product == null || product.Quantity <= 0)
+                if (product == null || product.Quantity < item.Quantity)
                 {
-                    throw new Exception($"Sản phẩm '{item.Name}' đã hết hàng.");
+                    throw new Exception($"Sản phẩm '{item.Name}' không đủ số lượng tồn kho (Còn lại: {product?.Quantity ?? 0}).");
                 }
             }
 
@@ -67,7 +67,8 @@ public class OrderService : IOrderService
             {
                 ItemType = item.ItemType == "Course" ? OrderItemType.Course : OrderItemType.PurchasableItem,
                 ItemId = item.ItemId,
-                Price = item.Price
+                Price = item.Price,
+                Quantity = item.Quantity
             });
         }
 
@@ -122,10 +123,10 @@ public class OrderService : IOrderService
                 var product = await _context.PurchasableItems.FindAsync(item.ItemId);
                 if (product != null)
                 {
-                    if (product.Quantity <= 0) 
-                        throw new Exception($"Sản phẩm '{product.Name}' đã hết hàng trong lúc xử lý thanh toán.");
+                    if (product.Quantity < item.Quantity) 
+                        throw new Exception($"Sản phẩm '{product.Name}' không đủ số lượng trong lúc xử lý thanh toán.");
                     
-                    product.Quantity -= 1;
+                    product.Quantity -= item.Quantity;
                 }
             }
 

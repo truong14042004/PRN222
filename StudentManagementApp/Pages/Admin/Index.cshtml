@@ -1,5 +1,6 @@
 @page
 @model StudentManagementApp.Pages.Admin.IndexModel
+@using System.Text.Json
 @{
     ViewData["Title"] = "Dashboard";
     var userName = HttpContext.Session.GetString("UserName");
@@ -80,10 +81,38 @@
                 font-weight: 700;
             }
 
+            .money-card {
+                background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+                border: 1px solid #a7f3d0;
+            }
+
+            .money-card .stat-title {
+                color: #065f46;
+                font-weight: 600;
+            }
+
+            .money-card .stat-value {
+                color: #047857;
+                font-size: 1.85rem;
+            }
+
             /* ACTION */
             .action-btn {
                 border-radius: 10px;
                 padding: 10px;
+            }
+
+            .chart-card {
+                border-radius: 12px;
+                padding: 18px;
+                background: #fff;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            }
+
+            .chart-wrap {
+                position: relative;
+                width: 100%;
+                height: 320px;
             }
     </style>
 </head>
@@ -122,6 +151,12 @@
 
         <!-- STATS -->
         <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card money-card">
+                    <div class="stat-title">Tổng doanh thu</div>
+                    <div class="stat-value">@Model.TotalRevenue.ToString("N0") đ</div>
+                </div>
+            </div>
             <div class="col-md-3">
                 <div class="stat-card">
                     <div class="stat-title">Học viên</div>
@@ -176,6 +211,13 @@
             </div>
         </div>
 
+        <div class="chart-card mb-4">
+            <h6 class="fw-bold mb-3">Biểu đồ doanh thu 6 tháng gần nhất</h6>
+            <div class="chart-wrap">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
         <!-- EXTRA -->
         <div class="stat-card">
             <h6 class="fw-bold">Thông tin hệ thống</h6>
@@ -186,5 +228,57 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function () {
+            const labels = @Html.Raw(JsonSerializer.Serialize(Model.RevenueMonthLabels));
+            const data = @Html.Raw(JsonSerializer.Serialize(Model.RevenueMonthValues));
+            const canvas = document.getElementById("revenueChart");
+            if (!canvas || !window.Chart) return;
+
+            const ctx = canvas.getContext("2d");
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Doanh thu (VNĐ)",
+                        data: data,
+                        borderColor: "#2563eb",
+                        backgroundColor: "rgba(37, 99, 235, 0.12)",
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) {
+                                    const value = Number(ctx.raw || 0);
+                                    return " " + value.toLocaleString("vi-VN") + " đ";
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return Number(value).toLocaleString("vi-VN") + " đ";
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

@@ -41,6 +41,8 @@ public class User
     [Column(TypeName = "decimal(18,2)")]
     public decimal WalletBalance { get; set; } = 0;
 
+    public bool RegistrationFeePaid { get; set; } = false;
+
     public ICollection<Class> TeachingClasses { get; set; } = new List<Class>();
     public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();

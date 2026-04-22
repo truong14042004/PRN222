@@ -22,7 +22,7 @@ namespace StudentManagementApp.Pages.Admin.Enrollments
 
             await _enrollmentService.ConfirmAsync(id);
             TempData["Success"] = "Đã xác nhận đăng ký.";
-            return RedirectToPage("/Admin/Enrollments");
+            return RedirectToPage("/Admin/Enrollments/Index");
         }
     }
 }

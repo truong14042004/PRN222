@@ -91,7 +91,7 @@
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
                                                     <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i> Chi tiết</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-event me-2"></i> Xem lịch học</a></li>
+                                                    <li><a class="dropdown-item" href="#student-schedule"><i class="bi bi-calendar-event me-2"></i> Xem lịch học</a></li>
                                                     <li><hr class="dropdown-divider"></li>
                                                     <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x-circle me-2"></i> Hủy đăng ký</a></li>
                                                 </ul>
@@ -114,5 +114,81 @@
                 }
             </div>
         </div>
+
+        <div id="student-schedule" class="mt-5 mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0"><i class="bi bi-calendar3 text-res-red me-2"></i>LỊCH HỌC TRONG TUẦN</h4>
+                <div class="d-flex gap-2">
+                    <a href="/Student?date=@Model.PreviousWeek.ToString("yyyy-MM-dd")" class="btn btn-light btn-sm rounded-pill px-3 shadow-sm border">
+                        <i class="bi bi-chevron-left"></i> Tuần trước
+                    </a>
+                    <div class="bg-white border rounded-pill px-4 py-1 small fw-bold d-flex align-items-center shadow-sm">
+                        @Model.WeekStart.ToString("dd/MM") — @Model.WeekEnd.ToString("dd/MM/yyyy")
+                    </div>
+                    <a href="/Student?date=@Model.NextWeek.ToString("yyyy-MM-dd")" class="btn btn-light btn-sm rounded-pill px-3 shadow-sm border">
+                        Tuần sau <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="res-card overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table mb-0 border-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th style="width: 120px;" class="border-0 py-3 ps-4 text-muted small text-uppercase fw-bold">Ngày học</th>
+                                <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Ca học chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var day in Model.WeekDays)
+                            {
+                                var sessions = Model.Sessions.Where(s => s.DayOfWeek == day.DayOfWeek).ToList();
+                                var isToday = day.Date == DateOnly.FromDateTime(DateTime.Today);
+                                <tr>
+                                    <td class="ps-4 py-4 border-end @(isToday ? "bg-res-red-light" : "")">
+                                        <div class="small fw-bold @(isToday ? "text-res-red" : "text-muted")">@day.DayName.ToUpper()</div>
+                                        <div class="h5 fw-bold mb-0 @(isToday ? "text-res-red" : "")">@day.Date.ToString("dd/MM")</div>
+                                        @if (isToday)
+                                        {
+                                            <span class="badge bg-res-red mt-1" style="font-size: 0.6rem;">HÔM NAY</span>
+                                        }
+                                    </td>
+                                    <td class="py-4 pe-4">
+                                        <div class="d-flex flex-wrap gap-3">
+                                            @if (sessions.Any())
+                                            {
+                                                foreach (var s in sessions)
+                                                {
+                                                    <div class="p-3 border rounded-4 bg-white shadow-sm" style="min-width: 220px; border-left: 4px solid var(--res-red) !important;">
+                                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                                            <span class="badge bg-res-red-light text-res-red rounded-pill px-2 py-1" style="font-size: 0.7rem;">
+                                                                <i class="bi bi-clock me-1"></i> @s.StartTime – @s.EndTime
+                                                            </span>
+                                                        </div>
+                                                        <div class="fw-bold text-dark mb-1">@s.ClassName</div>
+                                                        <div class="small text-muted">@s.CourseName</div>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="py-2 text-muted small italic text-opacity-50">Không có lịch học</div>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
+
+<style>
+    .bg-res-red-light { background-color: rgba(232, 65, 42, 0.05); }
+    .border-res-red { border-color: var(--res-red) !important; }
+    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+</style>

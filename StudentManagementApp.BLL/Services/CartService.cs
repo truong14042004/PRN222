@@ -35,15 +35,21 @@ public class CartService : ICartService
         {
             if (item.ItemType == OrderItemType.Course)
             {
-                var course = await _context.Courses.FindAsync(item.ItemId);
-                if (course != null)
+                var classItem = await _context.Classes.FindAsync(item.ItemId);
+                if (classItem != null)
                 {
+                    var course = await _context.Courses.FindAsync(classItem.CourseId);
+                    if (course == null)
+                    {
+                        continue;
+                    }
+
                     cartDto.Items.Add(new CartItemDto
                     {
                         CartItemId = item.Id,
                         ItemType = "Course",
-                        ItemId = course.Id,
-                        Name = course.Name,
+                        ItemId = classItem.Id,
+                        Name = $"{course.Name} - {classItem.ClassName}",
                         Price = course.TuitionFee,
                         ImageUrl = course.ThumbnailUrl
                     });

@@ -2,570 +2,99 @@
 @model StudentManagementApp.Pages.Home.IndexModel
 @{
     ViewData["Title"] = "Trang chủ";
-    var userId = HttpContext.Session.GetString("UserId");
 }
+
+@* Hero Section *@
+<section class="hero-section position-relative overflow-hidden" style="background: url('/images/banner.jpg') no-repeat center center; background-size: cover; min-height: 600px;">
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.3));"></div>
+    <div class="container position-relative h-100 d-flex align-items-center" style="min-height: 600px;">
+        <div class="row w-100">
+            <div class="col-lg-7 text-white">
+                <h1 class="display-3 fw-bold mb-3 animate__animated animate__fadeInUp">HỆ THỐNG ANH NGỮ MESH</h1>
+                <p class="h4 fw-normal mb-5 text-white animate__animated animate__fadeInUp animate__delay-1s">Đơn vị đào tạo IELTS hàng đầu Việt Nam với lộ trình cá nhân hóa, giúp bạn đạt mục tiêu nhanh nhất.</p>
+                <div class="d-flex gap-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="/Course" class="btn btn-primary-res btn-lg px-5">KHÁM PHÁ KHÓA HỌC</a>
+                    <a href="/Auth/Register" class="btn btn-outline-light btn-lg px-5 rounded-pill fw-bold border-2">ĐĂNG KÝ NGAY</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Stats Section *@
+<section class="py-5 bg-res-red text-white">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3 col-6">
+                <div class="h2 fw-bold mb-0">15+</div>
+                <div class="small opacity-75 text-uppercase">Năm kinh nghiệm</div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="h2 fw-bold mb-0">40+</div>
+                <div class="small opacity-75 text-uppercase">Trung tâm toàn quốc</div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="h2 fw-bold mb-0">50,000+</div>
+                <div class="small opacity-75 text-uppercase">Học viên IELTS 7.0+</div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="h2 fw-bold mb-0">100%</div>
+                <div class="small opacity-75 text-uppercase">Giảng viên bản ngữ</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Why RES Section *@
+<section class="py-5">
+    <div class="container py-4">
+        <h2 class="res-section-title center">TẠI SAO CHỌN RES?</h2>
+        <div class="row g-4 mt-2">
+            <div class="col-lg-4">
+                <div class="res-card p-4 text-center">
+                    <div class="bg-res-red bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-mortarboard-fill text-res-red h1 mb-0"></i>
+                    </div>
+                    <h5 class="fw-bold">Lộ trình chuyên sâu</h5>
+                    <p class="text-muted small">Chương trình học được thiết kế bám sát cấu trúc đề thi IELTS mới nhất từ IDP và British Council.</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="res-card p-4 text-center">
+                    <div class="bg-res-red bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-people-fill text-res-red h1 mb-0"></i>
+                    </div>
+                    <h5 class="fw-bold">Đội ngũ chuyên gia</h5>
+                    <p class="text-muted small">Giảng viên là các chuyên gia khảo thí IELTS, giàu kinh nghiệm sư phạm và tâm huyết.</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="res-card p-4 text-center">
+                    <div class="bg-res-red bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-laptop-fill text-res-red h1 mb-0"></i>
+                    </div>
+                    <h5 class="fw-bold">Hệ thống Hybrid</h5>
+                    <p class="text-muted small">Kết hợp học trực tiếp tại trung tâm và ôn luyện trực tuyến qua hệ thống LMS hiện đại.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* CTA Section *@
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="res-card bg-white border-0 shadow-lg p-5 text-center">
+            <h2 class="fw-bold mb-3">SẴN SÀNG CHINH PHỤC IELTS?</h2>
+            <p class="text-muted mb-4 mx-auto" style="max-width: 700px;">Đừng để rào cản tiếng Anh ngăn bước tiến của bạn. Hãy để RES đồng hành cùng bạn trên con đường chinh phục đỉnh cao học thuật.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="/Auth/Register" class="btn btn-primary-res px-5 py-3">NHẬN TƯ VẤN MIỄN PHÍ</a>
+                <a href="tel:18001234" class="btn btn-outline-res px-5 py-3"><i class="bi bi-telephone-fill me-2"></i>GỌI HOTLINE</a>
+            </div>
+        </div>
+    </div>
+</section>
 
 @section Styles {
-<style>
-@@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
-
-:root {
-  --red:        #E8162C;
-  --red-dark:   #B5101F;
-  --red-glow:   rgba(232,22,44,0.18);
-  --black:      #0A0A0A;
-  --dark:       #141414;
-  --card-bg:    #1C1C1C;
-  --border:     rgba(255,255,255,0.07);
-  --muted:      rgba(255,255,255,0.45);
-  --white:      #FFFFFF;
-  --radius:     12px;
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 }
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Be Vietnam Pro', sans-serif;
-  background: var(--black);
-  color: var(--white);
-  overflow-x: hidden;
-}
-
-/* ─── HERO ─────────────────────────────────── */
-.hero {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  overflow: hidden;
-}
-
-.hero__bg {
-  position: absolute;
-  inset: 0;
-  background: url('/images/banner.jpg') center center / cover no-repeat;
-  transform: scale(1.08);
-  animation: heroZoom 14s ease-out forwards;
-}
-
-.hero__overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 70% 60% at 20% 60%, rgba(232,22,44,0.22) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.72) 50%, rgba(10,10,10,0.97) 100%);
-  z-index: 1;
-}
-
-.hero__grain {
-  position: absolute; inset: 0; z-index: 2; opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 200px;
-}
-
-.hero__particles { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
-.particle {
-  position: absolute; border-radius: 50%; background: var(--red); opacity: 0;
-  animation: floatParticle var(--dur, 8s) var(--delay, 0s) ease-in-out infinite;
-}
-.particle:nth-child(1)  { width:4px; height:4px; left:8%;  --dur:9s;  --delay:0s; }
-.particle:nth-child(2)  { width:3px; height:3px; left:22%; --dur:12s; --delay:2s; }
-.particle:nth-child(3)  { width:5px; height:5px; left:38%; --dur:8s;  --delay:4s; }
-.particle:nth-child(4)  { width:3px; height:3px; left:58%; --dur:14s; --delay:1s; }
-.particle:nth-child(5)  { width:4px; height:4px; left:74%; --dur:10s; --delay:3s; }
-.particle:nth-child(6)  { width:2px; height:2px; left:90%; --dur:7s;  --delay:5s; }
-
-.hero__cut {
-  position: absolute; bottom: -1px; left: 0; right: 0; height: 140px;
-  background: var(--black);
-  clip-path: polygon(0 55%, 100% 0, 100% 100%, 0 100%);
-  z-index: 4;
-}
-
-.hero__inner {
-  position: relative; z-index: 3;
-  max-width: 1300px; margin: 0 auto; width: 100%;
-  padding: 180px 80px 160px;
-  display: grid; grid-template-columns: 1.1fr 0.9fr;
-  gap: 60px; align-items: flex-end;
-}
-
-.hero__left { display: flex; flex-direction: column; gap: 32px; }
-
-.hero__label {
-  display: inline-flex; align-items: center; gap: 12px;
-  font-family: 'Syne', sans-serif; font-size: 10.5px; font-weight: 700;
-  letter-spacing: 0.3em; text-transform: uppercase; color: var(--red);
-  opacity: 0; animation: revealUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
-}
-
-.hero__label-line {
-  display: block; width: 0; height: 1.5px; background: var(--red);
-  animation: expandLine 0.8s ease 0.5s forwards;
-}
-
-.hero__title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(3rem, 6vw, 5.5rem);
-  font-weight: 800; line-height: 0.95; letter-spacing: -0.02em; color: var(--white);
-  opacity: 0; animation: revealUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.5s forwards;
-}
-
-.hero__title-outline { -webkit-text-stroke: 1.5px rgba(255,255,255,0.22); color: transparent; }
-.hero__title-red { color: var(--red); }
-
-.hero__desc {
-  font-size: 1rem; font-weight: 400; color: var(--muted); max-width: 500px; line-height: 1.8;
-  opacity: 0; animation: revealUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.7s forwards;
-}
-
-.hero__cta {
-  display: flex; align-items: center; gap: 20px;
-  opacity: 0; animation: revealUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.9s forwards;
-}
-
-.btn-primary {
-  position: relative; display: inline-flex; align-items: center; gap: 10px;
-  background: var(--red); color: #fff;
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 16px 36px; border-radius: 6px; text-decoration: none;
-  overflow: hidden; transition: transform 0.25s, box-shadow 0.25s;
-  box-shadow: 0 8px 28px rgba(232,22,44,0.4);
-}
-.btn-primary::before {
-  content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
-  transition: left 0.5s;
-}
-.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(232,22,44,0.5); color:#fff; }
-.btn-primary:hover::before { left: 100%; }
-
-.btn-ghost {
-  display: inline-flex; align-items: center; gap: 8px;
-  color: rgba(255,255,255,0.55); font-size: 0.875rem; font-weight: 500;
-  text-decoration: none; transition: color 0.2s, gap 0.2s;
-}
-.btn-ghost:hover { color: #fff; gap: 12px; }
-
-/* Stats glass card */
-.hero__stats-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  padding: 40px 36px; display: flex; flex-direction: column; gap: 28px;
-  opacity: 0; animation: revealUp 1s cubic-bezier(0.22,1,0.36,1) 1.1s forwards;
-}
-.stat-row { display: flex; align-items: center; gap: 18px; }
-.stat-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  background: var(--red-glow); border: 1px solid rgba(232,22,44,0.25);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem; flex-shrink: 0;
-}
-.stat-num {
-  font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800;
-  color: var(--white); line-height: 1;
-}
-.stat-num span { color: var(--red); font-size: 1.1rem; }
-.stat-lbl { font-size: 0.77rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.04em; }
-.stat-divider { height: 1px; background: var(--border); }
-
-/* ─── MARQUEE ───────────────────────────────── */
-.marquee { display: flex; overflow: hidden; background: var(--red); padding: 13px 0; }
-.marquee__track {
-  display: flex; animation: marquee 25s linear infinite; will-change: transform; flex-shrink: 0;
-}
-.marquee__item {
-  display: inline-flex; align-items: center; gap: 28px; padding: 0 28px;
-  white-space: nowrap; font-family: 'Syne', sans-serif; font-size: 10px;
-  font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.9);
-}
-.marquee__dot { color: rgba(255,255,255,0.35); font-size: 13px; }
-
-/* ─── SEARCH ────────────────────────────────── */
-.search-section {
-  max-width: 900px; margin: -30px auto 0; padding: 0 32px; position: relative; z-index: 20;
-}
-.search-pill {
-  background: var(--dark); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px;
-  padding: 8px 8px 8px 32px; display: flex; align-items: center; gap: 14px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
-  transition: border-color 0.3s;
-}
-.search-pill:focus-within { border-color: rgba(232,22,44,0.4); }
-.search-pill svg { color: rgba(255,255,255,0.3); flex-shrink: 0; }
-.search-pill input {
-  flex: 1; background: transparent; border: none; outline: none;
-  font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.95rem; color: var(--white);
-}
-.search-pill input::placeholder { color: rgba(255,255,255,0.28); }
-.btn-search {
-  background: var(--red); color: #fff; border: none;
-  font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 14px 30px; border-radius: 100px; cursor: pointer; white-space: nowrap;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(232,22,44,0.35);
-}
-.btn-search:hover { background: var(--red-dark); box-shadow: 0 6px 28px rgba(232,22,44,0.5); }
-
-/* ─── FEATURES ──────────────────────────────── */
-.features-section {
-  max-width: 1300px; margin: 80px auto 0; padding: 0 80px;
-}
-.features-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 1px; background: var(--border);
-  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
-}
-.feature-item {
-  background: var(--dark); padding: 32px 26px;
-  display: flex; align-items: flex-start; gap: 18px; transition: background 0.3s;
-}
-.feature-item:hover { background: #1f1f1f; }
-.feature-icon {
-  width: 44px; height: 44px; border-radius: 10px;
-  background: var(--red-glow); border: 1px solid rgba(232,22,44,0.2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.15rem; flex-shrink: 0;
-}
-.feature-title {
-  font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700;
-  color: var(--white); margin-bottom: 7px;
-}
-.feature-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.65; }
-
-/* ─── COURSES ───────────────────────────────── */
-.courses-section {
-  max-width: 1300px; margin: 100px auto; padding: 0 80px;
-}
-.section-head {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  margin-bottom: 52px; gap: 20px; flex-wrap: wrap;
-}
-.section-eyebrow {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
-  letter-spacing: 0.3em; text-transform: uppercase; color: var(--red); margin-bottom: 14px;
-}
-.section-eyebrow::before { content:''; display:block; width:24px; height:1.5px; background:var(--red); }
-.section-title {
-  font-family: 'Syne', sans-serif; font-size: clamp(1.9rem, 3.5vw, 3rem);
-  font-weight: 800; color: var(--white); line-height: 1.05; letter-spacing: -0.02em;
-}
-.section-title em { font-style: normal; color: var(--red); }
-.btn-all {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
-  text-decoration: none; padding: 12px 22px;
-  border: 1px solid var(--border); border-radius: 100px;
-  transition: color 0.2s, border-color 0.2s, background 0.2s; white-space: nowrap;
-}
-.btn-all:hover { color:#fff; border-color:rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); }
-
-/* GRID */
-.courses-grid {
-  display: grid; grid-template-columns: repeat(3,1fr); gap: 20px;
-}
-.courses-grid .ccard:first-child { grid-column: span 2; }
-
-/* CARD */
-.ccard {
-  position: relative; border-radius: 16px; overflow: hidden;
-  background: var(--card-bg); border: 1px solid var(--border);
-  display: flex; flex-direction: column; cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), border-color 0.3s, box-shadow 0.4s;
-}
-.ccard:hover {
-  transform: translateY(-8px);
-  border-color: rgba(232,22,44,0.3);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(232,22,44,0.15);
-}
-.ccard__thumb { position: relative; overflow: hidden; height: 210px; }
-.ccard:first-child .ccard__thumb { height: 290px; }
-.ccard__img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  filter: brightness(0.82);
-  transition: transform 0.6s cubic-bezier(0.22,1,0.36,1), filter 0.4s;
-}
-.ccard:hover .ccard__img { transform: scale(1.07); filter: brightness(1); }
-.ccard__thumb-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(10,10,10,0.75) 0%, transparent 55%);
-}
-.ccard__badge {
-  position: absolute; top: 16px; left: 16px;
-  background: var(--red); color: #fff;
-  font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  padding: 5px 12px; border-radius: 100px;
-}
-.ccard__body { padding: 22px 24px 24px; flex: 1; display: flex; flex-direction: column; }
-.ccard__title {
-  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
-  color: var(--white); line-height: 1.35; margin-bottom: 10px; transition: color 0.2s;
-}
-.ccard:first-child .ccard__title { font-size: 1.25rem; }
-.ccard__desc {
-  font-size: 0.83rem; color: var(--muted); line-height: 1.65; flex: 1;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  overflow: hidden; margin-bottom: 20px;
-}
-.ccard__footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 18px; border-top: 1px solid var(--border);
-}
-.ccard__price {
-  font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--white);
-}
-.ccard__price sub { font-size: 0.62rem; font-weight: 600; color: var(--muted); margin-left: 2px; }
-.ccard__link {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px;
-  background: var(--red-glow); border: 1px solid rgba(232,22,44,0.25);
-  border-radius: 50%; color: var(--red); text-decoration: none;
-  transition: background 0.2s, transform 0.25s, color 0.2s;
-}
-.ccard__link:hover { background: var(--red); color: #fff; transform: rotate(45deg); }
-
-.empty-state {
-  grid-column: 1/-1; text-align: center; padding: 100px 0; color: var(--muted);
-}
-
-/* ─── SCROLL REVEAL ─────────────────────────── */
-.reveal {
-  opacity: 0; transform: translateY(28px);
-  transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
-}
-.reveal.visible { opacity: 1; transform: none; }
-.rd1 { transition-delay: 0.1s; } .rd2 { transition-delay: 0.2s; }
-.rd3 { transition-delay: 0.3s; } .rd4 { transition-delay: 0.4s; }
-
-/* ─── KEYFRAMES ─────────────────────────────── */
-@@keyframes heroZoom { from { transform: scale(1.08); } to { transform: scale(1); } }
-@@keyframes revealUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
-@@keyframes expandLine { from { width:0; } to { width:36px; } }
-@@keyframes floatParticle {
-
-}
-@@keyframes marquee { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-
-/* ─── RESPONSIVE ────────────────────────────── */
-@@media (max-width: 1100px) {
-  .hero__inner, .courses-section, .features-section { padding-left: 48px; padding-right: 48px; }
-  .features-grid { grid-template-columns: repeat(2,1fr); }
-}
-@@media (max-width: 860px) {
-  .hero__inner { grid-template-columns: 1fr; padding: 120px 32px 110px; }
-  .hero__stats-card { display: none; }
-  .courses-grid { grid-template-columns: 1fr 1fr; }
-  .courses-grid .ccard:first-child { grid-column: span 2; }
-  .courses-section { padding: 0 32px; }
-}
-@@media (max-width: 580px) {
-  .hero__title { font-size: 2.8rem; }
-  .courses-grid { grid-template-columns: 1fr; }
-  .courses-grid .ccard:first-child { grid-column: span 1; }
-  .search-pill { border-radius: 12px; padding: 12px 16px; flex-direction: column; }
-  .btn-search { width: 100%; border-radius: 8px; }
-  .features-section { padding: 0 24px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .courses-section { padding: 0 24px; }
-}
-</style>
-}
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero__bg"></div>
-  <div class="hero__overlay"></div>
-  <div class="hero__grain"></div>
-  <div class="hero__particles" aria-hidden="true">
-    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-  </div>
-
-  <div class="hero__inner">
-    <div class="hero__left">
-      <span class="hero__label">
-        <span class="hero__label-line"></span>
-        English Center — Nền tảng học tiếng Anh
-      </span>
-      <h1 class="hero__title">
-        Chinh Phục<br>
-        <span class="hero__title-outline">Tiếng Anh</span><br>
-        <span class="hero__title-red">Đỉnh Cao.</span>
-      </h1>
-      <p class="hero__desc">
-        Đồng hành cùng hàng nghìn học viên với phương pháp chuẩn quốc tế, lộ trình cá nhân hóa và đội ngũ giảng viên tận tâm — từng bước vươn tới mục tiêu.
-      </p>
-      <div class="hero__cta">
-        @if (userId == null) {
-          <a href="/Auth/Register" class="btn-primary">
-            Khám Phá Ngay
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <a href="/Course" class="btn-ghost">
-            Xem khóa học
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        } else {
-          <a href="/Course" class="btn-primary">
-            Xem Khóa Học
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        }
-      </div>
-    </div>
-
-    <div class="hero__stats-card">
-      <div class="stat-row">
-        <div class="stat-icon">🎓</div>
-        <div><div class="stat-num">10,000<span>+</span></div><div class="stat-lbl">Học viên đã tin tưởng</div></div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-row">
-        <div class="stat-icon">⭐</div>
-        <div><div class="stat-num">98<span>%</span></div><div class="stat-lbl">Học viên hài lòng</div></div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-row">
-        <div class="stat-icon">📚</div>
-        <div><div class="stat-num">50<span>+</span></div><div class="stat-lbl">Khóa học đa dạng</div></div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-row">
-        <div class="stat-icon">🏆</div>
-        <div><div class="stat-num">8<span>+</span></div><div class="stat-lbl">Năm kinh nghiệm</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="hero__cut"></div>
-</section>
-
-<!-- MARQUEE -->
-<div class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    @for (int i = 0; i < 3; i++) {
-      <div class="marquee__item">IELTS <span class="marquee__dot">✦</span></div>
-      <div class="marquee__item">TOEIC <span class="marquee__dot">✦</span></div>
-      <div class="marquee__item">GIAO TIẾP <span class="marquee__dot">✦</span></div>
-      <div class="marquee__item">BUSINESS ENGLISH <span class="marquee__dot">✦</span></div>
-      <div class="marquee__item">CAMBRIDGE <span class="marquee__dot">✦</span></div>
-      <div class="marquee__item">KIDS ENGLISH <span class="marquee__dot">✦</span></div>
-      <div class="marquee__item">TOEFL <span class="marquee__dot">✦</span></div>
-      <div class="marquee__item">LUYỆN THI ĐẠI HỌC <span class="marquee__dot">✦</span></div>
-    }
-  </div>
-</div>
-
-<!-- SEARCH -->
-<div class="search-section">
-  <div class="search-pill">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-    </svg>
-    <form method="get" style="display:flex;flex:1;align-items:center;gap:14px;">
-      <input type="text" name="q" placeholder="Tìm khóa học IELTS, TOEIC, giao tiếp..." value="@ViewData["Q"]" />
-      <button type="submit" class="btn-search">Tìm kiếm</button>
-    </form>
-  </div>
-</div>
-
-<!-- FEATURES -->
-<div class="features-section reveal">
-  <div class="features-grid">
-    <div class="feature-item">
-      <div class="feature-icon">🎯</div>
-      <div>
-        <div class="feature-title">Lộ trình cá nhân</div>
-        <div class="feature-desc">Chương trình học thiết kế riêng theo mục tiêu và trình độ.</div>
-      </div>
-    </div>
-    <div class="feature-item">
-      <div class="feature-icon">👨‍🏫</div>
-      <div>
-        <div class="feature-title">Giảng viên chuyên nghiệp</div>
-        <div class="feature-desc">Đội ngũ giáo viên chuẩn quốc tế, nhiều năm kinh nghiệm.</div>
-      </div>
-    </div>
-    <div class="feature-item">
-      <div class="feature-icon">📱</div>
-      <div>
-        <div class="feature-title">Học mọi lúc, mọi nơi</div>
-        <div class="feature-desc">Hệ thống online linh hoạt, theo dõi tiến độ trực quan.</div>
-      </div>
-    </div>
-    <div class="feature-item">
-      <div class="feature-icon">🏅</div>
-      <div>
-        <div class="feature-title">Chứng chỉ được công nhận</div>
-        <div class="feature-desc">Giá trị, được các tổ chức trong và ngoài nước công nhận.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- COURSES -->
-<section class="courses-section">
-  <div class="section-head reveal">
-    <div>
-      <div class="section-eyebrow">Chương trình học</div>
-      <h2 class="section-title">Khóa Học <em>Nổi Bật</em></h2>
-    </div>
-    <a href="/Course" class="btn-all">
-      Tất cả khóa học
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-  </div>
-
-  @if (Model.Courses != null && Model.Courses.Any()) {
-    <div class="courses-grid">
-      @{ int ci = 0; }
-      @foreach (var course in Model.Courses) {
-        <div class="ccard reveal rd@((ci % 4) + 1)">
-          <div class="ccard__thumb">
-            @if (!string.IsNullOrEmpty(course.ThumbnailUrl)) {
-              <img src="@course.ThumbnailUrl" class="ccard__img" alt="@course.Name" loading="lazy" />
-            } else {
-              <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800&q=80" class="ccard__img" alt="@course.Name" loading="lazy" />
-            }
-            <div class="ccard__thumb-overlay"></div>
-            <span class="ccard__badge">@course.Level</span>
-          </div>
-          <div class="ccard__body">
-            <h3 class="ccard__title">@course.Name</h3>
-            <p class="ccard__desc">@course.Description</p>
-            <div class="ccard__footer">
-              <span class="ccard__price">@course.TuitionFee.ToString("N0")<sub>VNĐ</sub></span>
-              <a href="/Course/Detail/@course.Id" class="ccard__link" title="Chi tiết">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-            </div>
-          </div>
-        </div>
-        ci++;
-      }
-    </div>
-  } else {
-    <div class="courses-grid">
-      <div class="empty-state">
-        <p style="font-size:2.5rem;margin-bottom:14px">🔍</p>
-        <p>Không tìm thấy khóa học phù hợp.</p>
-      </div>
-    </div>
-  }
-</section>
-
-<script>
-const obs = new IntersectionObserver(
-  es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-  { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-);
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-</script>

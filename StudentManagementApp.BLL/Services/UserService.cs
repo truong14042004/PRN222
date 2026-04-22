@@ -78,6 +78,8 @@ public class UserService : IUserService
         Role = user.Role,
         AvatarUrl = user.AvatarUrl,
         IsActive = user.IsActive,
+        WalletBalance = user.WalletBalance,
+        RegistrationFeePaid = user.RegistrationFeePaid,
         CreatedAt = user.CreatedAt
     };
 }

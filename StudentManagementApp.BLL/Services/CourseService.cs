@@ -7,10 +7,14 @@ namespace StudentManagementApp.BLL.Services;
 public class CourseService : ICourseService
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly ICourseNotificationPublisher _notificationPublisher;
 
-    public CourseService(ICourseRepository courseRepository)
+    public CourseService(
+        ICourseRepository courseRepository,
+        ICourseNotificationPublisher notificationPublisher)
     {
         _courseRepository = courseRepository;
+        _notificationPublisher = notificationPublisher;
     }
 
     public async Task<IEnumerable<CourseDto>> GetAllAsync()
@@ -33,14 +37,20 @@ public class CourseService : ICourseService
 
     public async Task CreateAsync(CreateCourseDto dto)
     {
-        await _courseRepository.AddAsync(new Course
+        var course = new Course
         {
             Name = dto.Name,
             Level = dto.Level,
             Description = dto.Description,
             TuitionFee = dto.TuitionFee,
             ThumbnailUrl = dto.ThumbnailUrl
-        });
+        };
+
+        await _courseRepository.AddAsync(course);
+        await PublishCourseChangedAsync(
+            "Created",
+            MapToDto(course),
+            $"Khóa học {course.Name} vừa được tạo.");
     }
 
     public async Task UpdateAsync(UpdateCourseDto dto)
@@ -56,10 +66,56 @@ public class CourseService : ICourseService
         course.IsActive = dto.IsActive;
 
         await _courseRepository.UpdateAsync(course);
+        await PublishCourseChangedAsync(
+            "Updated",
+            MapToDto(course),
+            $"Khóa học {course.Name} vừa được cập nhật.");
     }
 
-    public async Task DeleteAsync(int id) =>
+    public async Task DeleteAsync(int id)
+    {
+        var course = await _courseRepository.GetByIdAsync(id);
+        if (course is null)
+        {
+            await _courseRepository.DeleteAsync(id);
+            return;
+        }
+
+        var snapshot = MapToDto(course);
         await _courseRepository.DeleteAsync(id);
+        await PublishCourseChangedAsync(
+            "Deleted",
+            snapshot,
+            $"Khóa học {snapshot.Name} vừa được xóa.");
+    }
+
+    private async Task PublishCourseChangedAsync(string action, CourseDto course, string message)
+    {
+        try
+        {
+            await _notificationPublisher.PublishCourseChangedAsync(new CourseChangedNotification
+            {
+                Action = action,
+                CourseId = course.Id,
+                Course = course,
+                Title = GetTitle(action),
+                Message = message,
+                OccurredAt = DateTime.Now
+            });
+        }
+        catch
+        {
+            // Realtime notification should not break course CRUD.
+        }
+    }
+
+    private static string GetTitle(string action) => action switch
+    {
+        "Created" => "Khóa học mới",
+        "Updated" => "Khóa học đã cập nhật",
+        "Deleted" => "Khóa học đã xóa",
+        _ => "Khóa học thay đổi"
+    };
 
     private static CourseDto MapToDto(Course course) => new()
     {

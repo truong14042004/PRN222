@@ -4,81 +4,96 @@
     ViewData["Title"] = "Hồ sơ cá nhân";
 }
 
-<div class="container py-5">
-    <div class="row g-4">
-        <div class="col-lg-5">
-            <div class="res-card h-100">
-                <div class="res-card-header">Thông Tin Tài Khoản</div>
-                <div class="card-body p-4">
-                    @if (Model.CurrentUser is null)
-                    {
-                        <p class="text-muted mb-0">Không tìm thấy thông tin tài khoản.</p>
-                    }
-                    else
-                    {
-                        <div class="mb-3">
-                            <div class="small text-muted">Họ tên</div>
-                            <div class="fw-semibold">@Model.CurrentUser.FullName</div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="small text-muted">Username</div>
-                            <div class="fw-semibold">@Model.CurrentUser.Username</div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="small text-muted">Email</div>
-                            <div class="fw-semibold">@Model.CurrentUser.Email</div>
-                        </div>
-                        <div class="mb-0">
-                            <div class="small text-muted">Vai trò</div>
-                            <div class="fw-semibold">@Model.CurrentUser.Role</div>
-                        </div>
-                    }
-                </div>
-            </div>
+<section class="py-5 bg-light min-vh-100">
+    <div class="container py-4">
+        <div class="mb-5">
+            <h6 class="text-res-red fw-bold text-uppercase mb-1">Cài đặt tài khoản</h6>
+            <h2 class="fw-bold mb-0">HỒ SƠ CỦA TÔI</h2>
         </div>
 
-        <div class="col-lg-7">
-            <div class="res-card mb-4">
-                <div class="res-card-header">Cập Nhật Hồ Sơ</div>
-                <div class="card-body p-4">
-                    <form method="post" asp-page-handler="Profile" class="form-res">
-                        <div class="mb-3">
-                            <label class="form-label">Họ tên</label>
-                            <input asp-for="Input.FullName" class="form-control" />
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="res-card p-4 text-center">
+                    <div class="position-relative d-inline-block mb-4">
+                        <img src="@(string.IsNullOrEmpty(Model.CurrentUser?.AvatarUrl) ? "https://ui-avatars.com/api/?name=" + Model.CurrentUser?.FullName + "&background=DC343B&color=fff&size=256" : Model.CurrentUser.AvatarUrl)" 
+                             class="rounded-circle shadow-sm" alt="Avatar" style="width: 150px; height: 150px; object-fit: cover;">
+                        <button class="btn btn-primary-res btn-sm position-absolute bottom-0 end-0 rounded-circle p-2 shadow" title="Thay đổi ảnh">
+                            <i class="bi bi-camera-fill"></i>
+                        </button>
+                    </div>
+                    <h4 class="fw-bold mb-1">@Model.CurrentUser?.FullName</h4>
+                    <p class="text-muted small mb-4">@Model.CurrentUser?.Email</p>
+                    <div class="bg-light p-3 rounded-3 text-start mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small text-muted">Username:</span>
+                            <span class="small fw-bold">@Model.CurrentUser?.Username</span>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Số điện thoại</label>
-                            <input asp-for="Input.Phone" class="form-control" />
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small text-muted">Vai trò:</span>
+                            <span class="badge-res badge-paid py-1 px-3" style="font-size: 0.6rem;">@Model.CurrentUser?.Role</span>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Avatar URL</label>
-                            <input asp-for="Input.AvatarUrl" class="form-control" />
+                        <div class="d-flex justify-content-between">
+                            <span class="small text-muted">Tham gia từ:</span>
+                            <span class="small fw-bold">@Model.CurrentUser?.CreatedAt.ToString("MM/yyyy")</span>
                         </div>
-                        <button type="submit" class="btn btn-primary-res rounded-pill px-4">Lưu thay đổi</button>
-                    </form>
+                    </div>
+                    <div class="d-grid">
+                        <button class="btn btn-outline-danger btn-sm rounded-pill py-2">VÔ HIỆU HÓA TÀI KHOẢN</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="res-card">
-                <div class="res-card-header">Đổi Mật Khẩu</div>
-                <div class="card-body p-4">
-                    <form method="post" asp-page-handler="Password" class="form-res">
-                        <div class="mb-3">
-                            <label class="form-label">Mật khẩu hiện tại</label>
-                            <input type="password" name="currentPassword" class="form-control" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Mật khẩu mới</label>
-                            <input type="password" name="newPassword" class="form-control" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Xác nhận mật khẩu mới</label>
-                            <input type="password" name="confirmPassword" class="form-control" />
-                        </div>
-                        <button type="submit" class="btn btn-outline-res rounded-pill px-4">Cập nhật mật khẩu</button>
-                    </form>
+            <div class="col-lg-8">
+                <div class="res-card mb-4">
+                    <div class="res-card-header">
+                        CẬP NHẬT THÔNG TIN CƠ BẢN
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" asp-page-handler="Profile" class="form-res row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Họ và tên</label>
+                                <input asp-for="Input.FullName" class="form-control" placeholder="Nhập họ tên đầy đủ">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Số điện thoại</label>
+                                <input asp-for="Input.Phone" class="form-control" placeholder="090xxxxxxx">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Avatar URL</label>
+                                <input asp-for="Input.AvatarUrl" class="form-control" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div class="col-12 mt-4 text-end">
+                                <button type="submit" class="btn btn-primary-res px-5">LƯU THAY ĐỔI</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="res-card">
+                    <div class="res-card-header">
+                        BẢO MẬT & MẬT KHẨU
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" asp-page-handler="Password" class="form-res row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Mật khẩu hiện tại</label>
+                                <input type="password" name="currentPassword" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mật khẩu mới</label>
+                                <input type="password" name="newPassword" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Xác nhận mật khẩu mới</label>
+                                <input type="password" name="confirmPassword" class="form-control" required>
+                            </div>
+                            <div class="col-12 mt-4 text-end">
+                                <button type="submit" class="btn btn-outline-res px-5">ĐỔI MẬT KHẨU</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>

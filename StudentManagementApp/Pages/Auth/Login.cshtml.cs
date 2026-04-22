@@ -22,10 +22,20 @@ namespace StudentManagementApp.Pages.Auth
 
         public void OnGet()
         {
-            if (HttpContext.Session.GetString("UserId") != null)
+            if (string.IsNullOrWhiteSpace(HttpContext.Session.GetString("UserId")))
             {
-                Response.Redirect("/");
+                return;
             }
+
+            var destination = HttpContext.Session.GetString("UserRole") switch
+            {
+                "Admin" => "/Admin/Index",
+                "Teacher" => "/Teacher/Index",
+                "Student" => "/Student/Index",
+                _ => "/"
+            };
+
+            Response.Redirect(destination);
         }
 
         public async Task<IActionResult> OnPostAsync()

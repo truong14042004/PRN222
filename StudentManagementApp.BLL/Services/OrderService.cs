@@ -105,6 +105,7 @@ public class OrderService : IOrderService
                 order.User.WalletBalance -= order.BalanceUsed;
             }
 
+            await EnsureCourseEnrollmentsAsync(order);
             order.Status = OrderStatus.Paid;
             
             await _context.SaveChangesAsync();
@@ -164,8 +165,18 @@ public class OrderService : IOrderService
             string itemName = "Unknown";
             if (item.ItemType == OrderItemType.Course)
             {
-                var course = await _context.Courses.FindAsync(item.ItemId);
-                itemName = course?.Name ?? "Deleted Course";
+                var classItem = await _context.Classes.FindAsync(item.ItemId);
+                if (classItem != null)
+                {
+                    var course = await _context.Courses.FindAsync(classItem.CourseId);
+                    itemName = course is null
+                        ? classItem.ClassName
+                        : $"{course.Name} - {classItem.ClassName}";
+                }
+                else
+                {
+                    itemName = "Deleted Class";
+                }
             }
             else
             {
@@ -184,5 +195,55 @@ public class OrderService : IOrderService
         }
 
         return dto;
+    }
+
+    private async Task EnsureCourseEnrollmentsAsync(Order order)
+    {
+        var classIds = order.OrderItems
+            .Where(i => i.ItemType == OrderItemType.Course)
+            .Select(i => i.ItemId)
+            .Distinct()
+            .ToList();
+
+        if (!classIds.Any())
+        {
+            return;
+        }
+
+        var classes = await _context.Classes
+            .Where(c => classIds.Contains(c.Id))
+            .ToDictionaryAsync(c => c.Id);
+
+        var existingEnrollments = await _context.Enrollments
+            .Where(e => e.StudentId == order.UserId && classIds.Contains(e.ClassId))
+            .ToListAsync();
+
+        foreach (var classId in classIds)
+        {
+            if (!classes.ContainsKey(classId))
+            {
+                continue;
+            }
+
+            var existing = existingEnrollments.FirstOrDefault(e => e.ClassId == classId);
+            if (existing is null)
+            {
+                _context.Enrollments.Add(new Enrollment
+                {
+                    StudentId = order.UserId,
+                    ClassId = classId,
+                    Status = "Registered"
+                });
+                continue;
+            }
+
+            if (existing.Status == "Cancelled")
+            {
+                existing.Status = "Registered";
+                existing.EnrolledAt = DateTime.Now;
+                existing.ConfirmationCode = null;
+                existing.ConfirmedAt = null;
+            }
+        }
     }
 }

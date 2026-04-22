@@ -83,19 +83,5 @@ WeekStart = selectedDate.AddDays(daysToMonday);
         }
     }
 
-    public class DaySchedule
-    {
-        public DateOnly Date { get; set; }
-        public int DayOfWeek { get; set; }
-        public string DayName { get; set; } = string.Empty;
-    }
 
-    public class SessionInfo
-    {
-        public int DayOfWeek { get; set; }
-        public string StartTime { get; set; } = string.Empty;
-        public string EndTime { get; set; } = string.Empty;
-        public string ClassName { get; set; } = string.Empty;
-        public string CourseName { get; set; } = string.Empty;
-    }
 }

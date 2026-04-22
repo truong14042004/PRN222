@@ -1,5 +1,5 @@
 ﻿-- EnglishCenterDB Full Data Dump
--- Generated at: 04/23/2026 03:05:53
+-- Generated at: 04/23/2026 03:18:29
 USE [EnglishCenterDB];
 GO
 
@@ -372,6 +372,7 @@ INSERT INTO [QuizOptions] ([Id], [QuestionId], [OptionText], [IsCorrect], [SortO
 INSERT INTO [QuizOptions] ([Id], [QuestionId], [OptionText], [IsCorrect], [SortOrder]) VALUES (45, 19, N'reads', 1, 2);
 INSERT INTO [QuizOptions] ([Id], [QuestionId], [OptionText], [IsCorrect], [SortOrder]) VALUES (46, 19, N'reading', 0, 3);
 INSERT INTO [QuizOptions] ([Id], [QuestionId], [OptionText], [IsCorrect], [SortOrder]) VALUES (47, 19, N'readed', 0, 4);
+INSERT INTO [QuizOptions] ([Id], [QuestionId], [OptionText], [IsCorrect], [SortOrder]) VALUES (48, 21, N'it', 1, 1);
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('QuizOptions') AND is_identity = 1) SET IDENTITY_INSERT [QuizOptions] OFF;
 GO
 
@@ -397,6 +398,7 @@ INSERT INTO [QuizQuestions] ([Id], [QuizId], [QuestionText], [QuestionType], [Po
 INSERT INTO [QuizQuestions] ([Id], [QuizId], [QuestionText], [QuestionType], [Point], [SortOrder]) VALUES (18, 1, N'It ___ raining.', 2, 10, 18);
 INSERT INTO [QuizQuestions] ([Id], [QuizId], [QuestionText], [QuestionType], [Point], [SortOrder]) VALUES (19, 1, N'I ___ a book.', 1, 10, 19);
 INSERT INTO [QuizQuestions] ([Id], [QuizId], [QuestionText], [QuestionType], [Point], [SortOrder]) VALUES (20, 1, N'We ___ finished.', 2, 10, 20);
+INSERT INTO [QuizQuestions] ([Id], [QuizId], [QuestionText], [QuestionType], [Point], [SortOrder]) VALUES (21, 1, N'Let __ go', 2, 10, 21);
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('QuizQuestions') AND is_identity = 1) SET IDENTITY_INSERT [QuizQuestions] OFF;
 GO
 
@@ -409,6 +411,7 @@ GO
 -- Dumping data for table Quizzes
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Quizzes') AND is_identity = 1) SET IDENTITY_INSERT [Quizzes] ON;
 INSERT INTO [Quizzes] ([Id], [CourseId], [Title], [Description], [TimeLimitMinutes], [StartAt], [EndAt], [IsActive], [CreatedAt]) VALUES (1, 1, N'English Mixed Test', N'Bài kiểm tra tổng hợp 20 câu', 30, '2026-04-22 19:54:03.266', '2026-04-29 19:54:03.266', 1, '2026-04-22 19:54:03.266');
+INSERT INTO [Quizzes] ([Id], [CourseId], [Title], [Description], [TimeLimitMinutes], [StartAt], [EndAt], [IsActive], [CreatedAt]) VALUES (2, 5, N'Kiểm tra cuối kì nè', NULL, 30, '2026-04-23 03:14:00.000', '2026-05-09 03:14:00.000', 1, '2026-04-22 20:14:54.556');
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Quizzes') AND is_identity = 1) SET IDENTITY_INSERT [Quizzes] OFF;
 GO
 
@@ -456,7 +459,7 @@ INSERT INTO [Users] ([Id], [FullName], [Email], [Username], [Phone], [PasswordHa
 INSERT INTO [Users] ([Id], [FullName], [Email], [Username], [Phone], [PasswordHash], [Role], [AvatarUrl], [IsActive], [CreatedAt], [WalletBalance], [RegistrationFeePaid]) VALUES (15, N'Ngô Văn Hùng', N'hung.ngo@gmail.com', N'hung.ngo', N'0903000009', N'$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', N'Student', NULL, 1, '2024-02-05 09:00:00.000', 0.00, 1);
 INSERT INTO [Users] ([Id], [FullName], [Email], [Username], [Phone], [PasswordHash], [Role], [AvatarUrl], [IsActive], [CreatedAt], [WalletBalance], [RegistrationFeePaid]) VALUES (16, N'Đinh Thị Khanh', N'khanh.dinh@gmail.com', N'khanh.dinh', N'0903000010', N'$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', N'Student', NULL, 1, '2024-02-05 09:00:00.000', 0.00, 1);
 INSERT INTO [Users] ([Id], [FullName], [Email], [Username], [Phone], [PasswordHash], [Role], [AvatarUrl], [IsActive], [CreatedAt], [WalletBalance], [RegistrationFeePaid]) VALUES (17, N'Chu Văn Anh', N'anh.chu@gmail.com', N'anh.chu', N'0903000025', N'$2a$11$BvWcRd9paw1M5suEaFfOweUKwe9UpXOOJQbAEIRithXAv/.mcMfJy', N'Student', NULL, 1, '2024-03-03 09:00:00.000', 0.00, 1);
-INSERT INTO [Users] ([Id], [FullName], [Email], [Username], [Phone], [PasswordHash], [Role], [AvatarUrl], [IsActive], [CreatedAt], [WalletBalance], [RegistrationFeePaid]) VALUES (18, N'Mai Nguyễn Duy Khánh', N'mndkhanh@gmail.com', N'mndkhanh', N'0362718422', N'$2a$11$Si3YM5MhfzgbwNf0HbRYbuO62D9NTLhLiSpHXlyeqhlXVXT.lQlY.', N'Student', NULL, 1, '2026-04-22 23:01:53.348', 80300.00, 0);
+INSERT INTO [Users] ([Id], [FullName], [Email], [Username], [Phone], [PasswordHash], [Role], [AvatarUrl], [IsActive], [CreatedAt], [WalletBalance], [RegistrationFeePaid]) VALUES (18, N'Mai Nguyễn Duy Khánh', N'mndkhanh@gmail.com', N'mndkhanh', N'0362718422', N'$2a$11$Si3YM5MhfzgbwNf0HbRYbuO62D9NTLhLiSpHXlyeqhlXVXT.lQlY.', N'Student', N'https://htmediagroup.vn/wp-content/uploads/2022/11/Anh-58-copy-min.jpg.webp', 1, '2026-04-22 23:01:53.348', 80300.00, 0);
 INSERT INTO [Users] ([Id], [FullName], [Email], [Username], [Phone], [PasswordHash], [Role], [AvatarUrl], [IsActive], [CreatedAt], [WalletBalance], [RegistrationFeePaid]) VALUES (19, N'Nguyễn Căn Bình', N'mndkhanh3@gmail.com', N'canbinh', N'0362718422', N'$2a$11$EM.ClshrICOl/vugSMk51.1/4Fky1nUzQ4sH/nQeeCRX/wb3JaZqi', N'Teacher', N'https://htmediagroup.vn/wp-content/uploads/2022/11/Anh-58-copy-min.jpg.webp', 1, '2026-04-23 02:03:56.081', 100000.00, 0);
 INSERT INTO [Users] ([Id], [FullName], [Email], [Username], [Phone], [PasswordHash], [Role], [AvatarUrl], [IsActive], [CreatedAt], [WalletBalance], [RegistrationFeePaid]) VALUES (20, N'Nguyễn Nè', N'khanhbimn@gmail.com', N'ne', N'0362718422', N'$2a$11$QYapsTqClf0wdAFZz5IPa.LE7tBGPW.XIfwjGRmZsVKQ1fCcVFgIK', N'Student', NULL, 1, '2026-04-23 02:59:16.426', 0.00, 0);
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Users') AND is_identity = 1) SET IDENTITY_INSERT [Users] OFF;

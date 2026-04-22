@@ -5,128 +5,146 @@
     var userId = HttpContext.Session.GetString("UserId");
 }
 
-<div class="container py-5">
-    @if (Model.Course != null)
-    {
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="res-card mb-4">
-                    <div class="res-card-header bg-white">
-                        <h2 class="mb-0 fw-bold">@Model.Course.Name</h2>
-                    </div>
-                    <div class="card-body">
-                        <span class="badge-res bg-res-red text-white mb-3">LEVEL: @Model.Course.Level</span>
-                        <div class="mt-2 h5 fw-normal text-muted" style="line-height: 1.8;">
-                            @Model.Course.Description
+<section class="py-5 bg-light">
+    <div class="container">
+        @if (Model.Course != null)
+        {
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="res-card mb-4">
+                        <div class="res-card-header">
+                            THÔNG TIN KHÓA HỌC
                         </div>
-                        
-                        <div class="mt-4 p-4 bg-light rounded-3 d-flex align-items-center">
-                            <i class="bi bi-wallet2 text-res-red h3 mb-0 me-3"></i>
-                            <div>
-                                <div class="small text-muted fw-bold text-uppercase">Học phí trọn khóa</div>
-                                <div class="h4 mb-0 fw-bold text-res-red">@Model.Course.TuitionFee.ToString("N0") VNĐ</div>
+                        <div class="card-body p-4">
+                            <h2 class="fw-bold mb-3">@Model.Course.Name</h2>
+                            <div class="mb-4">
+                                <span class="badge bg-res-red text-white px-4 py-2 rounded-pill fw-bold">TRÌNH ĐỘ: @Model.Course.Level</span>
+                            </div>
+                            <div class="text-muted h5 fw-normal mb-5" style="line-height: 1.8;">
+                                @Model.Course.Description
+                            </div>
+                            
+                            <div class="p-4 bg-light rounded-3 border-start border-4 border-res-red d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="small text-muted fw-bold text-uppercase">Học phí ưu đãi</div>
+                                    <div class="h3 mb-0 fw-bold text-res-red">@Model.Course.TuitionFee.ToString("N0") VNĐ</div>
+                                </div>
+                                <i class="bi bi-gift text-res-red h1 mb-0 opacity-25"></i>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="res-card overflow-hidden">
-                    <div class="res-card-header d-flex justify-content-between align-items-center">
-                        <span>🗓️ LỚP HỌC ĐANG MỞ</span>
-                    </div>
-                    <div class="card-body p-0">
-                        @if (Model.Classes != null && Model.Classes.Any())
-                        {
-                            <div class="table-responsive">
-                                <table class="table res-table mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Tên lớp</th>
-                                            <th>Khai giảng</th>
-                                            <th>Kết thúc</th>
-                                            <th>Trạng thái</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var cls in Model.Classes)
-                                        {
+                    <div class="res-card">
+                        <div class="res-card-header">
+                            🗓️ LỊCH KHAI GIẢNG CÁC LỚP
+                        </div>
+                        <div class="card-body p-0">
+                            @if (Model.Classes != null && Model.Classes.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table res-table mb-0">
+                                        <thead>
                                             <tr>
-                                                <td class="fw-bold">@cls.ClassName</td>
-                                                <td>@cls.StartDate.ToString("dd/MM/yyyy")</td>
-                                                <td>@cls.EndDate.ToString("dd/MM/yyyy")</td>
-                                                <td>
-                                                    @{
-                                                        var badgeClass = cls.Status switch
-                                                        {
-                                                            "Upcoming" => "bg-success",
-                                                            "Ongoing" => "bg-primary",
-                                                            _ => "bg-secondary"
-                                                        };
-                                                    }
-                                                    <span class="badge @badgeClass px-3 py-2 rounded-pill">@cls.Status</span>
-                                                </td>
-                                                <td class="text-end">
-                                                    @if (userId != null && cls.Status == "Upcoming")
-                                                    {
-                                                        <form method="post" asp-page-handler="AddToCart" asp-route-id="@Model.Course.Id">
-                                                            <input type="hidden" name="classId" value="@cls.Id" />
-                                                            <button type="submit" class="btn btn-primary-res btn-sm rounded-pill px-3">Thêm vào giỏ</button>
-                                                        </form>
-                                                    }
-                                                    else if (userId == null)
-                                                    {
-                                                        <a href="/Auth/Login" class="btn btn-outline-res btn-sm rounded-pill px-3">Đăng nhập</a>
-                                                    }
-                                                </td>
+                                                <th>Tên lớp</th>
+                                                <th>Khai giảng</th>
+                                                <th>Kết thúc</th>
+                                                <th>Trạng thái</th>
+                                                <th>Hành động</th>
                                             </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="p-5 text-center">
-                                <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
-                                <p class="text-muted mt-3">Hiện chưa có lớp học nào khả dụng cho khóa học này.</p>
-                            </div>
-                        }
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var cls in Model.Classes)
+                                            {
+                                                <tr>
+                                                    <td class="fw-bold text-dark">@cls.ClassName</td>
+                                                    <td>@cls.StartDate.ToString("dd/MM/yyyy")</td>
+                                                    <td>@cls.EndDate.ToString("dd/MM/yyyy")</td>
+                                                    <td>
+                                                        @{
+                                                            var badgeClass = cls.Status switch
+                                                            {
+                                                                "Upcoming" => "badge-upcoming",
+                                                                "Ongoing" => "badge-ongoing",
+                                                                _ => "bg-secondary text-white"
+                                                            };
+                                                        }
+                                                        <span class="badge-res @badgeClass">@cls.Status</span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        @if (userId != null && cls.Status == "Upcoming")
+                                                        {
+                                                            <form method="post" asp-page-handler="AddToCart" asp-route-id="@Model.Course.Id">
+                                                                <input type="hidden" name="classId" value="@cls.Id" />
+                                                                <button type="submit" class="btn btn-primary-res btn-sm">ĐĂNG KÝ NGAY</button>
+                                                            </form>
+                                                        }
+                                                        else if (userId == null)
+                                                        {
+                                                            <a href="/Auth/Login" class="btn btn-outline-res btn-sm">ĐĂNG NHẬP</a>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="p-5 text-center">
+                                    <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mt-3 h5">Hiện chưa có lớp học nào khả dụng.</p>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-lg-4">
-                <div class="res-card sticky-top" style="top: 100px; z-index: 100;">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-4">Tại sao chọn chúng tôi?</h5>
-                        <ul class="list-unstyled mb-4">
-                            <li class="mb-3 d-flex align-items-start">
-                                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
-                                <span>Giảng viên bản ngữ giàu kinh nghiệm.</span>
-                            </li>
-                            <li class="mb-3 d-flex align-items-start">
-                                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
-                                <span>Giáo trình chuẩn quốc tế.</span>
-                            </li>
-                            <li class="mb-3 d-flex align-items-start">
-                                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
-                                <span>Môi trường học tập hiện đại.</span>
-                            </li>
-                        </ul>
-                        <div class="d-grid gap-2">
-                            <a href="/Course" class="btn btn-outline-res rounded-pill">Xem khóa học khác</a>
+                <div class="col-lg-4">
+                    <div class="res-card sticky-top" style="top: 100px;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 text-res-red border-bottom pb-2">ƯU ĐIỂM TẠI RES</h5>
+                            <div class="d-flex mb-4">
+                                <div class="bg-res-red bg-opacity-10 p-2 rounded me-3" style="height: fit-content;">
+                                    <i class="bi bi-patch-check-fill text-res-red h4 mb-0"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Cam kết đầu ra</h6>
+                                    <p class="small text-muted mb-0">Hỗ trợ học lại miễn phí nếu không đạt mục tiêu.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-4">
+                                <div class="bg-res-red bg-opacity-10 p-2 rounded me-3" style="height: fit-content;">
+                                    <i class="bi bi-clock-history text-res-red h4 mb-0"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Thời gian linh hoạt</h6>
+                                    <p class="small text-muted mb-0">Nhiều ca học phù hợp cho cả học sinh và người đi làm.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-4">
+                                <div class="bg-res-red bg-opacity-10 p-2 rounded me-3" style="height: fit-content;">
+                                    <i class="bi bi-lightning-fill text-res-red h4 mb-0"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Hỗ trợ 24/7</h6>
+                                    <p class="small text-muted mb-0">Đội ngũ trợ giảng luôn sẵn sàng giải đáp thắc mắc.</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <a href="/Course" class="btn btn-outline-dark w-100 rounded-pill fw-bold">QUAY LẠI DANH SÁCH</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-    else
-    {
-        <div class="text-center py-5">
-            <h2 class="text-danger">Không tìm thấy khóa học</h2>
-            <a href="/Course" class="btn btn-primary-res rounded-pill px-4 mt-3">Quay lại danh sách</a>
-        </div>
-    }
-</div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-search text-muted display-1 mb-3"></i>
+                <h2 class="text-muted">Không tìm thấy khóa học</h2>
+                <a href="/Course" class="btn btn-primary-res mt-3">XEM CÁC KHÓA HỌC KHÁC</a>
+            </div>
+        }
+    </div>
+</section>

@@ -1,91 +1,75 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500&display=swap');
 
 :root {
-    --res-red: #E8412A;
-    --res-red-dark: #C12A16;
-    --res-red-light: rgba(232, 65, 42, 0.08);
-    --res-dark: #111827;
-    --res-dark-soft: #1F2937;
+    --res-red: #DC343B;
+    --res-red-dark: #B92B31;
+    --res-bg: #FFFFFF;
+    --res-text: #333333;
     --res-white: #FFFFFF;
-    --res-bg: #F9FAFB;
-    --res-text: #1F2937;
-    --res-text-muted: #6B7280;
-    --res-border: rgba(0, 0, 0, 0.06);
-    --res-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --res-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --res-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --res-gray: #777777;
+    --res-light-gray: #f4f4f4;
+    --res-border: #eeeeee;
+    --res-footer-dark: #333333;
 }
 
 body {
-    font-family: 'Be Vietnam Pro', sans-serif;
+    font-family: 'Roboto', sans-serif;
     background-color: var(--res-bg);
     color: var(--res-text);
     overflow-x: hidden;
     line-height: 1.6;
 }
 
-/* --- UI PROMAX UTILITIES --- */
-.glass-effect {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+h1, h2, h3, h4, h5, h6, .navbar-nav {
+    font-family: 'Montserrat', sans-serif;
 }
 
-.text-gradient {
-    background: linear-gradient(135deg, var(--res-red), #FF8A00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.promax-card {
-    background: var(--res-white);
-    border-radius: 20px;
-    border: 1px solid var(--res-border);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--res-shadow-sm);
-}
-
-.promax-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--res-shadow-lg);
-    border-color: var(--res-red-light);
-}
-
-/* Navbar Promax */
+/* Navbar */
 .navbar-res {
-    background: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--res-border);
-    min-height: 75px;
+    background-color: var(--res-white) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-res .navbar-brand img {
+    height: 50px;
 }
 
 .navbar-res .nav-link {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--res-dark) !important;
-    transition: color 0.3s;
+    color: var(--res-text) !important;
+    font-weight: 700;
+    margin: 0 12px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    position: relative;
 }
 
 .navbar-res .nav-link:hover {
     color: var(--res-red) !important;
 }
 
-/* Buttons Promax */
+/* Buttons */
 .btn-primary-res {
-    background: linear-gradient(135deg, var(--res-red), #F5576C) !important;
-    border: none !important;
+    background-color: var(--res-red) !important;
+    border: 2px solid var(--res-red) !important;
     color: white !important;
     font-weight: 700;
-    padding: 14px 32px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(232, 65, 42, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 12px 30px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
 }
 
 .btn-primary-res:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(232, 65, 42, 0.4);
+    background-color: transparent !important;
+    color: var(--res-red) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 52, 59, 0.2);
 }
 
 .btn-outline-res {
@@ -93,40 +77,140 @@ body {
     color: var(--res-red) !important;
     background: transparent !important;
     font-weight: 700;
-    border-radius: 12px;
-    transition: all 0.3s;
+    padding: 10px 25px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
 }
 
 .btn-outline-res:hover {
-    background: var(--res-red-light) !important;
+    background-color: var(--res-red) !important;
+    color: white !important;
 }
 
-/* Badges Promax */
-.badge-res {
-    padding: 6px 16px;
-    border-radius: 100px;
+/* Cards */
+.res-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+    overflow: hidden;
+}
+
+.res-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(220, 52, 59, 0.1);
+    border-color: var(--res-red);
+}
+
+.res-card-header {
+    background-color: var(--res-white);
+    border-bottom: 1px solid #eee;
+    padding: 1.2rem;
     font-weight: 700;
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
+    color: var(--res-red);
+    text-transform: uppercase;
+    font-size: 1rem;
+}
+
+/* Tables */
+.res-table {
+    background: white;
+    border-radius: 0;
+}
+
+.res-table thead {
+    background-color: var(--res-red);
+}
+
+.res-table thead th {
+    color: white !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    padding: 1.2rem 1rem;
+    border: none;
+}
+
+.res-table td {
+    padding: 1.2rem 1rem;
+    border-bottom: 1px solid #eee;
 }
 
 /* Section titles */
 .res-section-title {
     font-weight: 800;
-    font-size: 2.5rem;
-    letter-spacing: -1px;
-    margin-bottom: 40px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    color: var(--res-text);
 }
 
-/* Footer Promax */
+.res-section-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background-color: var(--res-red);
+}
+
+.res-section-title.center {
+    text-align: center;
+}
+
+.res-section-title.center:after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Forms */
+.form-res label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-res .form-control {
+    border-radius: 4px;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    font-size: 0.95rem;
+}
+
+.form-res .form-control:focus {
+    border-color: var(--res-red);
+    box-shadow: 0 0 0 0.2rem rgba(220, 52, 59, 0.1);
+}
+
+/* Badges */
+.badge-res {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.badge-paid, .badge-upcoming { background-color: #ecfdf5; color: #059669; }
+.badge-pending, .badge-ongoing { background-color: #fffbeb; color: #f59e0b; }
+.badge-cancelled { background-color: #fef2f2; color: #ef4444; }
+
+/* Utilities */
+.text-res-red { color: var(--res-red) !important; }
+.bg-res-red { background-color: var(--res-red) !important; }
+
+/* Footer */
 .footer-res-main {
-    background-color: var(--res-dark);
-    padding: 80px 0 40px;
-}
-
-/* Animations */
-[data-aos] {
-    transition-duration: 800ms !important;
+    background-color: var(--res-red);
+    color: white;
+    padding: 5rem 0 3rem;
 }
 
 .footer-res-main h6 {

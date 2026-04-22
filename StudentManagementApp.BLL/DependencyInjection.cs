@@ -43,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IQuizQuestionService, QuizQuestionService>();
         services.AddScoped<IQuizResultService, QuizResultService>();
         services.AddScoped<ICourseProgressService, CourseProgressService>();
+        services.AddScoped<IQuizHintService, QuizHintService>();
 
         // Email Service
         services.AddScoped<IEmailService, EmailService>();

@@ -29,7 +29,15 @@ public class AuthService : IAuthService
 
         if (user is null) return null;
 
-        if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash)) return null;
+        var verified = TryVerifyPassword(dto.Password, user.PasswordHash, out var isLegacyPlainText);
+        if (!verified) return null;
+
+        // Upgrade legacy plain-text passwords to BCrypt after successful login.
+        if (isLegacyPlainText)
+        {
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            await _userRepository.UpdateAsync(user);
+        }
 
         return MapToDto(user);
     }
@@ -85,7 +93,7 @@ public class AuthService : IAuthService
             return false;
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+        if (!TryVerifyPassword(currentPassword, user.PasswordHash, out _))
         {
             return false;
         }
@@ -107,4 +115,33 @@ public class AuthService : IAuthService
         IsActive = user.IsActive,
         CreatedAt = user.CreatedAt
     };
+
+    private static bool TryVerifyPassword(string inputPassword, string storedHash, out bool isLegacyPlainText)
+    {
+        isLegacyPlainText = false;
+
+        if (string.IsNullOrWhiteSpace(inputPassword) || string.IsNullOrWhiteSpace(storedHash))
+        {
+            return false;
+        }
+
+        try
+        {
+            return BCrypt.Net.BCrypt.Verify(inputPassword, storedHash);
+        }
+        catch (BCrypt.Net.SaltParseException)
+        {
+            if (string.Equals(inputPassword, storedHash, StringComparison.Ordinal))
+            {
+                isLegacyPlainText = true;
+                return true;
+            }
+
+            return false;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+    }
 }

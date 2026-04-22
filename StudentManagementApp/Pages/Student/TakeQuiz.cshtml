@@ -363,6 +363,130 @@ body::before {
 .sidebar::-webkit-scrollbar-track { background:transparent; }
 .sidebar::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
 
+.ai-toggle {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 520;
+  background: linear-gradient(135deg, #4a9eff, #6bb3ff);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(74,158,255,0.35);
+}
+.ai-panel {
+  position: fixed;
+  right: 22px;
+  bottom: 74px;
+  z-index: 520;
+  width: 360px;
+  max-height: 540px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 18px 42px rgba(0,0,0,0.4);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ai-panel.show { display: flex; }
+.ai-head {
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ai-title { font-size: 14px; font-weight: 700; }
+.ai-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.ai-mode { font-size: 11px; color: #8ec5ff; margin-top: 2px; }
+.ai-close {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+.ai-chat {
+  flex: 1;
+  min-height: 240px;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ai-msg {
+  max-width: 86%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.ai-msg.bot {
+  align-self: flex-start;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.ai-msg.user {
+  align-self: flex-end;
+  background: rgba(74,158,255,0.18);
+  border: 1px solid rgba(74,158,255,0.36);
+}
+.ai-quick {
+  padding: 0 12px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ai-quick button {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.ai-input-wrap {
+  border-top: 1px solid var(--border);
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+}
+.ai-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 10px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.ai-input:focus { outline: none; border-color: rgba(74,158,255,0.5); }
+.ai-send {
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ai-send:disabled { opacity: 0.45; cursor: not-allowed; }
+
 @@media(max-width:768px) {
   .main { grid-template-columns:1fr; }
   .sidebar {
@@ -373,6 +497,16 @@ body::before {
   .q-area { padding:24px 20px 48px; }
   .topbar { padding:12px 16px; }
   .quiz-title { font-size:14px; }
+  .ai-panel {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: 70px;
+  }
+  .ai-toggle {
+    right: 12px;
+    bottom: 14px;
+  }
 }
 </style>
 </head>
@@ -534,12 +668,39 @@ else
       </div>
     </div>
   </div>
+
+  <button type="button" class="ai-toggle" id="aiHintToggle" onclick="toggleAiPanel()">Gợi ý AI</button>
+  <div class="ai-panel" id="aiPanel">
+    <div class="ai-head">
+      <div>
+        <div class="ai-title">Trợ lý quiz AI</div>
+        <div class="ai-sub" id="aiQuestionLabel">Đang xem câu 1/@totalQ</div>
+        <div class="ai-mode" id="aiModeLabel">Chế độ: đang khởi tạo...</div>
+      </div>
+      <button type="button" class="ai-close" onclick="toggleAiPanel(false)">x</button>
+    </div>
+    <div class="ai-chat" id="aiChat">
+      <div class="ai-msg bot">Mình có thể gợi ý từng bước để bạn làm câu hiện tại, không tiết lộ đáp án trực tiếp.</div>
+    </div>
+    <div class="ai-quick">
+      <button type="button" class="ai-quick-btn" data-prompt="Cho mình gợi ý cách loại trừ.">Loại trừ</button>
+      <button type="button" class="ai-quick-btn" data-prompt="Cho mình biết từ khóa cần chú ý.">Từ khóa</button>
+      <button type="button" class="ai-quick-btn" data-prompt="Mình đang bị rối, hướng dẫn từng bước nhé.">Từng bước</button>
+    </div>
+    <div class="ai-input-wrap">
+      <input type="text" class="ai-input" id="aiInput" placeholder="Hỏi trợ lý về câu hiện tại..." />
+      <button type="button" class="ai-send" id="aiSendBtn" onclick="sendAiHint()">Gửi</button>
+    </div>
+  </div>
 }
 
 <script>
 (function(){
   const totalQ = @((Model.Quiz?.Questions.Count ?? 0).ToString());
+  const quizId = @((Model.Quiz?.Id ?? 0).ToString());
   let currentIdx = 0;
+  let hasShownFallbackNotice = false;
+  const chatHistory = [];
   // answered[i] = true/false
   const answered = new Array(totalQ).fill(false);
 
@@ -554,6 +715,7 @@ else
     document.getElementById('slide_' + currentIdx).style.display = 'block';
     updateDot(currentIdx);
     updateProgress();
+    updateAiQuestionLabel();
   };
 
   function updateDot(idx) {
@@ -647,6 +809,138 @@ else
 
   // init
   updateProgress();
+  updateAiQuestionLabel();
+
+  function updateAiQuestionLabel() {
+    const label = document.getElementById('aiQuestionLabel');
+    if (!label) return;
+    label.textContent = 'Đang xem câu ' + (currentIdx + 1) + '/' + totalQ;
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;');
+  }
+
+  function addAiMessage(role, text) {
+    const chat = document.getElementById('aiChat');
+    if (!chat) return;
+    const box = document.createElement('div');
+    box.className = 'ai-msg ' + (role === 'user' ? 'user' : 'bot');
+    box.innerHTML = escapeHtml(text);
+    chat.appendChild(box);
+    chat.scrollTop = chat.scrollHeight;
+    chatHistory.push({
+      role: role === 'user' ? 'user' : 'assistant',
+      content: text
+    });
+    if (chatHistory.length > 20) {
+      chatHistory.splice(0, chatHistory.length - 20);
+    }
+  }
+
+  window.toggleAiPanel = function(forceOpen) {
+    const panel = document.getElementById('aiPanel');
+    if (!panel) return;
+    if (typeof forceOpen === 'boolean') {
+      panel.classList.toggle('show', forceOpen);
+      return;
+    }
+    panel.classList.toggle('show');
+  };
+
+  async function doSendHint(promptText) {
+    const sendBtn = document.getElementById('aiSendBtn');
+    const input = document.getElementById('aiInput');
+    const questionIdRaw = document.getElementById('hiddenQId_' + currentIdx)?.value || '0';
+    const selectedRaw = document.getElementById('hiddenOption_' + currentIdx)?.value || '';
+    const fillValue = document.getElementById('hiddenFill_' + currentIdx)?.value || '';
+
+    const questionId = parseInt(questionIdRaw, 10);
+    const selectedOptionId = parseInt(selectedRaw, 10);
+    if (!questionId || questionId <= 0) {
+      addAiMessage('bot', 'Không xác định được câu hỏi hiện tại.');
+      return;
+    }
+
+    if (sendBtn) sendBtn.disabled = true;
+    addAiMessage('user', promptText);
+
+    try {
+      const response = await fetch('/api/QuizAssistant/hint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quizId: quizId,
+          questionId: questionId,
+          message: promptText,
+          selectedOptionId: Number.isNaN(selectedOptionId) ? null : selectedOptionId,
+          fillInAnswer: fillValue || null,
+          history: chatHistory.slice(-12)
+        })
+      });
+
+      if (!response.ok) {
+        addAiMessage('bot', 'Chưa lấy được gợi ý lúc này. Bạn thử lại sau ít giây.');
+        return;
+      }
+
+      const data = await response.json();
+      const text = (data && data.reply) ? String(data.reply) : 'Minh chua co goi y phu hop.';
+      const provider = (data && data.provider) ? String(data.provider) : 'rules';
+      const reason = (data && data.reason) ? String(data.reason) : '';
+      const modeEl = document.getElementById('aiModeLabel');
+      if (modeEl) {
+        modeEl.textContent = provider === 'openai' ? 'Chế độ: AI nâng cao (hội đáp)' : 'Chế độ: gợi ý cơ bản (có nhớ hội thoại)';
+      }
+      if (provider === 'rules' && !hasShownFallbackNotice) {
+        const suffix = reason ? (' (' + reason + ')') : '';
+        addAiMessage('bot', 'Lưu ý: hệ thống đang ở chế độ gợi ý cơ bản' + suffix + '. Nếu bạn cấu hình API key hợp lệ (Gemini/OpenAI) và còn quota, chat sẽ thông minh hơn.');
+        hasShownFallbackNotice = true;
+      }
+      addAiMessage('bot', text);
+    } catch {
+      addAiMessage('bot', 'Kết nối đang gặp lỗi tạm thời. Bạn thử lại nhé.');
+    } finally {
+      if (sendBtn) sendBtn.disabled = false;
+      if (input) input.focus();
+    }
+  }
+
+  window.sendAiHint = async function() {
+    const input = document.getElementById('aiInput');
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    await doSendHint(text);
+  };
+
+  document.getElementById('aiInput')?.addEventListener('keydown', async function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      await window.sendAiHint();
+    }
+  });
+
+  document.querySelectorAll('.ai-quick-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const text = this.getAttribute('data-prompt') || '';
+      if (!text) return;
+      await doSendHint(text);
+    });
+  });
+
+  // Seed first assistant message into history for better multi-turn context.
+  const firstBot = document.querySelector('#aiChat .ai-msg.bot');
+  if (firstBot) {
+    chatHistory.push({
+      role: 'assistant',
+      content: firstBot.textContent || ''
+    });
+  }
 })();
 </script>
 </body>

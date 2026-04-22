@@ -95,7 +95,18 @@ namespace StudentManagementApp
                         admin.Username = username;
                     }
 
-                    if (!BCrypt.Net.BCrypt.Verify(password, admin.PasswordHash))
+                    var passwordMatched = false;
+                    try
+                    {
+                        passwordMatched = BCrypt.Net.BCrypt.Verify(password, admin.PasswordHash);
+                    }
+                    catch (BCrypt.Net.SaltParseException)
+                    {
+                        // Legacy/invalid hash format in database -> force reset to configured admin password.
+                        passwordMatched = false;
+                    }
+
+                    if (!passwordMatched)
                     {
                         admin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
                     }

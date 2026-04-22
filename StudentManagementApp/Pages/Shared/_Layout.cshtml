@@ -159,6 +159,8 @@
         @RenderBody()
     </main>
 
+    @if (userRole != "Teacher" && userRole != "Admin")
+    {
     <footer class="footer-res">
         <div class="footer-res-main">
             <div class="container">
@@ -214,6 +216,7 @@
             </div>
         </div>
     </footer>
+    }
 
     @if (userRole == "Student" && !string.IsNullOrWhiteSpace(userId))
     {

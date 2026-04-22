@@ -39,7 +39,8 @@ public class PurchasableItemService : IPurchasableItemService
                 Description = p.Description,
                 Price = p.Price,
                 ImageUrl = p.ImageUrl,
-                IsActive = p.IsActive
+                IsActive = p.IsActive,
+                Quantity = p.Quantity
             }).ToListAsync();
     }
 
@@ -55,7 +56,8 @@ public class PurchasableItemService : IPurchasableItemService
             Description = p.Description,
             Price = p.Price,
             ImageUrl = p.ImageUrl,
-            IsActive = p.IsActive
+            IsActive = p.IsActive,
+            Quantity = p.Quantity
         };
     }
 
@@ -67,6 +69,7 @@ public class PurchasableItemService : IPurchasableItemService
             Description = dto.Description,
             Price = dto.Price,
             ImageUrl = dto.ImageUrl,
+            Quantity = dto.Quantity,
             IsActive = true,
             CreatedAt = DateTime.Now
         };
@@ -83,6 +86,7 @@ public class PurchasableItemService : IPurchasableItemService
             item.Description = dto.Description;
             item.Price = dto.Price;
             item.ImageUrl = dto.ImageUrl;
+            item.Quantity = dto.Quantity;
             item.IsActive = dto.IsActive;
             await _context.SaveChangesAsync();
         }

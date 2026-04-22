@@ -54,6 +54,15 @@ public class OrderService : IOrderService
 
         foreach (var item in cart.Items)
         {
+            if (item.ItemType == "PurchasableItem")
+            {
+                var product = await _context.PurchasableItems.FindAsync(item.ItemId);
+                if (product == null || product.Quantity <= 0)
+                {
+                    throw new Exception($"Sản phẩm '{item.Name}' đã hết hàng.");
+                }
+            }
+
             order.OrderItems.Add(new OrderItem
             {
                 ItemType = item.ItemType == "Course" ? OrderItemType.Course : OrderItemType.PurchasableItem,
@@ -106,6 +115,20 @@ public class OrderService : IOrderService
             }
 
             await EnsureCourseEnrollmentsAsync(order);
+            
+            // Deduct stock for purchasable items
+            foreach (var item in order.OrderItems.Where(i => i.ItemType == OrderItemType.PurchasableItem))
+            {
+                var product = await _context.PurchasableItems.FindAsync(item.ItemId);
+                if (product != null)
+                {
+                    if (product.Quantity <= 0) 
+                        throw new Exception($"Sản phẩm '{product.Name}' đã hết hàng trong lúc xử lý thanh toán.");
+                    
+                    product.Quantity -= 1;
+                }
+            }
+
             order.Status = OrderStatus.Paid;
             
             await _context.SaveChangesAsync();

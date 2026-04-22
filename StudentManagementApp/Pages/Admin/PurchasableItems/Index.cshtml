@@ -64,6 +64,7 @@
                             <th>Hình ảnh</th>
                             <th>Tên vật phẩm</th>
                             <th>Giá</th>
+                            <th>Số lượng</th>
                             <th>Trạng thái</th>
                             <th class="text-end">Thao tác</th>
                         </tr>
@@ -81,6 +82,7 @@
                                     <small class="text-muted line-clamp-1" style="max-width: 300px;">@item.Description</small>
                                 </td>
                                 <td><span class="fw-bold text-primary">@item.Price.ToString("N0") VNĐ</span></td>
+                                <td>@item.Quantity</td>
                                 <td>
                                     <span class="badge bg-@(item.IsActive ? "success" : "secondary")">
                                         @(item.IsActive ? "Đang bán" : "Ngừng bán")

@@ -10,36 +10,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/Admin">English Center - Admin</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/Admin">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Users">Người dùng</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/Admin/Courses">Khóa học</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Classes">Lớp học</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Enrollments">Đăng ký</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Quizzes">Quiz</a></li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container mt-4">
-        <h1>Quản lý khóa học</h1>
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+            body {
+                font-family: "Be Vietnam Pro", sans-serif;
+                background: #f5f7fb;
+                margin: 0;
+            }
+
+            /* SIDEBAR */
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                background: #0f172a;
+                color: white;
+                padding: 20px;
+            }
+
+                .sidebar h4 {
+                    font-weight: 700;
+                    margin-bottom: 30px;
+                }
+
+                .sidebar a {
+                    display: block;
+                    color: #cbd5f1;
+                    padding: 10px 12px;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    margin-bottom: 8px;
+                    transition: 0.2s;
+                }
+
+                    .sidebar a:hover,
+                    .sidebar a.active {
+                        background: #1e293b;
+                        color: white;
+                    }
+
+            /* MAIN */
+            .main {
+                margin-left: 250px;
+                padding: 24px 32px;
+            }
+
+            /* TOPBAR */
+            .topbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            }
+
+            /* CARD */
+            .card-box {
+                background: white;
+                border-radius: 16px;
+                padding: 20px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            }
+
+            /* TABLE */
+            .table {
+                margin-bottom: 0;
+            }
+
+                .table thead {
+                    background: #f1f5f9;
+                }
+
+                .table th {
+                    font-weight: 600;
+                    font-size: 14px;
+                }
+
+                .table td {
+                    vertical-align: middle;
+                }
+
+            /* BUTTON */
+            .btn {
+                border-radius: 10px;
+            }
+
+            /* ACTION BUTTON GROUP */
+            .action-btns {
+                display: flex;
+                gap: 6px;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4>🎓 Admin</h4>
+
+        <a href="/Admin">Dashboard</a>
+        <a href="/Admin/Users">Người dùng</a>
+        <a class="active" href="/Admin/Courses">Khóa học</a>
+        <a href="/Admin/Classes">Lớp học</a>
+        <a href="/Admin/Enrollments">Đăng ký</a>
+        <a href="/Admin/Quizzes">Quiz</a>
+
+        <hr style="border-color:#334155">
+
+        <a href="/Auth/Logout">🚪 Đăng xuất</a>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <h4 class="mb-0">Quản lý khóa học</h4>
+            <div>Xin chào, <strong>@userName</strong></div>
+        </div>
 
         @if (TempData["Success"] != null)
         {
@@ -50,58 +143,77 @@
             <div class="alert alert-danger">@TempData["Error"]</div>
         }
 
+        <!-- ACTION -->
         <div class="mb-3">
             <a href="/Admin/Courses/Create" class="btn btn-primary">+ Thêm khóa học</a>
         </div>
 
-        @if (Model.Courses.Any())
-        {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Tên khóa học</th>
-                        <th>Cấp độ</th>
-                        <th>Học phí</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var course in Model.Courses)
-                    {
+        <!-- TABLE CARD -->
+        <div class="card-box">
+
+            @if (Model.Courses.Any())
+            {
+                <table class="table align-middle">
+                    <thead>
                         <tr>
-                            <td>@course.Name</td>
-                            <td>@course.Level</td>
-                            <td>@course.TuitionFee.ToString("N0") VNĐ</td>
-                            <td>
-                                <span class="badge bg-@(course.IsActive ? "success" : "secondary")">
-                                    @(course.IsActive ? "Đang mở" : "Đã ẩn")
-                                </span>
-                            </td>
-                            <td class="d-flex gap-1">
-                                <a href="/Admin/Courses/Edit/@course.Id" class="btn btn-sm btn-warning">Sửa</a>
-                                <form method="post" asp-page="/Admin/Courses/ToggleActive">
-                                    <input type="hidden" name="id" value="@course.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-dark">
-                                        @(course.IsActive ? "Ẩn" : "Mở")
-                                    </button>
-                                </form>
-                                <form method="post" asp-page="/Admin/Courses/Delete">
-                                    <input type="hidden" name="id" value="@course.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa khóa học này?');">Xóa</button>
-                                </form>
-                            </td>
+                            <th>Tên khóa học</th>
+                            <th>Cấp độ</th>
+                            <th>Học phí</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Thao tác</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <p class="text-muted">Không có khóa học nào.</p>
-        }
+                    </thead>
+                    <tbody>
+                        @foreach (var course in Model.Courses)
+                        {
+                            <tr>
+                                <td><strong>@course.Name</strong></td>
+                                <td>@course.Level</td>
+                                <td>@course.TuitionFee.ToString("N0") VNĐ</td>
+                                <td>
+                                    <span class="badge bg-@(course.IsActive ? "success" : "secondary")">
+                                        @(course.IsActive ? "Đang mở" : "Đã ẩn")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="action-btns justify-content-end">
+
+                                        <a href="/Admin/Courses/Edit/@course.Id"
+                                               class="btn btn-sm btn-warning">
+                                            Sửa
+                                        </a>
+
+                                        <form method="post" asp-page="/Admin/Courses/ToggleActive">
+                                            <input type="hidden" name="id" value="@course.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-dark">
+                                                @(course.IsActive ? "Ẩn" : "Mở")
+                                            </button>
+                                        </form>
+
+                                        <form method="post" asp-page="/Admin/Courses/Delete">
+                                            <input type="hidden" name="id" value="@course.Id" />
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Bạn có chắc muốn xóa khóa học này?');">
+                                                Xóa
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">Không có khóa học nào.</p>
+            }
+
+        </div>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

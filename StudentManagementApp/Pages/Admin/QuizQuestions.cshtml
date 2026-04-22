@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Quản lý câu hỏi quiz";
     var quiz = Model.Quiz;
+    var userName = HttpContext.Session.GetString("UserName");
 }
 
 <!DOCTYPE html>
@@ -11,316 +12,245 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        :root {
-            --bg: #edf3fb;
-            --card: #fff;
-            --ink: #0f172a;
-            --muted: #5b6b83;
-            --line: #d9e2ef;
-            --brand: #1d4ed8;
-            --ok: #16a34a;
-            --danger: #b91c1c;
-        }
-
-        body {
-            margin: 0;
-            font-family: "Manrope", "Segoe UI", sans-serif;
-            color: var(--ink);
-            background:
-                radial-gradient(700px 380px at 0% 0%, #dbeafe 0%, transparent 70%),
-                radial-gradient(650px 360px at 100% 100%, #e2e8f0 0%, transparent 70%),
-                var(--bg);
-            min-height: 100vh;
-        }
-
-        .shell {
-            width: min(1160px, 94vw);
-            margin: 0 auto;
-            padding: 24px 0 48px;
-        }
-
-        .hero {
-            border-radius: 22px;
-            padding: 22px;
-            color: #fff;
-            background: linear-gradient(124deg, #1e40af, #1d4ed8, #2563eb);
-            box-shadow: 0 22px 42px rgba(37, 99, 235, .23);
-            margin-bottom: 16px;
-            animation: rise .42s ease-out;
-        }
-
-        .hero h1 {
-            margin: 0;
-            font-size: clamp(1.35rem, 2.6vw, 2rem);
-            font-weight: 800;
-        }
-
-        .hero .meta {
-            margin-top: 8px;
-            color: rgba(255,255,255,.9);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1.15fr .85fr;
-            gap: 16px;
-        }
-
-        .panel {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 18px;
-            box-shadow: 0 18px 32px rgba(15, 23, 42, .08);
-            overflow: hidden;
-            animation: rise .46s ease-out .08s both;
-        }
-
-        .panel-head {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .panel-head strong {
-            font-size: 1rem;
-        }
-
-        .list {
-            max-height: 72vh;
-            overflow: auto;
-        }
-
-        .q-item {
-            padding: 14px 16px;
-            border-bottom: 1px solid #edf2f8;
-        }
-
-        .q-item:last-child {
-            border-bottom: none;
-        }
-
-        .q-title {
-            font-weight: 700;
-        }
-
-        .muted {
-            color: var(--muted);
-            font-size: .9rem;
-        }
-
-        .answer {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 9px;
-            border-radius: 999px;
-            border: 1px solid #d6e2f2;
-            color: #244264;
-            background: #f8fbff;
-            margin: 4px 6px 0 0;
-            font-size: .82rem;
-        }
-
-        .answer.correct {
-            border-color: #86efac;
-            background: #f0fdf4;
-            color: #166534;
-        }
-
-        .form-wrap {
-            padding: 16px;
-        }
-
-        .form-label {
-            font-weight: 700;
-            font-size: .9rem;
-        }
-
-        .mode-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border-radius: 999px;
-            border: 1px solid #d7e3f7;
-            background: #f3f8ff;
-            color: #23436f;
-            padding: 4px 10px;
-            font-size: .8rem;
-            font-weight: 700;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @@keyframes rise {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @@media (max-width: 992px) {
-            .grid {
-                grid-template-columns: 1fr;
+            body {
+                font-family: "Be Vietnam Pro", sans-serif;
+                background: #f5f7fb;
+                margin: 0;
             }
-        }
+
+            /* SIDEBAR */
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                background: #0f172a;
+                color: white;
+                padding: 20px;
+            }
+
+                .sidebar h4 {
+                    font-weight: 700;
+                    margin-bottom: 30px;
+                }
+
+                .sidebar a {
+                    display: block;
+                    color: #cbd5f1;
+                    padding: 10px 12px;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    margin-bottom: 8px;
+                }
+
+                    .sidebar a:hover,
+                    .sidebar a.active {
+                        background: #1e293b;
+                        color: white;
+                    }
+
+            /* MAIN */
+            .main {
+                margin-left: 250px;
+                padding: 20px 30px;
+            }
+
+            /* CARD */
+            .card-box {
+                background: white;
+                border-radius: 16px;
+                padding: 18px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            }
+
+            /* HERO */
+            .hero {
+                border-radius: 16px;
+                padding: 18px;
+                color: #fff;
+                background: linear-gradient(135deg, #3b82f6, #6366f1);
+                margin-bottom: 20px;
+            }
+
+            /* QUESTION */
+            .q-item {
+                padding: 14px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+                .q-item:last-child {
+                    border-bottom: none;
+                }
+
+            .answer {
+                display: inline-block;
+                padding: 6px 12px;
+                border-radius: 999px;
+                margin: 4px 4px 0 0;
+                background: #f1f5f9;
+                font-size: 13px;
+            }
+
+                .answer.correct {
+                    background: #dcfce7;
+                    color: #166534;
+                    font-weight: 600;
+                }
+
+            /* FORM */
+            .form-control, select {
+                border-radius: 10px !important;
+            }
+
+            .hidden {
+                display: none;
+            }
     </style>
 </head>
+
 <body>
-    <div class="shell">
-        <section class="hero">
-            <h1>@(quiz?.Title ?? "Quiz") - Câu hỏi</h1>
-            <div class="meta">
-                Khóa học: @quiz?.CourseName | Vai trò: @Model.CurrentRole | Tổng: @(quiz?.QuestionCount ?? 0) câu
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4>🎓 Admin</h4>
+
+        <a href="/Admin">Dashboard</a>
+        <a href="/Admin/Users">Người dùng</a>
+        <a href="/Admin/Courses">Khóa học</a>
+        <a href="/Admin/Classes">Lớp học</a>
+        <a href="/Admin/Enrollments">Đăng ký</a>
+        <a class="active" href="/Admin/Quizzes">Quiz</a>
+
+        <hr style="border-color:#334155">
+
+        <a href="/Auth/Logout">🚪 Đăng xuất</a>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- TOP -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h3 class="mb-0">Câu hỏi Quiz</h3>
+                <small class="text-muted">Xin chào, @userName</small>
             </div>
-        </section>
 
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">@TempData["Error"]</div>
-        }
+            <a href="/Admin/Quizzes" class="btn btn-outline-secondary">← Quay lại</a>
+        </div>
 
-        <div class="grid">
-            <section class="panel">
-                <header class="panel-head">
-                    <strong>Ngân hàng câu hỏi</strong>
-                    <a class="btn btn-sm btn-outline-secondary" href="/Admin/Quizzes">Quay lại</a>
-                </header>
-                <div class="list">
-                    @if (quiz is not null && quiz.Questions.Any())
+        <!-- HERO -->
+        <div class="hero">
+            <h2>@(quiz?.Title ?? "Quiz")</h2>
+            <div>
+                Khóa học: @quiz?.CourseName |
+                Tổng câu hỏi: @(quiz?.QuestionCount ?? 0)
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            <!-- LIST -->
+            <div class="col-md-7">
+                <div class="card-box">
+
+                    <h5 class="mb-3">Danh sách câu hỏi</h5>
+
+                    @if (quiz?.Questions?.Any() == true)
                     {
-                        @foreach (var question in quiz.Questions.OrderBy(q => q.SortOrder))
+                        @foreach (var q in quiz.Questions)
                         {
-                            <article class="q-item">
-                                <div class="d-flex justify-content-between align-items-start gap-2">
-                                    <div>
-                                        <div class="q-title">#@question.SortOrder - @question.QuestionText</div>
-                                        <div class="muted">@question.QuestionType | @question.Point điểm</div>
-                                    </div>
-                                    <div class="d-flex gap-1">
-                                        <a class="btn btn-sm btn-outline-primary" href="/Admin/QuizQuestions?quizId=@Model.QuizId&editId=@question.Id">Sửa</a>
-                                        <form method="post" asp-page-handler="Delete" asp-route-quizId="@Model.QuizId" asp-route-questionId="@question.Id" onsubmit="return confirm('Bạn có chắc muốn xóa câu hỏi này?');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
-                                        </form>
-                                    </div>
+                            <div class="q-item">
+                                <div class="fw-bold">
+                                    #@q.SortOrder - @q.QuestionText
                                 </div>
 
                                 <div class="mt-2">
-                                    @foreach (var option in question.Options.OrderBy(o => o.SortOrder))
+                                    @foreach (var o in q.Options)
                                     {
-                                        <span class="answer @(option.IsCorrect ? "correct" : "")">@option.OptionText</span>
+                                        <span class="answer @(o.IsCorrect ? "correct" : "")">
+                                            @o.OptionText
+                                        </span>
                                     }
                                 </div>
-                            </article>
+                            </div>
                         }
                     }
                     else
                     {
-                        <div class="p-4 muted">Chưa có câu hỏi nào trong quiz này.</div>
+                        <p class="text-muted">Chưa có câu hỏi</p>
                     }
-                </div>
-            </section>
 
-            <section class="panel">
-                <header class="panel-head">
-                    <strong>@(Model.Input.QuestionId.HasValue ? "Sửa câu hỏi" : "Thêm câu hỏi mới")</strong>
-                    <span class="mode-chip" id="modeChip">Trắc nghiệm</span>
-                </header>
-                <div class="form-wrap">
-                    <form method="post" asp-page="/Admin/QuizQuestions" asp-page-handler="Save" asp-route-quizId="@Model.QuizId">
-                        <input type="hidden" name="quizId" value="@Model.QuizId" />
+                </div>
+            </div>
+
+            <!-- FORM -->
+            <div class="col-md-5">
+                <div class="card-box">
+
+                    <h5 class="mb-3">Thêm / Sửa câu hỏi</h5>
+
+                    <form method="post" asp-page-handler="Save" asp-route-quizId="@Model.QuizId">
+
                         <input type="hidden" asp-for="Input.QuestionId" />
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                        <div class="mb-3">
-                            <label asp-for="Input.QuestionText" class="form-label">Nội dung câu hỏi</label>
-                            <textarea asp-for="Input.QuestionText" class="form-control" rows="3"></textarea>
+                        <label class="form-label">Nội dung câu hỏi</label>
+                        <textarea asp-for="Input.QuestionText" class="form-control"></textarea>
+
+                        <label class="form-label mt-2">Loại câu hỏi</label>
+                        <select asp-for="Input.QuestionType" id="type" class="form-select">
+                            <option value="MultipleChoice">Trắc nghiệm</option>
+                            <option value="FillInBlank">Điền đáp án</option>
+                        </select>
+
+                        <!-- MCQ -->
+                        <div id="mcq">
+                            <input asp-for="Input.OptionA" class="form-control mt-2" placeholder="Đáp án A">
+                            <input asp-for="Input.OptionB" class="form-control mt-2" placeholder="Đáp án B">
+                            <input asp-for="Input.OptionC" class="form-control mt-2" placeholder="Đáp án C">
+                            <input asp-for="Input.OptionD" class="form-control mt-2" placeholder="Đáp án D">
                         </div>
 
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label asp-for="Input.QuestionType" class="form-label">Loại câu hỏi</label>
-                                <select asp-for="Input.QuestionType" class="form-select" id="questionType">
-                                    <option value="MultipleChoice">Trắc nghiệm</option>
-                                    <option value="FillInBlank">Điền đáp án</option>
-                                </select>
-                            </div>
-                            <div class="col-3">
-                                <label asp-for="Input.Point" class="form-label">Điểm</label>
-                                <input asp-for="Input.Point" class="form-control" type="number" min="1" />
-                            </div>
-                            <div class="col-3">
-                                <label asp-for="Input.SortOrder" class="form-label">Thứ tự</label>
-                                <input asp-for="Input.SortOrder" class="form-control" type="number" min="0" />
-                                <small class="text-muted">Để 0 để tự tăng.</small>
-                            </div>
+                        <!-- FILL -->
+                        <div id="fill" class="hidden mt-2">
+                            <input asp-for="Input.FillInAnswer" class="form-control" placeholder="Đáp án đúng">
                         </div>
 
-                        <div id="fillBlock" class="hidden">
-                            <div class="mb-3">
-                                <label asp-for="Input.FillInAnswer" class="form-label">Đáp án đúng</label>
-                                <input asp-for="Input.FillInAnswer" class="form-control" />
-                            </div>
-                        </div>
+                        <button class="btn btn-primary w-100 mt-3">
+                            Lưu câu hỏi
+                        </button>
 
-                        <div id="mcqBlock">
-                            <div class="row g-2">
-                                <div class="col-12">
-                                    <label class="form-label">Các lựa chọn</label>
-                                </div>
-                                <div class="col-12"><input asp-for="Input.OptionA" class="form-control" placeholder="Lựa chọn A" /></div>
-                                <div class="col-12"><input asp-for="Input.OptionB" class="form-control" placeholder="Lựa chọn B" /></div>
-                                <div class="col-12"><input asp-for="Input.OptionC" class="form-control" placeholder="Lựa chọn C (không bắt buộc)" /></div>
-                                <div class="col-12"><input asp-for="Input.OptionD" class="form-control" placeholder="Lựa chọn D (không bắt buộc)" /></div>
-                                <div class="col-12 mt-2">
-                                    <label asp-for="Input.CorrectOptionSlot" class="form-label">Đáp án đúng</label>
-                                    <select asp-for="Input.CorrectOptionSlot" class="form-select">
-                                        <option value="1">A</option>
-                                        <option value="2">B</option>
-                                        <option value="3">C</option>
-                                        <option value="4">D</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-3 d-flex gap-2">
-                            <a class="btn btn-outline-secondary" href="/Admin/QuizQuestions?quizId=@Model.QuizId">Làm mới</a>
-                            <button type="submit" class="btn btn-primary">@(Model.Input.QuestionId.HasValue ? "Lưu câu hỏi" : "Thêm câu hỏi")</button>
-                        </div>
                     </form>
+
                 </div>
-            </section>
+            </div>
+
         </div>
+
     </div>
 
     <script>
-        (function () {
-            const typeSelect = document.getElementById("questionType");
-            const fillBlock = document.getElementById("fillBlock");
-            const mcqBlock = document.getElementById("mcqBlock");
-            const modeChip = document.getElementById("modeChip");
+            const type = document.getElementById("type");
+            const mcq = document.getElementById("mcq");
+            const fill = document.getElementById("fill");
 
-            function syncType() {
-                const isFill = typeSelect.value === "FillInBlank";
-                fillBlock.classList.toggle("hidden", !isFill);
-                mcqBlock.classList.toggle("hidden", isFill);
-                modeChip.textContent = isFill ? "Điền đáp án" : "Trắc nghiệm";
+            function toggle(){
+                if(type.value === "FillInBlank"){
+                    mcq.classList.add("hidden");
+                    fill.classList.remove("hidden");
+                } else {
+                    mcq.classList.remove("hidden");
+                    fill.classList.add("hidden");
+                }
             }
 
-            typeSelect.addEventListener("change", syncType);
-            syncType();
-        })();
+            type.addEventListener("change", toggle);
+            toggle();
     </script>
+
 </body>
 </html>

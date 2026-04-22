@@ -3,114 +3,421 @@
 @{
     ViewData["Title"] = "Báo cáo điểm danh";
     var userName = HttpContext.Session.GetString("UserName");
+    var attendanceRate = Model.PastSessions > 0
+        ? (Model.PresentCount * 100.0 / Model.PastSessions)
+        : 0.0;
+    var rateStr = attendanceRate.ToString("F1");
+    var rateColor = attendanceRate >= 80 ? "#22c55e" : attendanceRate >= 60 ? "#f5a623" : "#e8412a";
 }
 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo cáo điểm danh - English Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #13161d;
+  --surface-2: #1a1e28;
+  --surface-3: #20252f;
+  --border: rgba(255,255,255,0.07);
+  --accent: #e8412a;
+  --blue: #4a9eff;
+  --green: #22c55e;
+  --amber: #f5a623;
+  --text: #f0f2f5;
+  --text-muted: #6b7280;
+  --text-soft: #9ca3af;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  min-height: 100vh;
+}
+body::before {
+  content:'';
+  position:fixed; top:-200px; right:-100px;
+  width:600px; height:600px;
+  background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+/* ── Navbar ── */
+.navbar {
+  background: rgba(13,15,20,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top:0; z-index:100;
+}
+.nav-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px; color: var(--text);
+  text-decoration: none; letter-spacing: -0.3px;
+}
+.nav-brand span { color: var(--accent); }
+.nav-links { display:flex; align-items:center; gap:4px; list-style:none; }
+.nav-links a {
+  color: var(--text-muted); text-decoration:none;
+  font-size:13px; font-weight:500;
+  padding:6px 14px; border-radius:8px; transition:all 0.2s;
+}
+.nav-links a:hover { color:var(--text); background:var(--surface-2); }
+.nav-links a.active { color:var(--text); background:var(--surface-2); }
+.user-chip {
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--surface-2); border:1px solid var(--border);
+  border-radius:100px; padding:5px 14px 5px 8px;
+  font-size:13px; font-weight:500; color:var(--text-soft);
+  text-decoration:none; position:relative; cursor:pointer;
+}
+.user-avatar {
+  width:26px; height:26px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--amber));
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:#fff;
+}
+.dropdown-menu {
+  display:none; position:absolute; top:calc(100% + 8px); right:0;
+  background:var(--surface-2); border:1px solid var(--border);
+  border-radius:12px; min-width:160px; overflow:hidden;
+  z-index:200; box-shadow:0 16px 40px rgba(0,0,0,0.4);
+}
+.user-chip:hover .dropdown-menu { display:block; }
+.dropdown-menu a {
+  display:block; padding:10px 16px;
+  color:var(--text-soft); text-decoration:none;
+  font-size:13px; transition:background 0.15s;
+}
+.dropdown-menu a:hover { background:rgba(255,255,255,0.05); color:var(--text); }
+
+/* ── Wrap ── */
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  position:relative; z-index:1;
+}
+.page-header {
+  margin-bottom: 32px;
+  animation: fadeDown 0.5s ease both;
+}
+.page-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px; letter-spacing: -0.4px;
+}
+.page-header h1 span { color: var(--green); }
+.page-header p { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
+
+/* ── Filter form ── */
+.filter-bar {
+  display: flex; gap: 12px; align-items: center;
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+.select-wrap {
+  flex: 1; max-width: 400px;
+  position: relative;
+}
+.select-wrap::after {
+  content: '▾';
+  position: absolute; right: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted); pointer-events: none; font-size: 12px;
+}
+select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13.5px;
+  padding: 10px 36px 10px 14px;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+select:focus { outline: none; border-color: rgba(74,158,255,0.4); }
+select option { background: var(--surface-2); }
+.btn-view {
+  background: var(--blue);
+  color: #fff; border: none;
+  padding: 10px 22px; border-radius: 10px;
+  font-family: inherit; font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 0 20px rgba(74,158,255,0.25);
+}
+.btn-view:hover { background: #68b0ff; transform: translateY(-1px); }
+
+/* ── Stats cards ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+.stat-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+.stat-box-label {
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-muted);
+  font-weight: 600; margin-bottom: 8px;
+}
+.stat-box-value {
+  font-size: 28px; font-weight: 800; letter-spacing: -1px;
+  line-height: 1;
+}
+.stat-box-sub {
+  font-size: 12px; color: var(--text-muted); margin-top: 4px;
+}
+.stat-rate { border-bottom: 2px solid; }
+
+/* ── Progress bar ── */
+.progress-bar-wrap {
+  background: var(--surface-2);
+  border-radius: 100px; height: 6px;
+  overflow: hidden; margin-top: 10px;
+}
+.progress-bar-fill {
+  height: 100%; border-radius: 100px;
+  transition: width 1s ease;
+}
+
+/* ── Table ── */
+.table-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  animation: fadeUp 0.5s 0.3s ease both;
+}
+.table-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.table-header h3 {
+  font-size: 14px; font-weight:700;
+  text-transform: uppercase; letter-spacing:1.5px;
+  color: var(--text-soft);
+}
+.table-wrap { overflow-x: auto; }
+table { width:100%; border-collapse:collapse; }
+thead th {
+  padding: 13px 22px;
+  text-align:left; font-size:11px;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--text-muted); font-weight:600;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,0.02);
+}
+tbody tr {
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:rgba(255,255,255,0.03); }
+tbody td {
+  padding:14px 22px; font-size:14px;
+  vertical-align:middle;
+}
+.date-cell { color:var(--text-soft); font-variant-numeric: tabular-nums; }
+
+.badge {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:600;
+  padding:5px 14px; border-radius:100px; letter-spacing:0.3px;
+}
+.badge::before {
+  content:''; width:6px; height:6px;
+  border-radius:50%; flex-shrink:0;
+}
+.badge-present {
+  background:rgba(34,197,94,0.12); color:#4ade80;
+  border:1px solid rgba(34,197,94,0.25);
+}
+.badge-present::before { background:#22c55e; box-shadow:0 0 6px #22c55e; }
+.badge-absent {
+  background:rgba(239,68,68,0.12); color:#f87171;
+  border:1px solid rgba(239,68,68,0.25);
+}
+.badge-absent::before { background:#ef4444; box-shadow:0 0 6px #ef4444; }
+.badge-upcoming {
+  background:rgba(156,163,175,0.1); color:#9ca3af;
+  border:1px solid rgba(156,163,175,0.15);
+}
+.badge-upcoming::before { background:#6b7280; }
+.badge-missing {
+  background:rgba(245,166,35,0.12); color:#fbbf24;
+  border:1px solid rgba(245,166,35,0.25);
+}
+.badge-missing::before { background:#f59e0b; }
+
+.empty-state {
+  text-align:center; padding:64px 24px;
+  background:var(--surface);
+  border:1px solid var(--border); border-radius:20px;
+  animation:fadeUp 0.5s 0.2s ease both;
+}
+.empty-state p { color:var(--text-muted); font-size:14px; margin-top:12px; }
+
+@@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@@keyframes fadeUp {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@@media(max-width:640px) {
+  .stats-row { grid-template-columns:1fr 1fr; }
+  .filter-bar { flex-wrap:wrap; }
+  .select-wrap { max-width:100%; }
+}
+</style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">English Center</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/Student">Học viên</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Student/Schedule">Lịch học</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/Student/AttendanceReport">Điểm danh</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Student/Quizzes">Quiz</a></li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+
+<nav class="navbar">
+  <a href="/" class="nav-brand">English <span>Center</span></a>
+  <ul class="nav-links">
+    <li><a href="/Student">Học viên</a></li>
+    <li><a href="/Student/Schedule">Lịch học</a></li>
+    <li><a href="/Student/AttendanceReport" class="active">Điểm danh</a></li>
+    <li><a href="/Student/Quizzes">Quiz</a></li>
+  </ul>
+  <div class="user-chip">
+    <div class="user-avatar">@(userName?.Substring(0,1).ToUpper() ?? "U")</div>
+    @userName
+    <div class="dropdown-menu">
+      <a href="/Auth/Logout">🚪 Đăng xuất</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="page-header">
+    <h1>Báo cáo <span>điểm danh</span></h1>
+    <p>Theo dõi tình hình tham gia học của bạn</p>
+  </div>
+
+  <form method="get" class="filter-bar">
+    <div class="select-wrap">
+      <select name="classId">
+        <option value="">-- Chọn lớp học --</option>
+        @foreach (var e in Model.Enrollments)
+        {
+          <option value="@e.ClassId" selected="@(Model.SelectedClassId == e.ClassId)">@e.ClassName — @e.CourseName</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn-view">Xem báo cáo</button>
+  </form>
+
+  @if (Model.Class != null && Model.AllSessions.Any())
+  {
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-box-label">Lớp học</div>
+        <div class="stat-box-value" style="font-size:18px; font-weight:700;">@Model.Class.ClassName</div>
+        <div class="stat-box-sub">@Model.Class.CourseName</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-label">Buổi đã học</div>
+        <div class="stat-box-value" style="color: var(--blue);">@Model.PresentCount<span style="font-size:16px; color:var(--text-muted);">/@Model.PastSessions</span></div>
+        <div class="stat-box-sub">buổi có mặt / tổng đã qua</div>
+      </div>
+      <div class="stat-box stat-rate" style="border-color:@rateColor">
+        <div class="stat-box-label">Tỷ lệ có mặt</div>
+        <div class="stat-box-value" style="color:@rateColor">@rateStr%</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:@rateStr%; background:@rateColor;"></div>
         </div>
-    </nav>
-
-    <div class="container mt-4">
-        <h1>Báo cáo điểm danh</h1>
-
-        <form method="get" class="mb-4">
-            <div class="row">
-                <div class="col-md-4">
-                    <select name="classId" class="form-select">
-                        <option value="">-- Chọn lớp học --</option>
-                        @foreach (var e in Model.Enrollments)
-                        {
-                            <option value="@e.ClassId" selected="@(Model.SelectedClassId == e.ClassId)">@e.ClassName - @e.CourseName</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary">Xem</button>
-                </div>
-            </div>
-        </form>
-
-        @if (Model.Class != null && Model.AllSessions.Any())
-        {
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5>@Model.Class.ClassName - @Model.Class.CourseName</h5>
-                    <p><strong>Tiến độ:</strong> @Model.PresentCount / @Model.PastSessions buổi đã học</p>
-                    <p><strong>Tỷ lệ có mặt:</strong> @(Model.PastSessions > 0 ? (Model.PresentCount * 100.0 / Model.PastSessions).ToString("F1") : "0")%</p>
-                </div>
-            </div>
-
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Ngày</th>
-                        <th>Trạng thái</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var session in Model.AllSessions.OrderByDescending(s => s))
-                    {
-                        var isPast = session <= Model.Today;
-                        var hasAttendance = Model.AttByDate.TryGetValue(session, out var att);
-                        <tr>
-                            <td>@session.ToString("dd/MM/yyyy")</td>
-                            <td>
-                                @if (!isPast)
-                                {
-                                    <span class="badge bg-secondary">Chưa đến</span>
-                                }
-                                else if (hasAttendance)
-                                {
-                                    <span class="badge bg-@(att!.IsPresent ? "success" : "danger")">
-                                        @(att!.IsPresent ? "Có mặt" : "Vắng mặt")
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning">Chưa điểm danh</span>
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else if (Model.SelectedClassId == null)
-        {
-            <p class="text-muted">Vui lòng chọn lớp học để xem báo cáo điểm danh.</p>
-        }
-        else
-        {
-            <p class="text-muted">Không có dữ liệu điểm danh.</p>
-        }
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="table-section">
+      <div class="table-header">
+        <h3>📋 Chi tiết điểm danh</h3>
+        <span style="font-size:12px; color:var(--text-muted);">@Model.AllSessions.Count() buổi tổng cộng</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ngày học</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            @{int idx = 1;}
+            @foreach (var session in Model.AllSessions.OrderByDescending(s => s))
+            {
+              var isPast = session <= Model.Today;
+              var hasAttendance = Model.AttByDate.TryGetValue(session, out var att);
+              <tr>
+                <td style="color:var(--text-muted); font-size:12px;">@idx</td>
+                <td class="date-cell">@session.ToString("dd/MM/yyyy")</td>
+                <td>
+                  @if (!isPast)
+                  {
+                    <span class="badge badge-upcoming">Chưa đến</span>
+                  }
+                  else if (hasAttendance)
+                  {
+                    @if (att!.IsPresent)
+                    {
+                      <span class="badge badge-present">Có mặt</span>
+                    }
+                    else
+                    {
+                      <span class="badge badge-absent">Vắng mặt</span>
+                    }
+                  }
+                  else
+                  {
+                    <span class="badge badge-missing">Chưa điểm danh</span>
+                  }
+                </td>
+              </tr>
+              idx++;
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+  else if (Model.SelectedClassId == null)
+  {
+    <div class="empty-state">
+      <div style="font-size:40px;">🎒</div>
+      <p>Vui lòng chọn lớp học để xem báo cáo điểm danh.</p>
+    </div>
+  }
+  else
+  {
+    <div class="empty-state">
+      <div style="font-size:40px;">📭</div>
+      <p>Không có dữ liệu điểm danh cho lớp này.</p>
+    </div>
+  }
+
+</div>
 </body>
 </html>

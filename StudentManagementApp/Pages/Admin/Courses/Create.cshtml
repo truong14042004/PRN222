@@ -2,6 +2,7 @@
 @model StudentManagementApp.Pages.Admin.Courses.CreateModel
 @{
     ViewData["Title"] = "Tạo khóa học";
+    var userName = HttpContext.Session.GetString("UserName");
 }
 
 <!DOCTYPE html>
@@ -9,53 +10,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
+
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+            body {
+                font-family: "Be Vietnam Pro", sans-serif;
+                background: #f5f7fb;
+                margin: 0;
+            }
+
+            /* SIDEBAR */
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                background: #0f172a;
+                color: white;
+                padding: 20px;
+            }
+
+                .sidebar h4 {
+                    font-weight: 700;
+                    margin-bottom: 30px;
+                }
+
+                .sidebar a {
+                    display: block;
+                    color: #cbd5f1;
+                    padding: 10px 12px;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    margin-bottom: 8px;
+                    transition: 0.2s;
+                }
+
+                    .sidebar a:hover,
+                    .sidebar a.active {
+                        background: #1e293b;
+                        color: white;
+                    }
+
+            /* MAIN */
+            .main {
+                margin-left: 250px;
+                padding: 24px 32px;
+            }
+
+            /* TOPBAR */
+            .topbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            }
+
+            /* FORM CARD */
+            .form-card {
+                background: white;
+                border-radius: 16px;
+                padding: 25px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+                max-width: 800px;
+            }
+
+            /* INPUT */
+            .form-control, .form-select {
+                border-radius: 10px;
+            }
+
+            .btn {
+                border-radius: 10px;
+            }
+
+            /* PREVIEW */
+            .thumbnail-preview {
+                width: 100%;
+                max-height: 180px;
+                object-fit: cover;
+                border-radius: 12px;
+                margin-top: 10px;
+                border: 1px solid #e5e7eb;
+            }
+    </style>
 </head>
+
 <body>
-    <div class="container mt-4">
-        <h1>Tạo khóa học</h1>
 
-        <form method="post" class="mt-3">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4>🎓 Admin</h4>
 
-            <div class="mb-3">
-                <label class="form-label">Tên khóa học</label>
-                <input asp-for="Input.Name" class="form-control" />
-                <span asp-validation-for="Input.Name" class="text-danger small"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Cấp độ</label>
-                <select asp-for="Input.Level" class="form-select">
-                    <option value="">-- Chọn cấp độ --</option>
-                    <option value="A1">A1</option>
-                    <option value="A2">A2</option>
-                    <option value="B1">B1</option>
-                    <option value="B2">B2</option>
-                    <option value="C1">C1</option>
-                    <option value="C2">C2</option>
-                </select>
-                <span asp-validation-for="Input.Level" class="text-danger small"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Mô tả</label>
-                <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Học phí</label>
-                <input asp-for="Input.TuitionFee" type="number" min="0" class="form-control" />
-                <span asp-validation-for="Input.TuitionFee" class="text-danger small"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Thumbnail URL (tuỳ chọn)</label>
-                <input asp-for="Input.ThumbnailUrl" class="form-control" />
-            </div>
+        <a href="/Admin">Dashboard</a>
+        <a href="/Admin/Users">Người dùng</a>
+        <a class="active" href="/Admin/Courses">Khóa học</a>
+        <a href="/Admin/Classes">Lớp học</a>
+        <a href="/Admin/Enrollments">Đăng ký</a>
+        <a href="/Admin/Quizzes">Quiz</a>
 
-            <button type="submit" class="btn btn-primary">Lưu</button>
-            <a href="/Admin/Courses" class="btn btn-secondary">Hủy</a>
-        </form>
+        <hr style="border-color:#334155">
+
+        <a href="/Auth/Logout">🚪 Đăng xuất</a>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <h4 class="mb-0">Tạo khóa học</h4>
+            <div>Xin chào, <strong>@userName</strong></div>
+        </div>
+
+        <!-- FORM -->
+        <div class="form-card">
+
+            <form method="post">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Tên khóa học</label>
+                        <input asp-for="Input.Name" class="form-control" />
+                        <span asp-validation-for="Input.Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Cấp độ</label>
+                        <select asp-for="Input.Level" class="form-select">
+                            <option value="">-- Chọn cấp độ --</option>
+                            <option value="A1">A1 - Beginner</option>
+                            <option value="A2">A2 - Elementary</option>
+                            <option value="B1">B1 - Intermediate</option>
+                            <option value="B2">B2 - Upper</option>
+                            <option value="C1">C1 - Advanced</option>
+                            <option value="C2">C2 - Master</option>
+                        </select>
+                        <span asp-validation-for="Input.Level" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Mô tả</label>
+                        <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Học phí</label>
+                        <input asp-for="Input.TuitionFee" type="number" min="0" class="form-control" />
+                        <span asp-validation-for="Input.TuitionFee" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Thumbnail URL</label>
+                        <input asp-for="Input.ThumbnailUrl" class="form-control" id="thumbInput" />
+                    </div>
+
+                    <div class="col-12" id="previewBox" style="display:none;">
+                        <img id="previewImg" class="thumbnail-preview" />
+                    </div>
+
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Tạo khóa học</button>
+                    <a href="/Admin/Courses" class="btn btn-outline-secondary">Hủy</a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- PREVIEW SCRIPT -->
+    <script>
+            const input = document.getElementById("thumbInput");
+            const previewBox = document.getElementById("previewBox");
+            const img = document.getElementById("previewImg");
+
+            input.addEventListener("input", function () {
+                if (this.value) {
+                    img.src = this.value;
+                    previewBox.style.display = "block";
+                } else {
+                    previewBox.style.display = "none";
+                }
+            });
+    </script>
+
 </body>
 </html>

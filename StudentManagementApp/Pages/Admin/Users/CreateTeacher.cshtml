@@ -1,7 +1,8 @@
 @page
 @model StudentManagementApp.Pages.Admin.Users.CreateTeacherModel
 @{
-    ViewData["Title"] = "Tạo tài khoản giáo viên";
+    ViewData["Title"] = "Tạo giáo viên";
+    var userName = HttpContext.Session.GetString("UserName");
 }
 
 <!DOCTYPE html>
@@ -9,47 +10,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
+
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-4">
-        <h1>Tạo tài khoản giáo viên</h1>
 
-        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
-        {
-            <div class="alert alert-danger">
-                @foreach (var error in ViewData.ModelState[string.Empty]!.Errors)
-                {
-                    <div>@error.ErrorMessage</div>
+    <style>
+            body {
+                font-family: "Be Vietnam Pro", sans-serif;
+                background: #f5f7fb;
+                margin: 0;
+            }
+
+            /* SIDEBAR */
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                background: #0f172a;
+                color: white;
+                padding: 20px;
+            }
+
+                .sidebar h4 {
+                    font-weight: 700;
+                    margin-bottom: 30px;
                 }
-            </div>
-        }
 
-        <form method="post" class="mt-3">
-            <div class="mb-3">
-                <label class="form-label">Họ và tên</label>
-                <input type="text" class="form-control" name="fullName" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Tên đăng nhập</label>
-                <input type="text" class="form-control" name="username" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Số điện thoại</label>
-                <input type="text" class="form-control" name="phone">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Mật khẩu</label>
-                <input type="password" class="form-control" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
-            <a href="/Admin/Users?tab=teachers" class="btn btn-secondary">Quay lại</a>
-        </form>
+                .sidebar a {
+                    display: block;
+                    color: #cbd5f1;
+                    padding: 10px 12px;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    margin-bottom: 8px;
+                    transition: 0.2s;
+                }
+
+                    .sidebar a:hover,
+                    .sidebar a.active {
+                        background: #1e293b;
+                        color: white;
+                    }
+
+            /* MAIN */
+            .main {
+                margin-left: 250px;
+                padding: 24px 32px;
+            }
+
+            /* TOPBAR */
+            .topbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            }
+
+            /* FORM CARD */
+            .form-card {
+                background: white;
+                border-radius: 16px;
+                padding: 25px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+                max-width: 700px;
+            }
+
+            /* INPUT */
+            .form-control {
+                border-radius: 10px;
+            }
+
+            .btn {
+                border-radius: 10px;
+            }
+
+            /* HEADER ICON */
+            .icon-box {
+                width: 45px;
+                height: 45px;
+                border-radius: 12px;
+                background: linear-gradient(135deg,#6366f1,#3b82f6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4>🎓 Admin</h4>
+
+        <a href="/Admin">Dashboard</a>
+        <a class="active" href="/Admin/Users">Người dùng</a>
+        <a href="/Admin/Courses">Khóa học</a>
+        <a href="/Admin/Classes">Lớp học</a>
+        <a href="/Admin/Enrollments">Đăng ký</a>
+        <a href="/Admin/Quizzes">Quiz</a>
+
+        <hr style="border-color:#334155">
+
+        <a href="/Auth/Logout">🚪 Đăng xuất</a>
     </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="d-flex align-items-center gap-3">
+                <div class="icon-box">+</div>
+                <h4 class="mb-0">Tạo tài khoản giáo viên</h4>
+            </div>
+            <div>Xin chào, <strong>@userName</strong></div>
+        </div>
+
+        <!-- FORM -->
+        <div class="form-card">
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState[string.Empty]!.Errors)
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+
+            <form method="post" class="row g-3">
+
+                <div class="col-md-6">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" name="fullName" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Tên đăng nhập</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" class="form-control" name="phone">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+
+                <div class="col-12 mt-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Tạo tài khoản</button>
+                    <a href="/Admin/Users?tab=teachers" class="btn btn-outline-secondary">Quay lại</a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
 </body>
 </html>

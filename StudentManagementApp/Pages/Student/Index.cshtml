@@ -4,118 +4,495 @@
     ViewData["Title"] = "Bảng điều khiển học viên";
 }
 
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="res-section-title">CHÀO MỪNG QUAY TRỞ LẠI!</h2>
-        <a href="/PurchasableItems" class="btn btn-primary-res rounded-pill shadow-sm">🛒 Mở cửa hàng vật phẩm</a>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bảng Điều Khiển Học Viên</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161d;
+    --surface-2: #1a1e28;
+    --border: rgba(255,255,255,0.07);
+    --accent: #e8412a;
+    --accent-2: #f5a623;
+    --accent-blue: #4a9eff;
+    --accent-green: #22c55e;
+    --text: #f0f2f5;
+    --text-muted: #6b7280;
+    --text-soft: #9ca3af;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Be Vietnam Pro', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(232,65,42,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -100px; right: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(74,158,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .topbar-left h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  .topbar-left h1 span { color: var(--accent); }
+  .topbar-left p {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  .btn-shop {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 24px rgba(232,65,42,0.3);
+  }
+  .btn-shop:hover {
+    background: #ff5740;
+    transform: translateY(-2px);
+    box-shadow: 0 0 36px rgba(232,65,42,0.5);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  /* ── Stat cards ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 20px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    animation: fadeUp 0.5s ease both;
+  }
+  .stat-card:nth-child(1) { animation-delay: 0.1s; }
+  .stat-card:nth-child(2) { animation-delay: 0.2s; }
+  .stat-card:nth-child(3) { animation-delay: 0.3s; }
+  .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .stat-card:hover { transform: translateY(-4px); color: inherit; text-decoration: none; }
+  .stat-card:hover::before { opacity: 1; }
+
+  .stat-card.blue { border-bottom: 2px solid var(--accent-blue); }
+  .stat-card.blue:hover { border-color: var(--accent-blue); box-shadow: 0 12px 40px rgba(74,158,255,0.15); }
+  .stat-card.blue::before { background: linear-gradient(135deg, rgba(74,158,255,0.05), transparent); }
+
+  .stat-card.green { border-bottom: 2px solid var(--accent-green); }
+  .stat-card.green:hover { border-color: var(--accent-green); box-shadow: 0 12px 40px rgba(34,197,94,0.15); }
+  .stat-card.green::before { background: linear-gradient(135deg, rgba(34,197,94,0.05), transparent); }
+
+  .stat-card.red { border-bottom: 2px solid var(--accent); }
+  .stat-card.red:hover { border-color: var(--accent); box-shadow: 0 12px 40px rgba(232,65,42,0.15); }
+  .stat-card.red::before { background: linear-gradient(135deg, rgba(232,65,42,0.05), transparent); }
+
+  .stat-card.amber { border-bottom: 2px solid var(--accent-2); }
+  .stat-card.amber:hover { border-color: var(--accent-2); box-shadow: 0 12px 40px rgba(245,166,35,0.15); }
+  .stat-card.amber::before { background: linear-gradient(135deg, rgba(245,166,35,0.05), transparent); }
+
+  .stat-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  .stat-card.blue  .stat-icon { background: rgba(74,158,255,0.15); }
+  .stat-card.green .stat-icon { background: rgba(34,197,94,0.15); }
+  .stat-card.red   .stat-icon { background: rgba(232,65,42,0.15); }
+  .stat-card.amber .stat-icon { background: rgba(245,166,35,0.15); }
+
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .stat-action {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .stat-action::after {
+    content: '→';
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+  .stat-card:hover .stat-action::after { transform: translateX(4px); }
+
+  /* ── Table section ── */
+  .table-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+
+  .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .table-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .table-header-left h3 {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-soft);
+  }
+  .count-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+  }
+
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    padding: 14px 24px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+  tbody td {
+    padding: 16px 24px;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  .course-name {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .class-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 100px;
+  }
+
+  .date-text { color: var(--text-muted); font-size: 13px; }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.3px;
+  }
+  .status-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-confirmed {
+    background: rgba(34,197,94,0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34,197,94,0.25);
+  }
+  .status-confirmed::before { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+
+  .status-registered {
+    background: rgba(245,158,11,0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(245,158,11,0.25);
+  }
+  .status-registered::before { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+
+  .status-cancelled {
+    background: rgba(239,68,68,0.12);
+    color: #f87171;
+    border: 1px solid rgba(239,68,68,0.25);
+  }
+  .status-cancelled::before { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
+  .status-default {
+    background: rgba(156,163,175,0.12);
+    color: #9ca3af;
+    border: 1px solid rgba(156,163,175,0.2);
+  }
+  .status-default::before { background: #9ca3af; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    padding: 64px 24px;
+    text-align: center;
+  }
+  .empty-icon {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 20px;
+  }
+  .empty-state p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 9px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover {
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  /* ── Animations ── */
+  @@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Responsive ── */
+  @@media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @@media (max-width: 560px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .topbar { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .topbar-left h1 { font-size: 22px; }
+    tbody td { padding: 13px 16px; }
+    thead th { padding: 12px 16px; }
+    .table-header { padding: 18px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>Chào mừng <span>quay trở lại!</span> 👋</h1>
+      <p>Bảng điều khiển học viên</p>
+    </div>
+    <a href="/PurchasableItems" class="btn-shop">
+      🛒 Mở cửa hàng vật phẩm
+    </a>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stats-grid">
+    <a href="/Course" class="stat-card blue">
+      <div class="stat-icon">📘</div>
+      <div class="stat-label">Khóa học</div>
+      <div class="stat-action">Xem tất cả</div>
+    </a>
+    <a href="/Student/Schedule" class="stat-card green">
+      <div class="stat-icon">📅</div>
+      <div class="stat-label">Lịch học</div>
+      <div class="stat-action">Xem lịch tuần</div>
+    </a>
+    <a href="/Student/Quizzes" class="stat-card red">
+      <div class="stat-icon">✏️</div>
+      <div class="stat-label">Làm Quiz</div>
+      <div class="stat-action">Bắt đầu ngay</div>
+    </a>
+    <a href="/Student/Progress" class="stat-card amber">
+      <div class="stat-icon">📈</div>
+      <div class="stat-label">Tiến độ</div>
+      <div class="stat-action">Theo dõi ngay</div>
+    </a>
+  </div>
+
+  <!-- Enrollment table -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="table-header-left">
+        <span>📚</span>
+        <h3>Lớp học đã đăng ký</h3>
+      </div>
+      <span class="count-badge">@Model.Enrollments.Count() Lớp</span>
     </div>
 
-    <div class="row g-4 mb-5">
-        <div class="col-md-3">
-            <div class="res-card p-3 border-start border-primary border-4">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
-                        <i class="bi bi-book text-primary h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1">Khóa học</h6>
-                        <a href="/Course" class="text-decoration-none fw-bold">Xem tất cả</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="res-card p-3 border-start border-success border-4">
-                <div class="d-flex align-items-center">
-                    <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3">
-                        <i class="bi bi-calendar-event text-success h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1">Lịch học</h6>
-                        <a href="/Student/Schedule" class="text-decoration-none fw-bold">Xem lịch tuần</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="res-card p-3 border-start border-info border-4">
-                <div class="d-flex align-items-center">
-                    <div class="bg-info bg-opacity-10 p-3 rounded-circle me-3">
-                        <i class="bi bi-pencil-square text-info h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1">Làm Quiz</h6>
-                        <a href="/Student/Quizzes" class="text-decoration-none fw-bold">Bắt đầu ngay</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="res-card p-3 border-start border-warning border-4">
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle me-3">
-                        <i class="bi bi-graph-up-arrow text-warning h4 mb-0"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-muted mb-1">Tiến độ</h6>
-                        <a href="/Student/Progress" class="text-decoration-none fw-bold">Theo dõi ngay</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @if (!Model.Enrollments.Any())
+    {
+      <div class="empty-state">
+        <div class="empty-icon">🎒</div>
+        <p>Bạn chưa đăng ký lớp học nào.</p>
+        <a href="/Course" class="btn-outline">+ Đăng ký ngay</a>
+      </div>
+    }
+    else
+    {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Khóa học</th>
+              <th>Lớp học</th>
+              <th>Ngày đăng ký</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var enrollment in Model.Enrollments)
+            {
+              <tr>
+                <td class="course-name">@enrollment.CourseName</td>
+                <td><span class="class-chip">🏫 @enrollment.ClassName</span></td>
+                <td class="date-text">@enrollment.EnrolledAt.ToString("dd/MM/yyyy")</td>
+                <td>
+                  @{
+                    var statusClass = enrollment.Status switch
+                    {
+                      "Confirmed"  => "status-confirmed",
+                      "Registered" => "status-registered",
+                      "Cancelled"  => "status-cancelled",
+                      _            => "status-default"
+                    };
+                    var statusLabel = enrollment.Status switch
+                    {
+                      "Confirmed"  => "Đã xác nhận",
+                      "Registered" => "Đã đăng ký",
+                      "Cancelled"  => "Đã hủy",
+                      _            => enrollment.Status
+                    };
+                  }
+                  <span class="status-badge @statusClass">@statusLabel</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
 
-    <div class="res-card overflow-hidden">
-        <div class="res-card-header d-flex justify-content-between align-items-center">
-            <span>📚 LỚP HỌC ĐÃ ĐĂNG KÝ</span>
-            <span class="badge bg-res-red">@Model.Enrollments.Count() Lớp</span>
-        </div>
-        <div class="card-body p-0">
-            @if (!Model.Enrollments.Any())
-            {
-                <div class="p-5 text-center">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" style="width: 80px; opacity: 0.3;" alt="No data">
-                    <p class="text-muted mt-3">Bạn chưa đăng ký lớp học nào.</p>
-                    <a href="/Course" class="btn btn-outline-res rounded-pill">Đăng ký ngay</a>
-                </div>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table res-table mb-0">
-                        <thead>
-                            <tr>
-                                <th>Khóa học</th>
-                                <th>Lớp học</th>
-                                <th>Ngày đăng ký</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var enrollment in Model.Enrollments)
-                            {
-                                <tr>
-                                    <td class="fw-bold">@enrollment.CourseName</td>
-                                    <td><span class="badge bg-light text-dark border">@enrollment.ClassName</span></td>
-                                    <td class="text-muted">@enrollment.EnrolledAt.ToString("dd/MM/yyyy")</td>
-                                    <td>
-                                        @{
-                                            var badgeClass = enrollment.Status switch
-                                            {
-                                                "Confirmed" => "bg-success",
-                                                "Registered" => "bg-warning text-dark",
-                                                "Cancelled" => "bg-danger",
-                                                _ => "bg-secondary"
-                                            };
-                                        }
-                                        <span class="badge @badgeClass px-3 py-2 rounded-pill">@enrollment.Status</span>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        </div>
-    </div>
 </div>
+</body>
+</html>

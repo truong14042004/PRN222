@@ -8,99 +8,377 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lịch học - English Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #13161d;
+  --surface-2: #1a1e28;
+  --surface-3: #20252f;
+  --border: rgba(255,255,255,0.07);
+  --accent: #e8412a;
+  --blue: #4a9eff;
+  --green: #22c55e;
+  --amber: #f5a623;
+  --purple: #a78bfa;
+  --text: #f0f2f5;
+  --text-muted: #6b7280;
+  --text-soft: #9ca3af;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  min-height: 100vh;
+}
+body::before {
+  content:'';
+  position:fixed; top:-200px; left:-200px;
+  width:600px; height:600px;
+  background: radial-gradient(circle, rgba(74,158,255,0.07) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+/* ── Navbar ── */
+.navbar {
+  background: rgba(13,15,20,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top:0; z-index:100;
+}
+.nav-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+.nav-brand span { color: var(--accent); }
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.nav-links a:hover { color: var(--text); background: var(--surface-2); }
+.nav-links a.active { color: var(--text); background: var(--surface-2); }
+.nav-right { display:flex; align-items:center; gap:12px; }
+.user-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 5px 14px 5px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-soft);
+  text-decoration: none;
+  position: relative;
+  cursor: pointer;
+}
+.user-avatar {
+  width:26px; height:26px; border-radius:50%;
+  background: linear-gradient(135deg, var(--accent), var(--amber));
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:#fff;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 200;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+.user-chip:hover .dropdown-menu { display: block; }
+.dropdown-menu a {
+  display: block;
+  padding: 10px 16px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+.dropdown-menu a:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+
+<!-- ── Page ── -->
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  position: relative; z-index:1;
+}
+
+.page-header {
+  margin-bottom: 32px;
+  animation: fadeDown 0.5s ease both;
+}
+.page-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  letter-spacing: -0.4px;
+}
+.page-header h1 span { color: var(--blue); }
+.page-header p { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
+
+/* ── Week navigator ── */
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+.week-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.week-btn:hover { background: var(--surface-2); color: var(--text); border-color: rgba(255,255,255,0.12); }
+.week-range {
+  flex: 1;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ── Schedule grid ── */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--surface);
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+
+.grid-header {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: flex; align-items: center;
+}
+.grid-header.sessions-head { grid-column: 2; }
+
+.day-row {
+  display: contents;
+}
+.day-label {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--surface-2);
+}
+.day-label:last-of-type { border-bottom: none; }
+.day-name {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.day-date {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.day-label.today .day-date {
+  color: var(--blue);
+}
+.day-label.today .day-name {
+  color: var(--blue);
+}
+
+.day-sessions {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+  min-height: 64px;
+}
+
+.session-pill {
+  background: rgba(74,158,255,0.1);
+  border: 1px solid rgba(74,158,255,0.2);
+  border-radius: 10px;
+  padding: 8px 14px;
+  min-width: 180px;
+}
+.session-time {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 3px;
+}
+.session-class {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.session-course {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.no-session {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+.empty-icon { font-size: 40px; margin-bottom: 16px; }
+.empty-state p { color: var(--text-muted); font-size: 14px; }
+
+@@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@@keyframes fadeUp {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+@@media(max-width:640px) {
+  .schedule-grid { grid-template-columns: 70px 1fr; }
+  .day-date { font-size:13px; }
+  .week-range { font-size:12px; }
+  .session-pill { min-width: 140px; }
+}
+</style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">English Center</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/Student">Học viên</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/Student/Schedule">Lịch học</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Student/AttendanceReport">Điểm danh</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Student/Quizzes">Quiz</a></li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container mt-4">
-        <h1>Lịch học tuần</h1>
-        
-        <div class="mb-3">
-            <a href="/Student/Schedule?date=@Model.PreviousWeek.ToString("yyyy-MM-dd")" class="btn btn-secondary">Tuần trước</a>
-            <span class="mx-3">@Model.WeekStart.ToString("dd/MM/yyyy") - @Model.WeekEnd.ToString("dd/MM/yyyy")</span>
-            <a href="/Student/Schedule?date=@Model.NextWeek.ToString("yyyy-MM-dd")" class="btn btn-secondary">Tuần sau</a>
-        </div>
-
-        @if (Model.Enrollments.Any())
-        {
-            <table class="table table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Thứ</th>
-                        <th>Ca học</th>
-                        <th>Lớp</th>
-                        <th>Khóa học</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var day in Model.WeekDays)
-                    {
-                        var sessions = Model.Sessions.Where(s => s.DayOfWeek == day.DayOfWeek).ToList();
-                        <tr>
-                            <td>@day.DayName<br>@day.Date.ToString("dd/MM")</td>
-                            <td>
-                                @if (sessions.Any())
-                                {
-                                    @foreach (var s in sessions)
-                                    {
-                                        <div class="mb-2 p-2 bg-light rounded">
-                                            <strong>@s.StartTime - @s.EndTime</strong>
-                                            <br>@s.ClassName
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Không có lịch</span>
-                                }
-                            </td>
-                            <td>
-                                @if (sessions.Any())
-                                {
-                                    @string.Join(", ", sessions.Select(s => s.ClassName).Distinct())
-                                }
-                            </td>
-                            <td>
-                                @if (sessions.Any())
-                                {
-                                    @string.Join(", ", sessions.Select(s => s.CourseName).Distinct())
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <p class="text-muted">Bạn chưa có lớp học nào trong tuần này.</p>
-        }
+<nav class="navbar">
+  <a href="/" class="nav-brand">English <span>Center</span></a>
+  <ul class="nav-links">
+    <li><a href="/Student">Học viên</a></li>
+    <li><a href="/Student/Schedule" class="active">Lịch học</a></li>
+    <li><a href="/Student/AttendanceReport">Điểm danh</a></li>
+    <li><a href="/Student/Quizzes">Quiz</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="user-chip">
+      <div class="user-avatar">@(userName?.Substring(0,1).ToUpper() ?? "U")</div>
+      @userName
+      <div class="dropdown-menu">
+        <a href="/Auth/Logout">🚪 Đăng xuất</a>
+      </div>
     </div>
+  </div>
+</nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div class="wrap">
+
+  <div class="page-header">
+    <h1>Lịch học <span>tuần này</span></h1>
+    <p>Xem lịch học theo từng ngày trong tuần</p>
+  </div>
+
+  <div class="week-nav">
+    <a href="/Student/Schedule?date=@Model.PreviousWeek.ToString("yyyy-MM-dd")" class="week-btn">← Tuần trước</a>
+    <div class="week-range">
+      📅 @Model.WeekStart.ToString("dd/MM/yyyy") — @Model.WeekEnd.ToString("dd/MM/yyyy")
+    </div>
+    <a href="/Student/Schedule?date=@Model.NextWeek.ToString("yyyy-MM-dd")" class="week-btn">Tuần sau →</a>
+  </div>
+
+  @if (Model.Enrollments.Any())
+  {
+    <div class="schedule-grid">
+      <div class="grid-header">Ngày</div>
+      <div class="grid-header sessions-head">Ca học</div>
+      @foreach (var day in Model.WeekDays)
+      {
+        var sessions = Model.Sessions.Where(s => s.DayOfWeek == day.DayOfWeek).ToList();
+        var isToday = day.Date == DateOnly.FromDateTime(DateTime.Today);
+        <div class="day-label @(isToday ? "today" : "")">
+          <div class="day-name">@day.DayName</div>
+          <div class="day-date">@day.Date.ToString("dd/MM")</div>
+        </div>
+        <div class="day-sessions">
+          @if (sessions.Any())
+          {
+            @foreach (var s in sessions)
+            {
+              <div class="session-pill">
+                <div class="session-time">@s.StartTime – @s.EndTime</div>
+                <div class="session-class">@s.ClassName</div>
+                <div class="session-course">@s.CourseName</div>
+              </div>
+            }
+          }
+          else
+          {
+            <span class="no-session">Không có lịch</span>
+          }
+        </div>
+      }
+    </div>
+  }
+  else
+  {
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <p>Bạn chưa có lớp học nào trong tuần này.</p>
+    </div>
+  }
+
+</div>
 </body>
 </html>

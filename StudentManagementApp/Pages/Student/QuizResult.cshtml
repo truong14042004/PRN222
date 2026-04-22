@@ -10,154 +10,205 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - English Center</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        :root {
-            --bg: #f4f7fd;
-            --ink: #0f172a;
-            --muted: #64748b;
-            --line: #dbe4f1;
-        }
+            :root {
+                --bg: #f4f7fd;
+                --ink: #0f172a;
+                --muted: #64748b;
+                --line: #dbe4f1;
+                --success: #22c55e;
+                --danger: #ef4444;
+            }
 
-        body {
-            margin: 0;
-            font-family: "Be Vietnam Pro", "Segoe UI", sans-serif;
-            color: var(--ink);
-            background:
-                radial-gradient(760px 380px at 0% 0%, #dbeafe 0%, transparent 70%),
-                radial-gradient(760px 380px at 100% 100%, #dcfce7 0%, transparent 70%),
-                var(--bg);
-            min-height: 100vh;
-        }
+            body {
+                font-family: "Be Vietnam Pro", sans-serif;
+                background: radial-gradient(760px 380px at 0% 0%, #dbeafe 0%, transparent 70%), radial-gradient(760px 380px at 100% 100%, #dcfce7 0%, transparent 70%), var(--bg);
+            }
 
-        .shell {
-            width: min(880px, 94vw);
-            margin: 0 auto;
-            padding: 24px 0 38px;
-        }
+            .shell {
+                max-width: 900px;
+                margin: auto;
+                padding: 30px 15px;
+            }
 
-        .panel {
-            border: 1px solid var(--line);
-            border-radius: 22px;
-            background: #fff;
-            padding: 18px;
-            box-shadow: 0 16px 32px rgba(15, 23, 42, .08);
-        }
+            .panel {
+                background: #fff;
+                border-radius: 20px;
+                padding: 24px;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            }
 
-        .muted {
-            color: var(--muted);
-            font-size: .92rem;
-        }
+            .muted {
+                color: var(--muted);
+            }
 
-        .kpi {
-            border: 1px solid #e3ebf6;
-            border-radius: 14px;
-            padding: 12px;
-            text-align: center;
-            background: #f8fbff;
-        }
+            .kpi {
+                border-radius: 14px;
+                padding: 14px;
+                text-align: center;
+                background: #f8fbff;
+                transition: 0.2s;
+            }
 
-        .kpi-label {
-            color: #5f7390;
-            font-size: .84rem;
-        }
+                .kpi:hover {
+                    transform: translateY(-3px);
+                }
 
-        .kpi-value {
-            margin-top: 4px;
-            font-size: 1.3rem;
-            font-weight: 800;
-        }
+            .kpi-value {
+                font-size: 1.4rem;
+                font-weight: 800;
+            }
 
-        .review-item {
-            border: 1px solid #e2eaf5;
-            border-radius: 14px;
-            padding: 12px;
-            background: #f9fbff;
-        }
+            .progress {
+                height: 10px;
+                border-radius: 10px;
+            }
+
+            .review-item {
+                border-radius: 14px;
+                padding: 14px;
+                transition: 0.2s;
+            }
+
+                .review-item.correct {
+                    border-left: 5px solid var(--success);
+                    background: #f0fdf4;
+                }
+
+                .review-item.wrong {
+                    border-left: 5px solid var(--danger);
+                    background: #fef2f2;
+                }
+
+                .review-item:hover {
+                    transform: translateY(-2px);
+                }
+
+            .result-badge {
+                font-size: 1.1rem;
+                padding: 8px 14px;
+            }
     </style>
 </head>
+
 <body>
     <div class="shell">
+
         @if (Model.Result is null)
         {
             <div class="alert alert-warning">Không tìm thấy kết quả bài làm.</div>
-            <a class="btn btn-outline-secondary" href="/Student/Quizzes">Về danh sách quiz</a>
+            <a class="btn btn-outline-secondary" href="/Student/Quizzes">Quay lại</a>
         }
         else
         {
             <section class="panel">
-                <h2 class="mb-1">@Model.Result.QuizTitle</h2>
+
+                <!-- HEADER -->
+                <h2 class="fw-bold">@Model.Result.QuizTitle</h2>
                 <div class="muted mb-3">
                     Nộp bài lúc @Model.Result.CompletedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
                 </div>
 
-                <div class="row g-3">
+                <!-- KPI -->
+                <div class="row g-3 mb-3">
                     <div class="col-md-3 col-6">
                         <div class="kpi">
-                            <div class="kpi-label">Điểm số</div>
+                            <div class="muted">Điểm</div>
                             <div class="kpi-value">@Model.Result.Score / @Model.Result.TotalPoints</div>
                         </div>
                     </div>
+
                     <div class="col-md-3 col-6">
                         <div class="kpi">
-                            <div class="kpi-label">Tỷ lệ</div>
+                            <div class="muted">Tỷ lệ</div>
                             <div class="kpi-value">@Model.Result.PercentageScore</div>
                         </div>
                     </div>
+
                     <div class="col-md-3 col-6">
                         <div class="kpi">
-                            <div class="kpi-label">Câu đúng</div>
+                            <div class="muted">Đúng</div>
                             <div class="kpi-value">@Model.Result.CorrectCount / @Model.Result.TotalQuestions</div>
                         </div>
                     </div>
+
                     <div class="col-md-3 col-6">
                         <div class="kpi">
-                            <div class="kpi-label">Thời gian</div>
+                            <div class="muted">Thời gian</div>
                             <div class="kpi-value">@Model.Result.TimeTaken.ToString(@"hh\:mm\:ss")</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-3">
-                    <span class="badge bg-@(Model.Result.Passed ? "success" : "danger") fs-6">
-                        @(Model.Result.Passed ? "Đạt" : "Chưa đạt")
+                <!-- PROGRESS BAR -->
+                <div class="mb-3">
+                    <div class="progress">
+                        <div class="progress-bar bg-success"
+                             style="width:@Model.Result.PercentageScore.Replace("%", "")%">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASS / FAIL -->
+                <div class="mb-3">
+                    <span class="badge result-badge bg-@(Model.Result.Passed ? "success" : "danger")">
+                        @(Model.Result.Passed ? "🎉 Đạt" : "❌ Chưa đạt")
                     </span>
                 </div>
 
+                <!-- REVIEW -->
                 @if (Model.Result.AnswerReviews.Any())
                 {
-                    <div class="mt-4">
-                        <h5 class="mb-3">Đáp án chi tiết</h5>
-                        <div class="d-grid gap-2">
-                            @foreach (var review in Model.Result.AnswerReviews)
-                            {
-                                <div class="review-item">
-                                    <div class="d-flex justify-content-between align-items-start gap-2">
-                                        <div>
-                                            <strong>Câu @review.SortOrder:</strong> @review.QuestionText
-                                        </div>
-                                        <span class="badge bg-@(review.IsCorrect ? "success" : "danger")">
-                                            @(review.IsCorrect ? "Đúng" : "Sai")
-                                        </span>
+                    <h5 class="mb-3">Chi tiết bài làm</h5>
+
+                    <div class="d-grid gap-2">
+                        @foreach (var review in Model.Result.AnswerReviews)
+                        {
+                            <div class="review-item @(review.IsCorrect ? "correct" : "wrong")">
+
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>Câu @review.SortOrder:</strong>
+                                        @review.QuestionText
                                     </div>
-                                    <div class="small text-muted mt-2">Bạn chọn: @(string.IsNullOrWhiteSpace(review.StudentAnswer) ? "(Không trả lời)" : review.StudentAnswer)</div>
-                                    <div class="small mt-1">Đáp án đúng: <strong>@review.CorrectAnswer</strong></div>
-                                    <div class="small text-muted mt-1">Điểm: @review.PointsEarned/@review.Point</div>
+
+                                    <span class="badge bg-@(review.IsCorrect ? "success" : "danger")">
+                                        @(review.IsCorrect ? "Đúng" : "Sai")
+                                    </span>
                                 </div>
-                            }
-                        </div>
+
+                                <div class="mt-2 small text-muted">
+                                    Bạn chọn:
+                                    @(string.IsNullOrWhiteSpace(review.StudentAnswer)
+                                        ? "(Không trả lời)"
+                                        : review.StudentAnswer)
+                                </div>
+
+                                <div class="small">
+                                    Đáp án đúng: <strong>@review.CorrectAnswer</strong>
+                                </div>
+
+                                <div class="small text-muted">
+                                    Điểm: @review.PointsEarned / @review.Point
+                                </div>
+                            </div>
+                        }
                     </div>
                 }
 
+                <!-- ACTION -->
                 <div class="mt-4 d-flex gap-2">
                     <a class="btn btn-primary" href="/Student/Quizzes">Làm bài khác</a>
-                    <a class="btn btn-outline-secondary" href="/Student">Về trang học viên</a>
+                    <a class="btn btn-outline-secondary" href="/Student">Trang học viên</a>
                 </div>
+
             </section>
         }
+
     </div>
 </body>
 </html>

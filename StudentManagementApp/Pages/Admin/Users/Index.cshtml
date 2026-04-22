@@ -10,37 +10,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - English Center</title>
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+            body {
+                font-family: "Be Vietnam Pro", sans-serif;
+                background: #f5f7fb;
+            }
+
+            /* SIDEBAR */
+            .sidebar {
+                width: 240px;
+                height: 100vh;
+                position: fixed;
+                background: #111827;
+                padding: 20px;
+                color: #e5e7eb;
+            }
+
+                .sidebar a {
+                    display: block;
+                    padding: 10px;
+                    border-radius: 8px;
+                    color: #9ca3af;
+                    text-decoration: none;
+                    margin-bottom: 6px;
+                }
+
+                    .sidebar a.active,
+                    .sidebar a:hover {
+                        background: #1f2937;
+                        color: white;
+                    }
+
+            /* MAIN */
+            .main {
+                margin-left: 240px;
+                padding: 24px;
+            }
+
+            /* HEADER */
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            /* CARD */
+            .card-custom {
+                background: #fff;
+                border-radius: 12px;
+                padding: 16px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            }
+
+            /* SEARCH BAR */
+            .search-bar {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+    </style>
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/Admin">English Center - Admin</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/Admin">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/Admin/Users">Người dùng</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Courses">Khóa học</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Classes">Lớp học</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Enrollments">Đăng ký</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Admin/Quizzes">Quiz</a></li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Xin chào, @userName</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Auth/Logout">Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                </ul>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h5 class="mb-3">Admin</h5>
+
+        <a href="/Admin">Dashboard</a>
+        <a href="/Admin/Users" class="active">Người dùng</a>
+        <a href="/Admin/Courses">Khóa học</a>
+        <a href="/Admin/Classes">Lớp học</a>
+        <a href="/Admin/Enrollments">Đăng ký</a>
+        <a href="/Admin/Quizzes">Quiz</a>
+
+        <hr>
+        <a href="/Auth/Logout">Đăng xuất</a>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- HEADER -->
+        <div class="page-header">
+            <div>
+                <h4 class="fw-bold mb-0">Quản lý người dùng</h4>
+                <small class="text-muted">Xin chào, @userName</small>
             </div>
         </div>
-    </nav>
 
-    <div class="container mt-4">
-        <h1>Quản lý người dùng</h1>
-
+        <!-- ALERT -->
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success">@TempData["Success"]</div>
@@ -50,94 +115,131 @@
             <div class="alert alert-danger">@TempData["Error"]</div>
         }
 
+        <!-- TABS -->
         <ul class="nav nav-tabs mb-3">
             <li class="nav-item">
-                <a class="nav-link @(Model.Tab == "students" ? "active" : "")" href="/Admin/Users?tab=students">Học viên</a>
+                <a class="nav-link @(Model.Tab == "students" ? "active" : "")"
+                       href="/Admin/Users?tab=students">
+                    Học viên
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @(Model.Tab == "teachers" ? "active" : "")" href="/Admin/Users?tab=teachers">Giáo viên</a>
+                <a class="nav-link @(Model.Tab == "teachers" ? "active" : "")"
+                       href="/Admin/Users?tab=teachers">
+                    Giáo viên
+                </a>
             </li>
         </ul>
 
-        <form method="get" class="mb-3">
-            <input type="hidden" name="tab" value="@Model.Tab" />
-            <div class="row">
-                <div class="col-md-6">
-                    <input type="text" name="q" class="form-control" placeholder="Tìm kiếm..." value="@Model.Q">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-secondary">Tìm kiếm</button>
-                </div>
+        <!-- FILTER -->
+        <div class="card-custom mb-3">
+            <form method="get" class="search-bar">
+                <input type="hidden" name="tab" value="@Model.Tab" />
+
+                <input type="text"
+                       name="q"
+                       class="form-control"
+                       style="max-width: 300px;"
+                       placeholder="Tìm kiếm..."
+                       value="@Model.Q">
+
+                <button class="btn btn-secondary">Tìm</button>
+
                 @if (Model.Tab == "teachers")
                 {
-                    <div class="col-md-2">
-                        <a href="/Admin/Users/CreateTeacher" class="btn btn-primary">+ Thêm giáo viên</a>
-                    </div>
+                    <a href="/Admin/Users/CreateTeacher" class="btn btn-primary">
+                        + Thêm giáo viên
+                    </a>
                 }
+            </form>
+
+            <div class="mt-2 text-muted">
+                Tổng cộng: <strong>@Model.TotalCount</strong> người dùng
             </div>
-        </form>
+        </div>
 
-        <p>Tổng cộng: @Model.TotalCount người dùng</p>
+        <!-- TABLE -->
+        <div class="card-custom">
 
-        @if (Model.Users.Any())
-        {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Họ tên</th>
-                        <th>Email</th>
-                        <th>Điện thoại</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in Model.Users)
-                    {
-                        <tr>
-                            <td>@user.FullName</td>
-                            <td>@user.Email</td>
-                            <td>@user.Phone</td>
-                            <td>
-                                <span class="badge bg-@(user.IsActive ? "success" : "danger")">
-                                    @(user.IsActive ? "Hoạt động" : "Vô hiệu")
-                                </span>
-                            </td>
-                            <td>
-                                <a href="/Admin/Users/Edit/@user.Id?tab=@Model.Tab" class="btn btn-sm btn-outline-primary">Sửa</a>
-                                <form method="post" asp-page="/Admin/Users/Toggle" style="display:inline;">
-                                    <input type="hidden" name="id" value="@user.Id" />
-                                    <input type="hidden" name="tab" value="@Model.Tab" />
-                                    <button type="submit" class="btn btn-sm @(user.IsActive ? "btn-danger" : "btn-success")">
-                                        @(user.IsActive ? "Vô hiệu" : "Kích hoạt")
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-            @if (Model.TotalPages > 1)
+            @if (Model.Users.Any())
             {
-                <nav>
-                    <ul class="pagination">
-                        @for (int i = 1; i <= Model.TotalPages; i++)
-                        {
-                            <li class="page-item @(i == Model.Page ? "active" : "")">
-                                <a class="page-link" href="/Admin/Users?tab=@Model.Tab&page=@i&q=@Model.Q">@i</a>
-                            </li>
-                        }
-                    </ul>
-                </nav>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Điện thoại</th>
+                                <th>Trạng thái</th>
+                                <th class="text-end">Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+                                    <td><strong>@user.FullName</strong></td>
+                                    <td>@user.Email</td>
+                                    <td>@user.Phone</td>
+
+                                    <td>
+                                        <span class="badge bg-@(user.IsActive ? "success" : "danger")">
+                                            @(user.IsActive ? "Hoạt động" : "Vô hiệu")
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a href="/Admin/Users/Edit/@user.Id?tab=@Model.Tab"
+                                               class="btn btn-sm btn-outline-primary">
+                                            Sửa
+                                        </a>
+
+                                        <form method="post" asp-page="/Admin/Users/Toggle" class="d-inline">
+                                            <input type="hidden" name="id" value="@user.Id" />
+                                            <input type="hidden" name="tab" value="@Model.Tab" />
+
+                                            <button class="btn btn-sm @(user.IsActive ? "btn-danger" : "btn-success")">
+                                                @(user.IsActive ? "Vô hiệu" : "Kích hoạt")
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <!-- PAGINATION -->
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="mt-3">
+                        <ul class="pagination">
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Page ? "active" : "")">
+                                    <a class="page-link"
+                                           href="/Admin/Users?tab=@Model.Tab&page=@i&q=@Model.Q">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+
+                        </ul>
+                    </nav>
+                }
             }
-        }
-        else
-        {
-            <p class="text-muted">Không có người dùng nào.</p>
-        }
+            else
+            {
+                <p class="text-muted mb-0">Không có người dùng nào.</p>
+            }
+
+        </div>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
